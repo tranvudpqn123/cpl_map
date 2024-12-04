@@ -1,7 +1,7 @@
 export interface IMerchantRequest {
     keySearch: string;
     serviceTypeId: string;
-    sortBy: 'BILL_AMOUNT' | 'BILL_COUNT';
+    sortBy: ESortType;
     pageSize: number;
     latitude?: number;
     longtitude?: number;
@@ -45,6 +45,8 @@ export interface IMerchant {
     total_bill: any;
     total_bill_amount: any;
     selected: boolean;
+    orderNumber: number;
+    color: string;
 }
 
 export interface IWorkingTime {
@@ -54,5 +56,20 @@ export interface IWorkingTime {
     end_hour: string;
     date_created: string;
     date_updated: string;
+}
+
+export enum ESortType {
+    TOTAL_BILL_IN_MONTH = 'TOTAL_BILL_IN_MONTH',
+    TOTAL_BILL_AMOUNT_IN_MONTH = 'TOTAL_BILL_AMOUNT_IN_MONTH',
+    TOTAL_BILL = 'TOTAL_BILL',
+    TOTAL_BILL_AMOUNT = 'TOTAL_BILL_AMOUNT'
+}
+
+export interface IServiceType {
+    id: string;
+    name: string;
+    selected: boolean;
+    partnerIds: string[];
+    color: string;
 }
 

@@ -77,20 +77,48 @@
         </div>
 
         <div class="p-4">
-            <h5 class="my-3 name">{{focusedMerchant()!.name}}</h5>
+            <h5 class="my-3 text-xl text-slate-800">{{focusedMerchant()!.name}}</h5>
 
             <div class="mb-3 text-wrapper">
-                <label>Mô tả</label>
+                <label class="text-slate-400">Mô tả</label>
                 <p class="mb-0 description">{{focusedMerchant()!.description}}</p>
             </div>
 
             <div class="mb-3 text-wrapper">
-                <label>Địa chỉ</label>
+                <label class="text-slate-400">Địa chỉ</label>
                 <p class="mb-0 description">{{focusedMerchant()!.full_address}}</p>
             </div>
 
             <div class="mb-3 text-wrapper">
-                <label>Thời gian làm việc</label>
+                <label class="text-slate-400">Thống kê trong vòng 1 tháng</label>
+                <div class="flex gap-2">
+                   <div>
+                       <label class="mr-2 text-slate-400">Số lượng hóa đơn</label>
+                       <strong class="text-red-500 ">{{focusedMerchant()!.total_bill_in_month | dotSeparator}}</strong>
+                   </div>
+                    <div>
+                        <label class="mr-2 text-slate-400">Giá trị hóa đơn</label>
+                        <strong class="text-red-500 ">{{focusedMerchant()!.total_bill_amount_in_month | dotSeparator}}đ</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3 text-wrapper">
+                <label class="text-slate-400">Thống kê trong vòng 3 tháng</label>
+                <div class="flex gap-2">
+                    <div>
+                        <label class="mr-2 text-slate-400">Số lượng hóa đơn</label>
+                        <strong class="text-red-500 ">{{focusedMerchant()!.total_bill | dotSeparator}}</strong>
+                    </div>
+                    <div>
+                        <label class="mr-2 text-slate-400">Giá trị hóa đơn</label>
+                        <strong class="text-red-500 ">{{focusedMerchant()!.total_bill_amount | dotSeparator}}đ</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3 text-wrapper">
+                <label class="text-slate-400">Thời gian làm việc</label>
                 <p class="mb-0 description">{{focusedMerchant()!.start_hour}} - {{focusedMerchant()!.start_hour}}</p>
             </div>
         </div>
