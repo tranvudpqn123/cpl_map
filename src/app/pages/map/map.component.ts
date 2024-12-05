@@ -33,6 +33,7 @@ export class MapComponent implements OnInit {
     private originalMerchants = signal<any[]>([]);
     merchants = signal<any[]>([]);
     focusedMerchant = signal<IMerchant | null>(null);
+    loading = signal(false);
 
     serviceTypes = new Map(serviceTypesData.map(item => [item.id, item]));
     searchForm: FormGroup;
@@ -154,6 +155,7 @@ export class MapComponent implements OnInit {
             is_include_report: true
         }
         if (this.originalMerchants().length === 0) {
+            this.loading.set(true);
             this.httpClient.post(url, req).subscribe((res: any) => {
                 let {code, data: {data}} = res;
                 if (code === '200') {
@@ -191,6 +193,7 @@ export class MapComponent implements OnInit {
                         );
                         this.map.fitBounds(bounds, {padding: [50, 50]}); // Optional: Add padding for better visibility
                     }
+                    this.loading.set(false);
                 }
             });
         } else {

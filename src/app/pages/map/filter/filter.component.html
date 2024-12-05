@@ -1,4 +1,10 @@
-<section class="p-6 w-80 h-dvh border-r border-slate-300 overflow-auto">
+<section
+    class="relative p-6 w-80 h-dvh border-r border-slate-300 overflow-auto transition-all ease-out "
+    [class.w-0]="!showSideBar()"
+    [class.px-0]="!showSideBar()"
+    [class.w-80]="showSideBar()"
+    [class.px-6]="showSideBar()"
+>
 
     <div class="mb-6">
         <h6 class="mb-3 text-xl text-slate-800">Lọc cửa hàng</h6>
@@ -20,25 +26,27 @@
                     type="button"
                     class="flex items-center justify-between px-2 w-full rounded h-8 border text-left"
                     (click)="isShowServiceTypeOptions = !isShowServiceTypeOptions">
-                    <span>{{selectedServiceType() ? selectedServiceType()!.name : 'Tất cả'}}</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
+                    <span>{{ selectedServiceType() ? selectedServiceType()!.name : 'Tất cả' }}</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                         class="bi bi-chevron-down" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                              d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
                     </svg>
                 </button>
             </div>
 
-            <div>
-                <p class="mb-1 text-slate-400">Số lượng merchant</p>
-                <select
-                    class="px-2 w-full rounded h-8 border"
-                    formControlName="pageSize"
-                >
-                    <option [value]="-1">Tất cả</option>
-                    @for(option of pageSizeOptions; track $index) {
-                        <option [value]="option">{{option}}</option>
-                    }
-                </select>
-            </div>
+            <!--            <div>-->
+            <!--                <p class="mb-1 text-slate-400">Số lượng merchant</p>-->
+            <!--                <select-->
+            <!--                    class="px-2 w-full rounded h-8 border"-->
+            <!--                    formControlName="pageSize"-->
+            <!--                >-->
+            <!--                    <option [value]="-1">Tất cả</option>-->
+            <!--                    @for (option of pageSizeOptions; track $index) {-->
+            <!--                        <option [value]="option">{{ option }}</option>-->
+            <!--                    }-->
+            <!--                </select>-->
+            <!--            </div>-->
 
             <div>
                 <p class="mb-1 text-slate-400">Sắp xếp theo</p>
@@ -74,7 +82,7 @@
                         [value]="ESortType.TOTAL_BILL"
                         formControlName="sortBy"
                     >
-                    <label for="billAmountIn3Month">Số lượng hóa đơn (3 tháng)</label>
+                    <label for="billCountIn3Month">Số lượng hóa đơn (3 tháng)</label>
                 </div>
 
                 <div class="mb-1 flex align-center gap-2">
@@ -95,7 +103,7 @@
     </div>
 
     <div class="sticky top-0">
-        <h6 class="mb-3 text-xl text-slate-800">Kết quả tìm kiếm ({{ merchants()?.length}})</h6>
+        <h6 class="mb-3 text-xl text-slate-800">Kết quả tìm kiếm ({{ merchants()?.length }})</h6>
         @for (merchant of merchants(); track $index) {
             <div
                 class="py-2 px-1 flex items-center gap-2 leading-none cursor-pointer rounded group hover:bg-amber-50"
@@ -107,43 +115,78 @@
                     [class.bg-amber-500]="merchant.selected"
                     [class.text-white]="merchant.selected"
                     [class.border-amber-500]="merchant.selected"
+                    [ngStyle]="{
+                        backgroundColor: merchant.color,
+                        borderColor: merchant.color
+                    }"
 
-                >{{merchant.orderNumber}}</div>
-                <div>{{merchant.name}}</div>
+                >{{ merchant.orderNumber }}
+                </div>
+                <div>
+                    {{ merchant.name }}
+                    @if (sortBy.value === ESortType.TOTAL_BILL_AMOUNT || sortBy.value === ESortType.TOTAL_BILL_AMOUNT_IN_MONTH) {
+                        <strong class="text-red-500">{{getAmount(merchant) | dotSeparator}}</strong>
+                    } @else {
+                        <strong class="text-red-500">{{getAmount(merchant)}}</strong>
+
+                    }
+
+                </div>
             </div>
         }
     </div>
 
-</section>
 
-<ng-template
-    cdkConnectedOverlay
-    [cdkConnectedOverlayOrigin]="serviceTypeTrigger"
-    [cdkConnectedOverlayOpen]="isShowServiceTypeOptions"
->
-    <div class="py-3 bg-white rounded border border-slate-400">
-        <div
-            class="py-1 px-3 flex items-center gap-2 cursor-pointer"
-            (click)="onSelectServiceType(null)"
-        >
-            <div class="w-4 h-4 rounded-full border" [ngStyle]="{
+    <ng-template
+        cdkConnectedOverlay
+        [cdkConnectedOverlayOrigin]="serviceTypeTrigger"
+        [cdkConnectedOverlayOpen]="isShowServiceTypeOptions"
+    >
+        <div class="py-3 bg-white rounded border border-slate-400">
+            <div
+                class="py-1 px-3 flex items-center gap-2 cursor-pointer"
+                (click)="onSelectServiceType(null)"
+            >
+                <div class="w-4 h-4 rounded-full border" [ngStyle]="{
                     backgroundColor: 'white',
                     borderColor: 'bg-slate-400'
                 }"></div>
-            <span>Tất cả</span>
-        </div>
+                <span>Tất cả</span>
+            </div>
 
-        @for(serviceType of serviceTypes(); track $index) {
-            <div
-                class="py-1 px-3 flex items-center gap-2 cursor-pointer"
-                (click)="onSelectServiceType(serviceType)"
-            >
-                <div class="w-4 h-4 rounded-full" [ngStyle]="{
+            @for (serviceType of serviceTypes(); track $index) {
+                <div
+                    class="py-1 px-3 flex items-center gap-2 cursor-pointer"
+                    (click)="onSelectServiceType(serviceType)"
+                >
+                    <div class="w-4 h-4 rounded-full" [ngStyle]="{
                     backgroundColor: serviceType.color,
                     borderColor: serviceType.color
                 }"></div>
-                <span>{{serviceType.name}}</span>
-            </div>
-        }
-    </div>
-</ng-template>
+                    <span>{{ serviceType.name }}</span>
+                </div>
+            }
+        </div>
+    </ng-template>
+</section>
+
+<button
+    class="transition-all ease-out w-12 h-12 fixed bottom-8 left-96 rounded-full border border-slate-400 flex items-center justify-center bg-white text-slate-800 shadow-md z-20"
+    [class.left-16]="!showSideBar()"
+    [class.left-96]="showSideBar()"
+    (click)="onToggleShowSideBar()"
+>
+    @if (showSideBar()) {
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg"
+             viewBox="0 0 16 16">
+            <path
+                d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+        </svg>
+    } @else {
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+        </svg>
+    }
+
+</button>
+

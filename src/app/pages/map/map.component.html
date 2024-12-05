@@ -125,3 +125,10 @@
     </div>
 </div>
 
+@if (loading()) {
+    <div class="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black/50 z-30">
+        <div class="loader"></div>
+    </div>
+}
+
+

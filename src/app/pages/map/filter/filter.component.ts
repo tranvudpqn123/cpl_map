@@ -1,9 +1,10 @@
 import {ChangeDetectionStrategy, Component, inject, input, output, signal} from '@angular/core';
 import {merchants as merchantsData, serviceTypes as serviceTypesData} from './../data';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {FormBuilder, FormControl, ReactiveFormsModule} from '@angular/forms';
 import {ESortType, IMerchant, IMerchantRequest, IServiceType} from '@models/merchant-request.interface';
 import {OverlayModule} from '@angular/cdk/overlay';
 import {CommonModule} from '@angular/common';
+import {DotSeparatorPipe} from '@pipes/dot-separator.pipe';
 
 @Component({
     selector: 'app-filter',
@@ -11,7 +12,8 @@ import {CommonModule} from '@angular/common';
     imports: [
         ReactiveFormsModule,
         OverlayModule,
-        CommonModule
+        CommonModule,
+        DotSeparatorPipe
     ],
     templateUrl: './filter.component.html',
     styleUrl: './filter.component.scss',
@@ -34,6 +36,12 @@ export class FilterComponent {
     });
     isShowServiceTypeOptions = false;
     selectedServiceType = signal<IServiceType | null>(null);
+    showSideBar = signal(true);
+
+    get sortBy(): FormControl {
+        return this.searchForm.get('sortBy') as FormControl;
+    }
+
 
     onSearch() {
         let {keySearch, sortBy, serviceTypeId, pageSize} = this.searchForm.value;
@@ -58,5 +66,18 @@ export class FilterComponent {
         this.searchForm.patchValue({
             serviceTypeId: serviceType?.id ?? ''
         });
+    }
+
+    onToggleShowSideBar() {
+        this.showSideBar.update(val => !val);
+    }
+
+    getAmount(merchant: IMerchant) {
+        const sortBy = this.sortBy.value;
+        if (sortBy === ESortType.TOTAL_BILL) return merchant.total_bill;
+        if (sortBy === ESortType.TOTAL_BILL_AMOUNT) return merchant.total_bill_amount;
+        if (sortBy === ESortType.TOTAL_BILL_IN_MONTH) return merchant.total_bill_in_month;
+        if (sortBy === ESortType.TOTAL_BILL_AMOUNT_IN_MONTH) return merchant.total_bill_amount_in_month;
+        return '';
     }
 }
