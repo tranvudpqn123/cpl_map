@@ -125,6 +125,8 @@ export class MapComponent implements OnInit {
         if (merchant.selected) {
             this.focusedMerchant.set(merchant);
         }
+        this.map.setView([merchant.latitude, merchant.longtitude], 21);
+
     }
 
 
@@ -152,7 +154,6 @@ export class MapComponent implements OnInit {
                 const marker = L.marker([merchant.latitude, merchant.longtitude], {icon: customDivIcon});
 
                 marker.on('click', () => {
-                    this.map.setView([merchant.latitude, merchant.longtitude], 16);
                     this.onSelectMerchant(merchant);
                 });
                 marker.addTo(this.markerLayer); // Add marker to LayerGroup
