@@ -4,6 +4,7 @@
     [class.px-0]="!showSideBar()"
     [class.w-80]="showSideBar()"
     [class.px-6]="showSideBar()"
+    (click)="$event.stopPropagation()"
 >
 
     <div class="mb-6">

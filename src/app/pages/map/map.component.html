@@ -61,8 +61,9 @@
 <!--</div>-->
 
 
-<div *ngIf="focusedMerchant()" class="fixed w-screen h-screen merchant-detail">
-    <div class="fixed bg-white main-wrapper">
+<div *ngIf="focusedMerchant()" [class.none-bg]="test() === true" class="fixed w-screen h-screen merchant-detail">
+    {{test() | json}}
+    <div appClickOutside (clickOutside)="onCloseMerchantDetail()" class="fixed bg-white main-wrapper">
         <button class="w-8 h-8 absolute btn bg-white btn-close-modal flex items-center justify-center" (click)="onCloseMerchantDetail()">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
                 <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
@@ -76,7 +77,7 @@
                 }">
         </div>
 
-        <div class="p-4">
+        <div  class="p-4 ">
             <h5 class="my-3 text-xl text-slate-800">{{focusedMerchant()!.name}}</h5>
 
             <div class="mb-3 text-wrapper">

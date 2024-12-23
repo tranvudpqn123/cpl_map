@@ -7,6 +7,7 @@ import {FilterComponent} from './filter/filter.component';
 import {ESortType, IMerchant, IMerchantRequest, IServiceType} from '@models/merchant-request.interface';
 import {HttpClient} from '@angular/common/http';
 import {DotSeparatorPipe} from '@pipes/dot-separator.pipe';
+import {ClickOutsideDirective} from '../../directive/click-outside';
 
 @Component({
     selector: 'app-map',
@@ -17,7 +18,8 @@ import {DotSeparatorPipe} from '@pipes/dot-separator.pipe';
         CommonModule,
         ReactiveFormsModule,
         FilterComponent,
-        DotSeparatorPipe
+        DotSeparatorPipe,
+        ClickOutsideDirective
     ]
 })
 export class MapComponent implements OnInit {
@@ -32,9 +34,11 @@ export class MapComponent implements OnInit {
     private centroid: L.LatLngExpression = [21.040973510502976, 105.83468800262507];
     private originalMerchants = signal<any[]>([]);
     merchants = signal<any[]>([]);
+    private selectedMerchant: IMerchant | null = null;
+
     focusedMerchant = signal<IMerchant | null>(null);
     loading = signal(false);
-
+    test = signal(false);
     serviceTypes = new Map(serviceTypesData.map(item => [item.id, item]));
     searchForm: FormGroup;
 
@@ -84,28 +88,46 @@ export class MapComponent implements OnInit {
 
     onSearch(request: IMerchantRequest) {
         this.getMerchants(request);
+        this.focusedMerchant.set(this.merchants()[0]);
+        this.test.set(true);
     }
 
-    onSelectMerchant(merchant: IMerchant): void {
-        merchant.selected = !merchant.selected;
 
-        const nodes = document.querySelectorAll('.marker-icon[data-merchant-id="' + merchant.id.toLowerCase() + '"]');
+    private updateMerchantStyles(merchantId: string, backgroundColor: string, color: string, saveOriginal: boolean = false): void {
+        const nodes = document.querySelectorAll('.marker-icon[data-merchant-id="' + merchantId.toLowerCase() + '"]');
+        nodes.forEach(node => {
+            const element = node as HTMLElement;
+
+            if (saveOriginal && !element.getAttribute('data-original-bg-color')) {
+                element.setAttribute('data-original-bg-color', element.style.backgroundColor || 'white');
+            }
+            element.style.backgroundColor = backgroundColor;
+            element.style.color = color;
+        });
+    }
+    onSelectMerchant(merchant: IMerchant): void {
+        if (this.selectedMerchant) {
+            this.updateMerchantStyles(this.selectedMerchant.id,
+                this.selectedMerchant.color || 'white',
+                '',
+                false);
+            this.selectedMerchant.selected = false;
+        }
+
+        merchant.selected = true;
+        this.selectedMerchant = merchant;
+
+        this.updateMerchantStyles(merchant.id,
+            'red',
+            'white',
+            true);
 
         if (merchant.selected) {
             this.focusedMerchant.set(merchant);
-            nodes.forEach(node => {
-                const element = node as HTMLElement; // Cast to HTMLElement if needed
-                element.style.backgroundColor = 'red';
-                element.style.color = 'white';
-            });
-        } else {
-            nodes.forEach(node => {
-                const element = node as HTMLElement; // Cast to HTMLElement if needed
-                element.style.backgroundColor = 'white';
-                element.style.color = 'gray';
-            });
         }
     }
+
+
 
     onCloseMerchantDetail() {
         this.focusedMerchant.set(null);
@@ -128,7 +150,13 @@ export class MapComponent implements OnInit {
                     iconAnchor: [15, 15] // Anchor point of the icon
                 });
                 const marker = L.marker([merchant.latitude, merchant.longtitude], {icon: customDivIcon});
+
+                marker.on('click', () => {
+                    this.map.setView([merchant.latitude, merchant.longtitude], 16);
+                    this.onSelectMerchant(merchant);
+                });
                 marker.addTo(this.markerLayer); // Add marker to LayerGroup
+
             }
         });
 
@@ -138,6 +166,9 @@ export class MapComponent implements OnInit {
         // Add tiles to map
         tiles.addTo(this.map);
     }
+
+
+
 
     private isSubstringIgnoringAccent(substring: string, mainString: string): boolean {
         const normalize = (str: string) =>
@@ -237,7 +268,7 @@ export class MapComponent implements OnInit {
                 const bounds = L.latLngBounds(
                     data.map((merchant: IMerchant) => [merchant.latitude, merchant.longtitude])
                 );
-                this.map.fitBounds(bounds, {padding: [50, 50]}); // Optional: Add padding for better visibility
+                this.map.fitBounds(bounds, {padding: [50, 50],maxZoom: 18}); // Optional: Add padding for better visibility
             }
         }
 
