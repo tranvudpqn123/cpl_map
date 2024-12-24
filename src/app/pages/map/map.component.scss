@@ -57,10 +57,13 @@
         font-size: 12px;
     }
 }
+.none-bg {
+    background: none !important;
 
+}
 .merchant-detail {
     top: 0;
-    left: 0;
+    left: 20rem;
     background: rgba(0,0,0,.5);
     z-index: 200;
 

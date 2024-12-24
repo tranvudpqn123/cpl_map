@@ -23,6 +23,7 @@ export class FilterComponent {
     search = output<IMerchantRequest>();
     selectMerchant = output<IMerchant>();
     merchants = input<any[]>();
+    private selectedMerchant: IMerchant | null = null;
 
     private readonly fb = inject(FormBuilder);
     protected readonly ESortType = ESortType;
@@ -37,6 +38,7 @@ export class FilterComponent {
     isShowServiceTypeOptions = false;
     selectedServiceType = signal<IServiceType | null>(null);
     showSideBar = signal(true);
+    event: any;
 
     get sortBy(): FormControl {
         return this.searchForm.get('sortBy') as FormControl;
@@ -58,6 +60,13 @@ export class FilterComponent {
 
     onSelectMerchant(merchant: IMerchant) {
         this.selectMerchant.emit(merchant);
+
+        if (this.selectedMerchant) {
+            this.selectedMerchant.selected = false;
+        }
+        merchant.selected = true;
+        this.selectedMerchant = merchant;
+
     }
 
     onSelectServiceType(serviceType: IServiceType | null) {
