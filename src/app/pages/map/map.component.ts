@@ -125,7 +125,12 @@ export class MapComponent implements OnInit {
         if (merchant.selected) {
             this.focusedMerchant.set(merchant);
         }
-        this.map.setView([merchant.latitude, merchant.longtitude], 21);
+        const currentZoom = this.map.getZoom();
+        if (currentZoom < 14 - 1) {
+            this.map.setView([merchant.latitude, merchant.longtitude], 14 - 1);
+        } else {
+            this.map.setView([merchant.latitude, merchant.longtitude], currentZoom);
+        }
 
     }
 
