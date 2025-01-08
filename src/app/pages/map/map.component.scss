@@ -1,109 +1,30 @@
-.map-container {
-    position: fixed;
-    width: 100vw;
-    height: 100vh;
-    z-index: 1;
+.map-page {
+    width: 100dvw;
+    height: 100dvh;
+    background-color: #ababab;
+    font-size: 11px;
 }
 
-.map-frame {
-    height: 100%;
-}
+.top-filter {
+    min-width: 500px;
+    height: 50px;
+    top: 20px;
+    left: 90px;
 
-#googleMap {
-    height: 100%;
-}
+    .btn-service-type {
+        height: 32px;
+        border-radius: 30px;
+        box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+        background-color: white;
 
-
-.merchants,
-.map-merchants{
-    position: absolute;
-
-    display: block;
-    width: 220px;
-    background-color: #fff;
-    border-radius: 4px;
-    border: 1px solid #d6d6d6;
-
-    font-size: 12px;
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-    z-index: 100;
-
-    .merchant {
-        padding: 4px 10px;
-        cursor: pointer;
-
-        &.selected,
         &:hover {
-            background-color: #d6d6d6;
+            background-color: rgb(243, 243, 243);
         }
     }
-
 }
 
+.left-filter {
+    height: 100%;
+    width: 70px;
 
-.merchants{
-    bottom: 1rem;
-    left: 1rem;
-}
-
-.map-merchants{
-    top: 5rem;
-    left: 1rem;
-
-    max-height: 280px;
-
-    .form-control {
-        padding: 0.325rem 0.75rem;
-        font-size: 12px;
-    }
-}
-.none-bg {
-    background: none !important;
-
-}
-.merchant-detail {
-    top: 0;
-    left: 20rem;
-    background: rgba(0,0,0,.5);
-    z-index: 200;
-
-    .main-wrapper {
-        right: 0;
-        width: 450px;
-        height: 100vh;
-
-        border-top-left-radius: 15px;
-        border-bottom-left-radius: 15px;
-        font-size: 13px;
-    }
-
-
-    .btn-close-modal {
-        transform: translate(-120%, .5rem);
-        border: 1px solid gray;
-        border-radius: 50%;
-        box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-    }
-
-    .avatar {
-        border-top-left-radius: 16px;
-        height: 250px;
-        background-position: center;
-        background-size: cover;
-    }
-}
-
-.loader {
-    margin: auto;
-    border: 20px solid #EAF0F6;
-    border-radius: 50%;
-    border-top: 20px solid #FF7A59;
-    width: 200px;
-    height: 200px;
-    animation: spinner 1s linear infinite;
-}
-
-@keyframes spinner {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
 }

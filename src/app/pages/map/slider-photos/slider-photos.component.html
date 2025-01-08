@@ -1,0 +1,52 @@
+<section class="position-fixed overflow-auto slider-photos">
+    <div class="position-absolute bg-white image-groups">
+        <div class="d-flex align-items-center justify-content-between border-bottom title">
+            <button class="d-block"><i class="fs-2 bi bi-arrow-left-short"></i></button>
+            <h5 class="text-center fs-5 flex-fill text-truncate">Hoàn Mỹ Resort Ninh Chử</h5>
+            <button class="d-block"></button>
+        </div>
+
+        <div id="btnPhotoGroups" class="overflow-hidden swiper-container btn-photo-groups">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide"><div class="p-3 btn fs-6">All</div></div>
+                <div class="swiper-slide"><div class="p-3 btn fs-6">Latest</div></div>
+                <div class="swiper-slide"><div class="p-3 btn fs-6">Videos</div></div>
+                <div class="swiper-slide"><div class="p-3 btn fs-6">Rooms</div></div>
+                <div class="swiper-slide"><div class="p-3 btn fs-6">Exteriors</div></div>
+                <div class="swiper-slide"><div class="p-3 btn fs-6">Food & Drink</div></div>
+                <div class="swiper-slide"><div class="p-3 btn fs-6">Beach</div></div>
+                <div class="swiper-slide"><div class="p-3 btn fs-6">From Visitors</div></div>
+            </div>
+        </div>
+
+        <ul class="overflow-auto photos">
+            @for(photo of photos(); track $index) {
+                <li>
+                    <button class="d-block w-100">
+                        <img [src]="photo" alt="image" width="100%">
+                    </button>
+                </li>
+            }
+        </ul>
+    </div>
+
+    <div class="position-relative main-screen">
+        <div id="photoSliderWrapper" class="overflow-hidden swiper-container photos-wrapper">
+            <div class="swiper-wrapper">
+                @for(photo of photos(); track $index) {
+                    <div class="swiper-slide">
+                        <div class="text-center">
+                            <img [src]="photo" alt="image">
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="text-white swiper-button-prev"></div>
+            <div class="text-white swiper-button-next"></div>
+        </div>
+    </div>
+
+
+</section>
+
+

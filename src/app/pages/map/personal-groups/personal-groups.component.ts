@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
-  selector: 'app-filter',
+  selector: 'app-personal-groups',
   standalone: true,
   imports: [],
-  templateUrl: './filter.component.html',
-  styleUrl: './filter.component.scss',
+  templateUrl: './personal-groups.component.html',
+  styleUrl: './personal-groups.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FilterComponent {
+export class PersonalGroupsComponent {
 
 }

@@ -1,0 +1,107 @@
+.side-bar-wrapper {
+    color: rgb(var(--c-gray));
+
+}
+
+
+.address-groups {
+    height: 100dvh;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+
+    hr {
+        width: 50px;
+    }
+}
+
+
+.address-group {
+    --thumbnail-width: 38px;
+    --thumbnail-border-width: 1px;
+
+    button {
+        border: none;
+
+        .thumbnail {
+            width: var(--thumbnail-width);
+            height: var(--thumbnail-width);
+            padding: var(--thumbnail-border-width);
+
+            background-color: white;
+            border: var(--thumbnail-border-width) solid rgb(var(--c-gray), .5);
+            border-radius: 4px;
+
+            img {
+                width: 100%;
+                height: 100%;
+                border-radius: 2.5px;
+            }
+        }
+
+        .thumbnail-group {
+            width: calc(var(--thumbnail-width) + 4px);
+            aspect-ratio: 1;
+
+            &.more-than-one {
+                .thumbnail {
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-43%, -43%);
+
+                    &+.thumbnail {
+                        transform: translate(-57%, -57%);
+                    }
+
+                    img {
+                        position: relative;
+                        &:after {
+                            content: '';
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+
+                            display: block;
+                            width: 100%;
+                            height: 100%;
+                            background-color: rgba(0, 0, 0, 0.2);
+
+                        }
+                    }
+
+                }
+
+                .number-of-addresses {
+                    bottom: .75rem;
+                    right: 1rem;
+                    font-weight: 500;
+                }
+            }
+        }
+
+
+    }
+
+    &+.address-group {
+        margin-top: 10px;
+    }
+
+    .address-group-title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    &.selected {
+        button {
+            .thumbnail {
+                border: var(--thumbnail-border-width) solid rgb(var(--c-primary));
+            }
+        }
+
+        .address-group-title {
+            color: rgb(var(--c-primary));
+        }
+
+    }
+}
