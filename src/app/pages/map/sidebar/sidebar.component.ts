@@ -13,12 +13,21 @@ export class SidebarComponent implements OnInit {
 
     private readonly merchantFilterService = inject(MerchantFilterService);
     addressGroups = signal<IAddressGroup[]>([]);
+    selectedAddressGroupId = signal('');
 
     ngOnInit() {
         this.merchantFilterService.addressGroups$
             .subscribe((addressGroups) => {
-                console.log('addressGroups', addressGroups);
                 this.addressGroups.set(addressGroups);
             });
+
+        this.merchantFilterService.selectedAddressGroupId$
+            .subscribe((selectedAddressGroupId) => {
+                this.selectedAddressGroupId.set(selectedAddressGroupId);
+            });
+    }
+
+    onSelectAddressGroup(addressGroupId: string) {
+        this.merchantFilterService.updateSelectedAddressGroup(addressGroupId);
     }
 }

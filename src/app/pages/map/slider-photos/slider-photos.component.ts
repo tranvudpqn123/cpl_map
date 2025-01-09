@@ -1,6 +1,16 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, signal} from '@angular/core';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    Component,
+    CUSTOM_ELEMENTS_SCHEMA,
+    inject,
+    OnInit,
+    signal
+} from '@angular/core';
 import {Swiper} from 'swiper';
 import {RedZoomModule} from 'ngx-red-zoom';
+import {IAddress, IAddressGroup, IAddressImageGroup, MerchantFilterService} from '@services/merchant-filter.service';
+import {CommonModule} from '@angular/common';
 
 @Component({
     selector: 'app-slider-photos',
@@ -8,29 +18,24 @@ import {RedZoomModule} from 'ngx-red-zoom';
     templateUrl: './slider-photos.component.html',
     styleUrl: './slider-photos.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [RedZoomModule],
+    imports: [RedZoomModule, CommonModule],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class SliderPhotosComponent implements AfterViewInit {
-    photos = signal([
-        'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455210yCJcAm/cmv-welcom-center_interior-12.jpg',
-        'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455210EfqeBv/cmv-welcome-center_exterior_10.jpg',
-        'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455210mtrWxM/cmv-pool-33.jpg',
-        'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455210UGLXZg/cmv-pool-29.jpg',
-        'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211TgJMHE/faro-tower-1.jpg',
-        'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211UzwjzQ/cmv-mundo-restaurant-4.jpg',
-        'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211JeyMiR/cmv-mundo-restaurant-6.jpg',
-        'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211Xktjjr/cmv-mundo-restaurant-7.jpg',
-        'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211MbnTyc/cmv-mundo-restaurant-2.jpg',
-        'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211vPzGaB/cmv-el-salon-bar-2.jpg',
-        'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211MwbqAv/cmv-el-salon-bar-3.jpg',
-        'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211myYXiA/cmv-el-salon-bar-4.jpg',
-        'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211TVYCWA/cmv-el-salon-bar-6.jpg',
-        'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211xHNkrZ/cmv-el-salon-bar-5.jpg',
-        'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211zujUUh/cmv-kid-playground-5.jpg',
-        'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211MnbdTM/cmv-kid-playground-4.jpg',
-        'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-    ])
+export class SliderPhotosComponent implements AfterViewInit, OnInit {
+    private readonly merchantFilterService = inject(MerchantFilterService);
+    selectedAddress = signal<IAddress | null>(null);
+    selectedImageGroup = signal<IAddressImageGroup | null>(null);
+    showingImageIdx = signal(0);
+    photoSliderWrapperHorizontal: Swiper | null = null;
+    photoSliderWrapperVertical: Swiper | null = null;
+
+    ngOnInit() {
+        this.merchantFilterService.selectedAddress$
+            .subscribe((selectedAddress) => {
+                this.selectedAddress.set(selectedAddress);
+                this.selectedImageGroup.set(selectedAddress.imageGroups[0]);
+            });
+    }
 
     ngAfterViewInit() {
         new Swiper("#btnPhotoGroups", {
@@ -38,16 +43,64 @@ export class SliderPhotosComponent implements AfterViewInit {
             spaceBetween: 4,
             mousewheel: true
         });
-
-        new Swiper("#photoSliderWrapper", {
+        this.photoSliderWrapperHorizontal = new Swiper("#photoSliderWrapperHorizontal", {
             slidesPerView: 1,
             pagination: true,
+            loop: false,
             spaceBetween: 0,
             navigation: {
                 nextEl: '.swiper-button-next',
                 prevEl: '.swiper-button-prev',
             },
-
         });
+        this.photoSliderWrapperHorizontal.on('slideChange', (event: Swiper) => {
+            this.showingImageIdx.set(event.activeIndex);
+            if (this.photoSliderWrapperVertical) {
+                this.photoSliderWrapperVertical.slideTo(event.activeIndex, 500);
+            }
+        });
+
+
+        this.photoSliderWrapperVertical = new Swiper("#photoSliderWrapperVertical", {
+            slidesPerView: "auto",
+            direction: "vertical",
+            mousewheel: true,
+            spaceBetween: 2,
+            pagination: {
+                clickable: true,
+            },
+            loop: false,
+            centeredSlides: true,
+            centeredSlidesBounds: true,
+            scrollbar: {
+                el: '.swiper-scrollbar',
+                draggable: true,
+            },
+        });
+    }
+
+    onSlideImageTo(index: number) {
+        if (this.photoSliderWrapperHorizontal) {
+            console.log('hello')
+            this.photoSliderWrapperHorizontal.slideTo(index, 500);
+            this.showingImageIdx.set(index)
+        }
+    }
+
+    onSelectImageGroup(imageGroup: IAddressImageGroup) {
+        this.selectedImageGroup.set(imageGroup);
+        setTimeout(() => {
+            if (this.photoSliderWrapperHorizontal) {
+                this.photoSliderWrapperHorizontal.update(); // Recalculate slides
+                this.photoSliderWrapperHorizontal.slideTo(0); // Reset to the first image
+            }
+            if (this.photoSliderWrapperVertical) {
+                this.photoSliderWrapperVertical.update(); // Recalculate slides
+                this.photoSliderWrapperVertical.slideTo(0); // Reset to the first image
+            }
+        }, 0);
+
+        this.showingImageIdx.set(0);
+
     }
 }

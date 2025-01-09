@@ -1,15 +1,16 @@
 .side-bar-wrapper {
     color: rgb(var(--c-gray));
-
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    height: 100dvh;
 }
 
 
 .address-groups {
-    height: 100dvh;
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-
     hr {
         width: 50px;
+    }
+    &+.address-groups {
+        max-height: calc(100dvh - 230px);
     }
 }
 
@@ -70,7 +71,7 @@
                 }
 
                 .number-of-addresses {
-                    bottom: .75rem;
+                    bottom: .5rem;
                     right: 1rem;
                     font-weight: 500;
                 }
