@@ -10,7 +10,6 @@ import {IAddressGroup, MerchantFilterService} from '@services/merchant-filter.se
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SidebarComponent implements OnInit {
-
     private readonly merchantFilterService = inject(MerchantFilterService);
     addressGroups = signal<IAddressGroup[]>([]);
     selectedAddressGroupId = signal('');

@@ -1,5 +1,6 @@
-@use './config/theme';
-@use './config/reset';
-
 @use './vendor/bootstrap';
 @use './vendor/swiper';
+
+@use './config/theme';
+@use './config/reset';
+@use './config/global';

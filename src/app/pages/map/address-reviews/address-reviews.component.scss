@@ -1,0 +1,99 @@
+.star-icons {
+    color: rgb(255, 191, 0);
+}
+
+.rating-bars {
+    font-size: 14px;
+
+    .rating-bar {
+        background-color: rgb(var(--c-gray), .16);
+        height: 8px;
+
+        &:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+
+            height: 8px;
+            width: var(--overlay-percent, 0%);
+            background-color: rgb(255, 191, 0);
+            border-radius: 8px;
+        }
+    }
+}
+
+.rating-numbers {
+    span {
+        font-size: 56px;
+    }
+
+    .btn-show-more-reviews {
+        border: 1px solid transparent;
+
+        &:hover {
+            background-color: rgb(var(--c-primary), .15);
+            border-color: rgb(var(--c-primary));
+            color: rgb(var(--c-primary));
+        }
+    }
+}
+
+.review {
+    .author-info {
+        .avatar {
+            height: 32px;
+            width: 32px;
+            background-size: cover;
+            background-position: center;
+        }
+
+    }
+
+    .content {
+        .text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+        }
+    }
+
+    .btn-images-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 2px;
+
+        .btn-image {
+            height: 135px;
+            background-size: cover;
+            background-position: center;
+            background-color: rgb(var(--c-gray), .3);
+
+            &::before {
+                font-size: 30px;
+                color: white;
+                background-color: rgba(0,0,0,.3);
+
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+            }
+        }
+
+        &.shortcut {
+            .btn-image:nth-child(4) {
+                &::before {
+                    content: attr(data-rest-images-amount);
+                }
+            }
+        }
+    }
+}

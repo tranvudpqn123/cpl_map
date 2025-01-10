@@ -9,17 +9,34 @@
     .key-search-box {
         margin-right: 20px;
         height: 48px;
-        box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+        border-radius: 30px;
+
+        &.show-options {
+            border-radius: 20px 20px 0 0;
+            box-shadow: none;
+
+            .input-group {
+                border-radius: 30px 30px 0 0;
+            }
+        }
     }
 
     &.large {
         height: 100dvh;
         background-color: white;
         box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    }
+}
 
-        .key-search-box {
-            box-shadow: none;
-        }
+.result-search-options {
+    height: 500px;
+    width: 370px;
+    border-radius: 0 0 20px 20px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+
+    .option {
+        font-size: 14px;
+        height: 38px;
     }
 }
 
@@ -31,7 +48,7 @@
         border: 1px solid rgb(var(--c-gray));
         &.selected {
             border: 1px solid rgb(var(--c-primary));
-            background-color: rgb(var(--c-primary), .3);
+            background-color: rgb(var(--c-primary), .15);
             color: rgb(var(--c-primary));
         }
     }
@@ -39,14 +56,6 @@
     .recent-addresses-title {
         top: 0;
     }
-}
-
-.rounded-30px {
-    border-radius: 30px;
-}
-
-.btn-sidebar {
-    margin-top: 10px;
 }
 
 .addresses {

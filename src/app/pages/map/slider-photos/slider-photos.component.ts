@@ -33,7 +33,7 @@ export class SliderPhotosComponent implements AfterViewInit, OnInit {
         this.merchantFilterService.selectedAddress$
             .subscribe((selectedAddress) => {
                 this.selectedAddress.set(selectedAddress);
-                this.selectedImageGroup.set(selectedAddress.imageGroups[0]);
+                this.selectedImageGroup.set(selectedAddress ? selectedAddress.imageGroups[0] : null);
             });
     }
 
@@ -81,7 +81,6 @@ export class SliderPhotosComponent implements AfterViewInit, OnInit {
 
     onSlideImageTo(index: number) {
         if (this.photoSliderWrapperHorizontal) {
-            console.log('hello')
             this.photoSliderWrapperHorizontal.slideTo(index, 500);
             this.showingImageIdx.set(index)
         }

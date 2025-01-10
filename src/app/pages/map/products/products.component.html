@@ -1,0 +1,21 @@
+<section>
+    @for(productGroup of productGroups(); track productGroup.id) {
+        <div class="border-bottom py-4 px-4">
+            <h6 class="mb-3 fs-4 fw-400">{{productGroup.title}}</h6>
+            <div class="d-grid grid-products">
+                @for(product of productGroup.products; track product.id) {
+                    <button
+                        class="position-relative py-2 d-flex align-items-end justify-content-start rounded-2 btn btn-product"
+                        [ngStyle]="{backgroundImage: 'url(' + product.avatar + ')'}"
+                    >
+                        <div class="position-relative text-white text-start">
+                            <h6 class="mb-1 fs-5 product-title">{{product.title}}</h6>
+                            <p>160.000 </p>
+                        </div>
+                    </button>
+                }
+            </div>
+        </div>
+    }
+
+</section>

@@ -4,13 +4,17 @@
     height: 100dvh;
 }
 
+.btn-sidebar {
+    margin-top: 10px;
+}
+
 
 .address-groups {
     hr {
         width: 50px;
     }
     &+.address-groups {
-        max-height: calc(100dvh - 230px);
+        max-height: calc(100dvh - 245px);
     }
 }
 
