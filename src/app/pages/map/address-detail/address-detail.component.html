@@ -1,17 +1,23 @@
-<section class="position-fixed bg-white overflow-hidden address-detail-page">
+<section
+    class="position-fixed bg-white overflow-hidden address-detail-page"
+    [class.left]="!isShowMerchantGroups()"
+>
     @if (currentTab() === EAddressDetailTab.OVERVIEW) {
         <div
-            class="position-absolute p-3 d-flex justify-content-end btn-close-popup-wrapper"
+            class="position-absolute px-3 pt-3 d-flex justify-content-end btn-close-popup-wrapper"
             [class.show]="!isAtTop()"
+            [class.large]="!isShowMerchantGroups()"
         >
             <button
-                class="p-0 d-flex align-items-center justify-content-center rounded-circle btn bg-white border btn-close-popup">
+                class="p-0 d-flex align-items-center justify-content-center rounded-circle btn bg-white border btn-close-popup"
+                [ngStyle]="{opacity: isShowMerchantGroups() ? 1 : 0}"
+            >
                 <i class="fs-5 bi bi-x-lg"></i>
             </button>
         </div>
     } @else {
         <div
-            class="mb-3 p-3 d-flex justify-content-between btn-close-popup-wrapper full"
+            class="mb-3 px-3 pb-3 d-flex justify-content-between btn-close-popup-wrapper full"
             [class.show]="!isAtTop()"
         >
             <button
@@ -21,8 +27,10 @@
             <h5 class="fs-4">Coffee Trường Quay</h5>
 
             <button
-                class="p-0 d-flex align-items-center justify-content-center rounded-circle btn btn-close-popup">
-                <i class="fs-5 bi bi-x-lg"></i>
+                class="p-0 d-flex align-items-center justify-content-center rounded-circle btn btn-close-popup"
+
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M256-213.85 213.85-256l224-224-224-224L256-746.15l224 224 224-224L746.15-704l-224 224 224 224L704-213.85l-224-224-224 224Z"/></svg>
             </button>
         </div>
     }

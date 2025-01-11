@@ -2,10 +2,16 @@
     left: 500px;
     top: 50px;
     bottom: 20px;
-    width: 430px;
+    width: 450px;
     border-radius: 16px;
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 
+    &.left {
+        left: 70px;
+        top: 0;
+        bottom: 0;
+        border-radius: 0;
+    }
 }
 
 .wrapper-content {
@@ -39,11 +45,17 @@
 }
 
 .btn-close-popup-wrapper {
+    padding-top: 20px;
+    padding-bottom: 1rem;
     top: 0;
     left: 0;
     right: 0;
     z-index: 100;
     transition: all .150s ease-in;
+
+    &.large {
+        padding-bottom: 24px;
+    }
 
     &.show {
         background-color: #fff;

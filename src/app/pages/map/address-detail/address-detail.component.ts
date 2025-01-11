@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, signal} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, input, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {StarRatingDirective} from 'directives/star-rating.directive';
 import {ScrollDirectionDirective} from 'directives/scroll-directive.directive';
@@ -15,6 +15,8 @@ import {ProductsComponent} from '@pages/map/products/products.component';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AddressDetailComponent implements AfterViewInit{
+    isShowMerchantGroups = input();
+
     protected readonly EAddressDetailTab = EAddressDetailTab;
     imageGroups = signal([
         'https://s3.ap-southeast-1.amazonaws.com/mytourcdn.com/resources/pictures/hotels/17/zm0h0Jr-Ti2eyZbrH5VM3A-77.jpeg',
@@ -24,7 +26,7 @@ export class AddressDetailComponent implements AfterViewInit{
         'https://s3.ap-southeast-1.amazonaws.com/mytourcdn.com/resources/pictures/hotels/17/gFD_RrUzRryUiHntS3GzkA-168.jpeg'
     ]);
     isAtTop = signal(true);
-    currentTab = signal(EAddressDetailTab.PRODUCT);
+    currentTab = signal(EAddressDetailTab.OVERVIEW);
 
     ngAfterViewInit() {
         new Swiper("#btnPhotoGroups", {

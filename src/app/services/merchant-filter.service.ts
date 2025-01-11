@@ -1,16 +1,26 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {BehaviorSubject, distinctUntilChanged, filter, map, shareReplay} from 'rxjs';
+import {HttpClient} from '@angular/common/http';
+import {IResponseData} from '@models/response-data.interface';
+import {UtilsService} from '@services/utils.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class MerchantFilterService {
-
+    private readonly httpClient = inject(HttpClient);
+    private readonly utilsService = inject(UtilsService);
     private readonly addressData = new BehaviorSubject<{
         addressGroups: IAddressGroupData[],
         selectedAddress: IAddress | null,
         selectedAddressGroupId: string,
         isShowListAddressGroups: boolean,
+
+        selectedMerchant: IMerchant | null,
+        merchantGroups: IAddressGroupData[],
+        isShowMerchantGroups: boolean,
+
+
     }>(
         {
             addressGroups: [
@@ -19,8 +29,8 @@ export class MerchantFilterService {
                     title: 'Hà Nội',
                     addresses: [
                         {
-                            id: '1',
-                            title: 'Hotel Mely',
+                            id: '029871e7-0ca9-4a62-934b-96ddcf1821f7',
+                            title: '1995 Coffee',
                             avatar: 'https://gcs.tripi.vn/tripi-assets/mytour/icons/image_homestay_biet_thu.png',
                             ratingNumber: 4.6,
                             ratingAmount: 33335,
@@ -146,14 +156,16 @@ export class MerchantFilterService {
                                         'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211xHNkrZ/cmv-el-salon-bar-5.jpg',
                                     ]
                                 }
-                            ]
+                            ],
+                            addressDetail: '',
                         },
                         {
-                            id: '2',
-                            title: 'MerPerle Dalat Hotel',
+                            id: '167d7bcc-472e-4394-b570-ea188d06f890',
+                            title: 'Gila Coffee',
                             avatar: 'https://gcs.tripi.vn/tripi-assets/mytour/icons/image_homestay_homestay.png',
                             ratingNumber: 4.4,
                             ratingAmount: 335,
+                            addressDetail: '153 Giáp Nhất, Phường Thượng Đình',
                             imageGroups: [
                                 {
                                     id: '1',
@@ -165,11 +177,12 @@ export class MerchantFilterService {
                             ]
                         },
                         {
-                            id: '3',
-                            title: 'MerPerle Dalat Hotel',
+                            id: 'e2e7a7f1-0989-424d-a19c-38a86242863b',
+                            title: '1945 Coffee',
                             avatar: 'https://gcs.tripi.vn/tripi-assets/mytour/icons/image_homestay_bungalow.png',
                             ratingNumber: 4,
                             ratingAmount: 335,
+                            addressDetail: '43 Nguyễn Thị Định, Phường Trung Hòa',
                             imageGroups: [
                                 {
                                     id: '1',
@@ -183,293 +196,13 @@ export class MerchantFilterService {
 
                     ]
                 },
-                {
-                    id: '2',
-                    title: 'Hà Nội',
-                    addresses: [
-                        {
-                            id: '1',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '2',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '3',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '4',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '5',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '6',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '7',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '8',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '9',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '10',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '11',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '12',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '13',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '14',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '15',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        }
-                    ]
-                },
-                {
-                    id: '3',
-                    title: 'Bà Rịa Vũng Tàu',
-                    addresses: [
-                        {
-                            id: '1',
-                            title: 'Hotel Mely',
-                            avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/471582xtF/img21.jpg',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        }
-                    ]
-                },
-                {
-                    id: '4',
-                    title: 'Hà Nội',
-                    addresses: [
-                        {
-                            id: '1',
-                            title: 'Hotel Mely',
-                            avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/472445WTa/mat-tien-b0010979.jpg',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '1',
-                            title: 'Hotel Mely',
-                            avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/472445WTa/mat-tien-b0010979.jpg',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '2',
-                            title: 'MerPerle Dalat Hotel',
-                            avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/472445BDn/mat-tien-4w9a8084.jpg',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '3',
-                            title: 'MerPerle Dalat Hotel',
-                            avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/471583VTL/sanh-chinh-10.jpg',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-
-                    ]
-                },
-                {
-                    id: '5',
-                    title: 'Hà Nội',
-                    addresses: [
-                        {
-                            id: '1',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '2',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '3',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '4',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '5',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '6',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '7',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '8',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '9',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '10',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '11',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '12',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '13',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '14',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        },
-                        {
-                            id: '15',
-                            title: 'Hotel Mely',
-                            avatar: 'https://lh5.googleusercontent.com/p/AF1QipMWEt8qZ2qRrrvRh43p8AdcNyN8RAI8nxlC-LX9=w152-h86-k-no',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        }
-                    ]
-                },
-                {
-                    id: '6',
-                    title: 'Bà Rịa Vũng Tàu',
-                    addresses: [
-                        {
-                            id: '1',
-                            title: 'Hotel Mely',
-                            avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/471582xtF/img21.jpg',
-                            ratingNumber: 4,
-                            ratingAmount: 335, imageGroups:[]
-                        }
-                    ]
-                },
             ],
             selectedAddress: null,
             selectedAddressGroupId: 'ALL',
             isShowListAddressGroups: false,
+            isShowMerchantGroups: false,
+            selectedMerchant: null,
+            merchantGroups: [],
         }
     );
 
@@ -501,6 +234,16 @@ export class MerchantFilterService {
                 return selectedAddressGroup ? selectedAddressGroup.addresses : [];
             }));
     }
+    get allAddresses$() {
+        return this.addressData.asObservable().pipe(
+            distinctUntilChanged((prev, curr) => {
+                return prev === curr;
+            }),
+            map(data => {
+                const {addressGroups, selectedAddressGroupId} = data;
+                return addressGroups.flatMap(it => it.addresses);
+            }));
+    }
     get isShowListAddressGroups$() {
         return this.addressData.asObservable().pipe(
             distinctUntilChanged((prev, curr) => {
@@ -510,9 +253,26 @@ export class MerchantFilterService {
                 return data.isShowListAddressGroups;
             }));
     }
+    get isShowMerchantGroups$() {
+        return this.addressData.asObservable().pipe(
+            distinctUntilChanged((prev, curr) => {
+                return prev.isShowMerchantGroups === curr.isShowMerchantGroups;
+            }),
+            map(data => {
+                return data.isShowMerchantGroups;
+            }));
+    }
     get selectedAddress$() {
         return this.addressData.asObservable().pipe(
             map(data => data.selectedAddress),
+            distinctUntilChanged((prev, curr) => {
+                return prev === curr;
+            }),
+            map(data => data));
+    }
+    get selectedMerchant$() {
+        return this.addressData.asObservable().pipe(
+            map(data => data.selectedMerchant),
             distinctUntilChanged((prev, curr) => {
                 return prev === curr;
             }),
@@ -537,16 +297,33 @@ export class MerchantFilterService {
                 }) as IAddressGroup[];
             }), shareReplay(1));
     }
+    get merchantGroups$() {
+        return this.addressData.asObservable().pipe(
+            map(data => data.merchantGroups),
+            distinctUntilChanged((prev, curr) => {
+                return prev === curr;
+            }),
+            map(data => {
+                return data.map(it => {
+                    const avatars = it.addresses.slice(it.addresses.length - 2).map(address => address.avatar);
+
+                    return {
+                        id: it.id,
+                        title: it.title,
+                        avatars,
+                        numberAddresses: it.addresses.length
+                    }
+                }) as IAddressGroup[];
+            }), shareReplay(1));
+    }
     get selectedAddressGroupId$() {
         return this.addressData.asObservable().pipe(
             distinctUntilChanged(),
             map(data => data.selectedAddressGroupId));
     }
-
     updateAddressGroups(addressGroups: IAddressGroupData[]): void {
         this.addressData.next({...this.addressData.value, addressGroups});
     }
-
 
     updateSelectedAddressGroup(addressGroupId: string) {
         const {addressGroups, selectedAddressGroupId} = this.addressData.value;
@@ -560,6 +337,19 @@ export class MerchantFilterService {
             });
         }
     }
+    updateSelectedMerchant(merchant: IMerchant | null) {
+        this.addressData.next({...this.addressData.value, selectedMerchant: merchant});
+    }
+
+    getMerchants(merchantFilterRequest: IMerchantFilterRequest) {
+        const url = `https://apigw.cashplus.vn/api/app/customer/home/listPartnerV2?page_size=10`;
+        return this.httpClient.post<IResponseData<IMerchantResponse>>(url, merchantFilterRequest)
+            .pipe(map(res => this.utilsService.convertKeysToCamelCase<IResponseData<IMerchantResponse>>(res)));
+    }
+}
+
+export interface IMerchantFilterRequest {
+    search: string;
 }
 
 export interface IAddressGroup {
@@ -582,10 +372,67 @@ export interface IAddress {
     ratingNumber: number;
     ratingAmount: number;
     imageGroups: IAddressImageGroup[];
+    addressDetail: string;
 }
 
 export interface IAddressImageGroup {
     id: string,
     title: string;
     images: string[];
+}
+
+export interface IMerchantResponse {
+    totalElements: number
+    zoom: number
+    maxDistanceAll: number
+    maxDistance: number
+    data: IMerchant[]
+    haveData: boolean
+    totalElementsInBound: number
+    totalPage: number
+    totalDocumentsInIndex: number
+}
+
+export interface IMerchant {
+    id: string
+    branchId: any
+    score: number
+    distance: number
+    isBranch: boolean
+    partnerId: string
+    serviceTypeId: string
+    code: string
+    name: string
+    avatar: string
+    startHour?: string
+    endHour?: string
+    serviceTypeIcons: string
+    rating: number
+    totalRating: number
+    discountRate: number
+    avatarSmall: string
+    description: string
+    address: string
+    phone: string
+    linkQR: string
+    fullAddress: string
+    status: number
+    isFavourite: boolean
+    latitude: number
+    longtitude: number
+    contractDiscount_rate: number
+    workingTimes: IWorkingTime[]
+    totalBillInMonth: any
+    totalBillAmountIn_Month: any
+    totalBill: any
+    totalBillAmount: any
+}
+
+export interface IWorkingTime {
+    id: number
+    partnerId: string
+    startHour: string
+    endHour: string
+    dateCreated: string
+    dateUpdated: string
 }

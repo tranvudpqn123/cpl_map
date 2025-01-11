@@ -3,13 +3,17 @@
     top: 0;
     left: 70px;
     padding: 10px 0px 0 20px;
-    width: 410px;
+    width: 450px;
     color: rgb(var(--c-gray));
+    z-index: 100;
 
     .key-search-box {
         margin-right: 20px;
         height: 48px;
         border-radius: 30px;
+        .input-group {
+            border-radius: 30px;
+        }
 
         &.show-options {
             border-radius: 20px 20px 0 0;
@@ -29,14 +33,40 @@
 }
 
 .result-search-options {
-    height: 500px;
-    width: 370px;
+    width: 410px;
     border-radius: 0 0 20px 20px;
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    font-size: 14px;
 
     .option {
-        font-size: 14px;
-        height: 38px;
+        height: 40px;
+
+        &:hover {
+            background-color: rgb(var(--c-gray), .1);
+        }
+
+        .option-icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        .option-title {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+        }
+
+        .btn-remove {
+            flex-shrink: 0;
+            width: 30px;
+            aspect-ratio: 1;
+
+            &:hover {
+                background-color: rgb(var(--c-gray), .15);
+            }
+        }
     }
 }
 
