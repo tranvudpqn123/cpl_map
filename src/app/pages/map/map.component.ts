@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
 // Services
-import {IMerchant, MerchantFilterService} from '@services/merchant-filter.service';
+import { MerchantFilterService} from '@services/merchant-filter.service';
 // Components
 import {SidebarComponent} from '@pages/map/sidebar/sidebar.component';
 import {SliderPhotosComponent} from '@pages/map/slider-photos/slider-photos.component';
@@ -8,6 +8,9 @@ import {FilterComponent} from '@pages/map/filter/filter.component';
 import {PersonalGroupsComponent} from '@pages/map/personal-groups/personal-groups.component';
 import {AddressDetailComponent} from '@pages/map/address-detail/address-detail.component';
 import {AutomaticallyUnsubscribe} from '@constants/automatically-unsubscribe';
+
+//Interface
+import {IMerchant} from '@models/merchant.interface';
 
 @Component({
     selector: 'app-map',
