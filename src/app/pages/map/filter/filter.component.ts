@@ -120,8 +120,14 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit 
     onSelectAddressOption(addressOption: IAddressOption) {
         const selectedMerchant = this.responseMerchants().find(it => it.id === addressOption.id);
         if (selectedMerchant) {
+            this.searchFrom.reset({keySearch: selectedMerchant.name});
             this.merchantFilterService.updateSelectedMerchant(selectedMerchant);
         }
+        this.isShowResultSearch.set(false);
+    }
+
+    onCloseAddressDetail() {
+        this.merchantFilterService.updateSelectedMerchant(null);
     }
 
     private getMerchants(recentMerchants: IMerchant[]) {
@@ -135,6 +141,7 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit 
             .subscribe(res => {
                 const {code, data} = res;
                 if (code === '200') {
+                    console.log('data: ', data);
                     const merchantOptions = data.data.map(it => {
                         const saved = recentMerchants.some(merchant => merchant.id === it.id);
 

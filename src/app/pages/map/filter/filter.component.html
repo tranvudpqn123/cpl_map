@@ -22,7 +22,9 @@
             >
             <button class="me-2 p-0 border-0 btn"><i class="fs-3 bi bi-search"></i></button>
             <button
-                class="ms-4 p-0 d-flex align-items-center justify-content-center rounded-circle border-0 btn btn-close-popup">
+                class="ms-4 p-0 d-flex align-items-center justify-content-center rounded-circle border-0 btn btn-close-popup"
+                (click)="onCloseAddressDetail()"
+            >
                 <svg xmlns="http://www.w3.org/2000/svg" height="26px" viewBox="0 -960 960 960" width="26px" fill="currentColor"><path d="M256-213.85 213.85-256l224-224-224-224L256-746.15l224 224 224-224L746.15-704l-224 224 224 224L704-213.85l-224-224-224 224Z"/></svg>
             </button>
         </div>
@@ -100,7 +102,10 @@
 </div>
 
 @if (selectedMerchant()) {
-    <app-address-detail [isShowMerchantGroups]="isShowMerchantGroups()"></app-address-detail>
+    <app-address-detail
+        [isShowMerchantGroups]="isShowMerchantGroups()"
+        [selectedMerchant]="selectedMerchant()"
+    ></app-address-detail>
 }
 
 <ng-template
@@ -111,28 +116,30 @@
 >
     <div class="py-3 border-start border-end border-bottom bg-white result-search-options">
 
-        @for (option of options(); track option.id) {
-            <div
-                class="px-3 d-flex gap-3 align-items-center justify-content-between cursor-pointer option"
-                [title]="option.address"
-                (click)="onSelectAddressOption(option)"
-            >
-                <div class="flex-fill d-flex align-items-center gap-2">
-                    <div [innerHTML]="option.icon | safeSvg" class="option-icon"></div>
+        @for (option of options(); track option.id; let index = $index) {
+            @if (index < 9) {
+                <div
+                    class="px-3 d-flex gap-3 align-items-center justify-content-between cursor-pointer option"
+                    [title]="option.address"
+                    (click)="onSelectAddressOption(option)"
+                >
+                    <div class="flex-fill d-flex align-items-center gap-2">
+                        <div [innerHTML]="option.icon | safeSvg" class="option-icon"></div>
 
-                    <div class="flex-fill align-items-center gap-2 option-title">
-                        <span class="fw-500">{{ option.title }} </span>
-                        <span class="c-text-gray">{{ option.address }}</span>
+                        <div class="flex-fill align-items-center gap-2 option-title">
+                            <span class="fw-500">{{ option.title }} </span>
+                            <span class="c-text-gray">{{ option.address }}</span>
+                        </div>
+
                     </div>
 
+                    @if (option.saved) {
+                        <button class="p-0 d-flex align-items-center justify-content-center rounded-circle btn btn-remove">
+                            <i class="bi bi-x-lg"></i></button>
+                    }
+
                 </div>
-
-                @if (option.saved) {
-                    <button class="p-0 d-flex align-items-center justify-content-center rounded-circle btn btn-remove">
-                        <i class="bi bi-x-lg"></i></button>
-                }
-
-            </div>
+            }
         } @empty {
             <div class="p-3 text-center empty-data">No results found for the entered address.</div>
 

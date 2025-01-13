@@ -1,21 +1,36 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, input, signal} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, input, output, Output, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {StarRatingDirective} from 'directives/star-rating.directive';
-import {ScrollDirectionDirective} from 'directives/scroll-directive.directive';
 import {Swiper} from 'swiper';
+// Components
 import {AddressReviewsComponent} from '@pages/map/address-reviews/address-reviews.component';
 import {ProductsComponent} from '@pages/map/products/products.component';
+// Services
+import {IMerchant} from '@services/merchant-filter.service';
+// Directives
+import {StarRatingDirective} from 'directives/star-rating.directive';
+import {ScrollDirectionDirective} from 'directives/scroll-directive.directive';
+
 
 @Component({
     selector: 'app-address-detail',
     standalone: true,
-    imports: [CommonModule, StarRatingDirective, ScrollDirectionDirective, AddressReviewsComponent, ProductsComponent],
+    imports: [
+        CommonModule,
+        // Directives
+        StarRatingDirective,
+        ScrollDirectionDirective,
+        // Components
+        AddressReviewsComponent,
+        ProductsComponent
+    ],
     templateUrl: './address-detail.component.html',
     styleUrl: './address-detail.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AddressDetailComponent implements AfterViewInit{
+    changeTab = output<EAddressDetailTab>()
     isShowMerchantGroups = input();
+    selectedMerchant = input<IMerchant | null>();
 
     protected readonly EAddressDetailTab = EAddressDetailTab;
     imageGroups = signal([

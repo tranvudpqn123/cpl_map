@@ -1,181 +1,185 @@
-<section
-    class="position-fixed bg-white overflow-hidden address-detail-page"
-    [class.left]="!isShowMerchantGroups()"
->
-    @if (currentTab() === EAddressDetailTab.OVERVIEW) {
-        <div
-            class="position-absolute px-3 pt-3 d-flex justify-content-end btn-close-popup-wrapper"
-            [class.show]="!isAtTop()"
-            [class.large]="!isShowMerchantGroups()"
-        >
-            <button
-                class="p-0 d-flex align-items-center justify-content-center rounded-circle btn bg-white border btn-close-popup"
-                [ngStyle]="{opacity: isShowMerchantGroups() ? 1 : 0}"
-            >
-                <i class="fs-5 bi bi-x-lg"></i>
-            </button>
-        </div>
-    } @else {
-        <div
-            class="mb-3 px-3 pb-3 d-flex justify-content-between btn-close-popup-wrapper full"
-            [class.show]="!isAtTop()"
-        >
-            <button
-                class="p-0 d-flex align-items-center justify-content-center rounded-circle btn btn-go-back">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M396.15-267.69 183.85-480l212.3-212.31 28.31 28.77L260.92-500h515.23v40H260.92l163.54 163.54-28.31 28.77Z"/></svg>
-            </button>
-            <h5 class="fs-4">Coffee Trường Quay</h5>
-
-            <button
-                class="p-0 d-flex align-items-center justify-content-center rounded-circle btn btn-close-popup"
-
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M256-213.85 213.85-256l224-224-224-224L256-746.15l224 224 224-224L746.15-704l-224 224 224 224L704-213.85l-224-224-224 224Z"/></svg>
-            </button>
-        </div>
-    }
-
-    <div
-        appScrollDirection
-        class="wrapper-content overflow-auto"
-        [class.large]="currentTab() !== EAddressDetailTab.OVERVIEW"
-        (scrolledToTop)="onScrollToTop()"
-        (scrolling)="isAtTop.set(false)"
+@if (selectedMerchant()) {
+    <section
+        class="position-fixed bg-white overflow-hidden address-detail-page"
+        [class.left]="!isShowMerchantGroups()"
     >
         @if (currentTab() === EAddressDetailTab.OVERVIEW) {
             <div
-                class="position-relative p-3 d-flex align-items-end justify-content-start cursor-pointer address-avatar"
-                [ngStyle]="{backgroundImage: 'url(' + 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/472445WTa/mat-tien-b0010979.jpg' + ')'}"
+                class="position-absolute px-3 pt-3 d-flex justify-content-end btn-close-popup-wrapper"
+                [class.show]="!isAtTop()"
+                [class.large]="!isShowMerchantGroups()"
             >
-            <span class="position-relative d-flex align-items-center gap-2 text-white text">
+                <button
+                    class="p-0 d-flex align-items-center justify-content-center rounded-circle btn bg-white border btn-close-popup"
+                    [ngStyle]="{opacity: isShowMerchantGroups() ? 1 : 0}"
+                >
+                    <i class="fs-5 bi bi-x-lg"></i>
+                </button>
+            </div>
+        } @else {
+            <div
+                class="mb-3 px-3 pb-3 d-flex justify-content-between btn-close-popup-wrapper full"
+                [class.show]="!isAtTop()"
+            >
+                <button
+                    class="p-0 d-flex align-items-center justify-content-center rounded-circle btn btn-go-back">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M396.15-267.69 183.85-480l212.3-212.31 28.31 28.77L260.92-500h515.23v40H260.92l163.54 163.54-28.31 28.77Z"/></svg>
+                </button>
+
+                <h5 class="fs-4">{{selectedMerchant()!.name}}</h5>
+
+                <button
+                    class="p-0 d-flex align-items-center justify-content-center rounded-circle btn btn-close-popup"
+
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M256-213.85 213.85-256l224-224-224-224L256-746.15l224 224 224-224L746.15-704l-224 224 224 224L704-213.85l-224-224-224 224Z"/></svg>
+                </button>
+            </div>
+        }
+
+        <div
+            appScrollDirection
+            class="wrapper-content overflow-auto"
+            [class.large]="currentTab() !== EAddressDetailTab.OVERVIEW"
+            (scrolledToTop)="onScrollToTop()"
+            (scrolling)="isAtTop.set(false)"
+        >
+            @if (currentTab() === EAddressDetailTab.OVERVIEW) {
+                <div
+                    class="position-relative p-3 d-flex align-items-end justify-content-start cursor-pointer address-avatar"
+                    [ngStyle]="{backgroundImage: 'url(' + 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/472445WTa/mat-tien-b0010979.jpg' + ')'}"
+                >
+            <span class="position-relative px-3 py-2 d-flex align-items-center gap-2 text-white border rounded text">
                 <i class="bi bi-images"></i>
                 See Photos
             </span>
 
+                </div>
+
+                <div class="py-3 px-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h5 class="mb-2 fs-4">{{selectedMerchant()!.name}}</h5>
+
+                        <button class="c-text-gray btn-pin">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="32px"
+                                 fill="currentColor" class="d-inline-block">
+                                <path d="m598.05-453.03 65.03 62.11v33.84H496.92v200.16L480-140l-16.92-16.92v-200.16H296.92v-33.84L360-453.03v-313.12h-43.08V-800h324.21v33.85h-43.08v313.12Zm-254.26 62.11h270.47l-50.05-48.93v-326.3H393.85v326.3l-50.06 48.93Zm135.24 0Z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 c-text-gray">
+                        <span>5.0</span>
+                        <div [appStarRating]="5" class="star-icons"></div>
+                        <span>(52)</span>
+                    </div>
+                    <p class="c-text-gray">Hà Nội</p>
+                </div>
+            }
+
+            <div
+                class="bg-white fs-5 d-flex border-bottom c-text-gray address-info-groups"
+            >
+                <button
+                    class="btn flex-fill rounded-0"
+                    [class.selected] = "currentTab() === EAddressDetailTab.OVERVIEW"
+                    (click)="onSelectTab(EAddressDetailTab.OVERVIEW)"
+                >Overview</button>
+                <button
+                    class="btn flex-fill rounded-0"
+                    [class.selected] = "currentTab() === EAddressDetailTab.REVIEW"
+                    (click)="onSelectTab(EAddressDetailTab.REVIEW)"
+                >Reviews</button>
+                <button
+                    class="btn flex-fill rounded-0"
+                    [class.selected] = "currentTab() === EAddressDetailTab.PRODUCT"
+                    (click)="onSelectTab(EAddressDetailTab.PRODUCT)"
+                >Products</button>
+                <button
+                    class="btn flex-fill rounded-0"
+                    [class.selected] = "currentTab() === EAddressDetailTab.ABOUT"
+                    (click)="onSelectTab(EAddressDetailTab.ABOUT)"
+                >About</button>
             </div>
 
-            <div class="py-3 px-4">
-                <div class="d-flex align-items-center justify-content-between">
-                    <h5 class="mb-2 fs-4">Coffee Trường Quay</h5>
-
-                    <button class="c-text-gray btn-pin">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="32px"
-                             fill="currentColor" class="d-inline-block">
-                            <path d="m598.05-453.03 65.03 62.11v33.84H496.92v200.16L480-140l-16.92-16.92v-200.16H296.92v-33.84L360-453.03v-313.12h-43.08V-800h324.21v33.85h-43.08v313.12Zm-254.26 62.11h270.47l-50.05-48.93v-326.3H393.85v326.3l-50.06 48.93Zm135.24 0Z"></path>
+            @if (currentTab() === EAddressDetailTab.OVERVIEW) {
+                <div class="border-bottom fs-6 px-4 py-3 ">
+                    <div class="py-2 d-flex gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                             fill="#5f6368">
+                            <path
+                                d="M480.14-490.77q26.71 0 45.59-19.02 18.89-19.02 18.89-45.73 0-26.71-19.03-45.6Q506.57-620 479.86-620q-26.71 0-45.59 19.02-18.89 19.02-18.89 45.73 0 26.71 19.03 45.6 19.02 18.88 45.73 18.88ZM480-172.92q112.77-98.16 178.31-199.66t65.54-175.57q0-109.77-69.5-181.2-69.5-71.42-174.35-71.42t-174.35 71.42q-69.5 71.43-69.5 181.2 0 74.07 65.54 175.57T480-172.92Zm0 53.69Q339-243.92 267.58-351.81q-71.43-107.88-71.43-196.34 0-126.93 82.66-209.39Q361.46-840 480-840q118.54 0 201.19 82.46 82.66 82.46 82.66 209.39 0 88.46-71.43 196.34Q621-243.92 480-119.23Zm0-436.15Z"/>
                         </svg>
-                    </button>
-                </div>
-                <div class="d-flex align-items-center gap-2 c-text-gray">
-                    <span>5.0</span>
-                    <div [appStarRating]="5" class="star-icons"></div>
-                    <span>(52)</span>
-                </div>
-                <p class="c-text-gray">Hà Nội</p>
-            </div>
-        }
 
-        <div
-            class="bg-white fs-5 d-flex border-bottom c-text-gray address-info-groups"
-        >
-            <button
-                class="btn flex-fill rounded-0"
-                [class.selected] = "currentTab() === EAddressDetailTab.OVERVIEW"
-                (click)="onSelectTab(EAddressDetailTab.OVERVIEW)"
-            >Overview</button>
-            <button
-                class="btn flex-fill rounded-0"
-                [class.selected] = "currentTab() === EAddressDetailTab.REVIEW"
-                (click)="onSelectTab(EAddressDetailTab.REVIEW)"
-            >Reviews</button>
-            <button
-                class="btn flex-fill rounded-0"
-                [class.selected] = "currentTab() === EAddressDetailTab.PRODUCT"
-                (click)="onSelectTab(EAddressDetailTab.PRODUCT)"
-            >Products</button>
-            <button
-                class="btn flex-fill rounded-0"
-                [class.selected] = "currentTab() === EAddressDetailTab.ABOUT"
-                (click)="onSelectTab(EAddressDetailTab.ABOUT)"
-            >About</button>
+                        <span>4 Ng. 181 P. Quan Nhân, Nhân Chính, Thanh Xuân, Hà Nội 11415, Vietnam</span>
+                    </div>
+                    <div class="py-2 d-flex gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                             fill="#5f6368">
+                            <path
+                                d="m625.85-305.85 28.3-28.3L500-488.33V-680h-40v208.31l165.85 165.84ZM480.13-120q-74.67 0-140.41-28.34-65.73-28.34-114.36-76.92-48.63-48.58-76.99-114.26Q120-405.19 120-479.87q0-74.67 28.34-140.41 28.34-65.73 76.92-114.36 48.58-48.63 114.26-76.99Q405.19-840 479.87-840q74.67 0 140.41 28.34 65.73 28.34 114.36 76.92 48.63 48.58 76.99 114.26Q840-554.81 840-480.13q0 74.67-28.34 140.41-28.34 65.73-76.92 114.36-48.58 48.63-114.26 76.99Q554.81-120 480.13-120ZM480-480Zm0 320q133 0 226.5-93.5T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160Z"/>
+                        </svg>
+                        <button>
+                            <span>Open</span>
+                            <span>Closes 11PM</span>
+                        </button>
+                    </div>
+                    <div class="py-2 d-flex gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                             fill="#5f6368">
+                            <path
+                                d="M480.13-120q-74.67 0-140.41-28.34-65.73-28.34-114.36-76.92-48.63-48.58-76.99-114.26Q120-405.19 120-479.87q0-74.67 28.34-140.41 28.34-65.73 76.92-114.36 48.58-48.63 114.26-76.99Q405.19-840 479.87-840q74.67 0 140.41 28.34 65.73 28.34 114.36 76.92 48.63 48.58 76.99 114.26Q840-554.81 840-480.13q0 74.67-28.34 140.41-28.34 65.73-76.92 114.36-48.58 48.63-114.26 76.99Q554.81-120 480.13-120ZM440-162v-78q-33 0-56.5-23.5T360-320v-40L168-552q-3 18-5.5 36t-2.5 36q0 121 79.5 212T440-162Zm276-102q20-22 36-47.5t26.5-53q10.5-27.5 16-56.5t5.5-59q0-98.58-54.12-180.06Q691.77-741.54 600-777.54V-760q0 33-23.5 56.5T520-680h-80v80q0 17-11.5 28.5T400-560h-80v80h240q17 0 28.5 11.5T600-440v120h40q26 0 47 15.5t29 40.5Z"/>
+                        </svg>
+                        <button>Facebook</button>
+                    </div>
+                    <div class="py-2 d-flex gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                             fill="#5f6368">
+                            <path
+                                d="M304.62-80Q277-80 258.5-98.5 240-117 240-144.62v-670.76q0-27.62 18.5-46.12Q277-880 304.62-880h350.76q27.62 0 46.12 18.5Q720-843 720-815.38v670.76q0 27.62-18.5 46.12Q683-80 655.38-80H304.62ZM280-258.46v113.84q0 9.24 7.69 16.93 7.69 7.69 16.93 7.69h350.76q9.24 0 16.93-7.69 7.69-7.69 7.69-16.93v-113.84H280Zm200 100q12.38 0 21.58-9.19 9.19-9.2 9.19-21.58 0-12.39-9.19-21.58Q492.38-220 480-220q-12.38 0-21.58 9.19-9.19 9.19-9.19 21.58 0 12.38 9.19 21.58 9.2 9.19 21.58 9.19Zm-200-140h400V-740H280v441.54ZM280-780h400v-35.38q0-9.24-7.69-16.93-7.69-7.69-16.93-7.69H304.62q-9.24 0-16.93 7.69-7.69 7.69-7.69 16.93V-780Zm0 521.54V-120v-138.46ZM280-780v-60 60Z"/>
+                        </svg>
+                        <button>037 767 0509</button>
+                    </div>
+                    <div class="py-2 d-flex gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                             fill="#5f6368">
+                            <path
+                                d="M184.62-200q-26.66 0-45.64-18.98T120-264.62v-430.76q0-26.66 18.98-45.64T184.62-760h408.46q15.34 0 29.07 6.66t22.62 18.42L840-480 644.77-225.08q-8.89 11.76-22.62 18.42-13.73 6.66-29.07 6.66H184.62Zm0-40h408.46q6.15 0 11.15-2.31t8.85-6.92L790-480 613.08-710.77q-3.85-4.61-8.85-6.92-5-2.31-11.15-2.31H184.62q-10.77 0-17.7 6.92-6.92 6.93-6.92 17.7v430.76q0 10.77 6.92 17.7 6.93 6.92 17.7 6.92Zm204.61-240Z"/>
+                        </svg>
+                        <button>Add Label</button>
+                    </div>
+                </div>
+                <div class="border-bottom py-4 px-4">
+                    <h6 class="mb-3 fs-4 fw-400">Photos & Videos</h6>
+
+                    <div id="btnPhotoGroups" class="position-relative overflow-hidden swiper-container mb-1 btn-photo-groups">
+                        <div class="swiper-wrapper">
+                            @for (image of imageGroups(); track $index) {
+                                <div class="overflow-hidden rounded-3 swiper-slide">
+                                    <div
+                                        class="position-relative w-100 h-100 fs-6 cursor-pointer text-white image-group"
+                                        [ngStyle]="{backgroundImage: 'url(' + image + ')'}"
+                                    >
+                                        <div class="px-3 py-2 d-flex align-items-end justify-content-start fw-semibold fs-6 overlay">All</div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="rounded-circle c-text-gray bg-white swiper-button-prev"></div>
+                        <div class="rounded-circle c-text-gray bg-white swiper-button-next"></div>
+                    </div>
+                </div>
+            }
+
+            @if (currentTab() === EAddressDetailTab.OVERVIEW || currentTab() === EAddressDetailTab.REVIEW) {
+                <app-address-reviews></app-address-reviews>
+            }
+
+            @if (currentTab() === EAddressDetailTab.PRODUCT) {
+                <app-products></app-products>
+            }
+
         </div>
 
-        @if (currentTab() === EAddressDetailTab.OVERVIEW) {
-            <div class="border-bottom fs-6 px-4 py-3 ">
-                <div class="py-2 d-flex gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
-                         fill="#5f6368">
-                        <path
-                            d="M480.14-490.77q26.71 0 45.59-19.02 18.89-19.02 18.89-45.73 0-26.71-19.03-45.6Q506.57-620 479.86-620q-26.71 0-45.59 19.02-18.89 19.02-18.89 45.73 0 26.71 19.03 45.6 19.02 18.88 45.73 18.88ZM480-172.92q112.77-98.16 178.31-199.66t65.54-175.57q0-109.77-69.5-181.2-69.5-71.42-174.35-71.42t-174.35 71.42q-69.5 71.43-69.5 181.2 0 74.07 65.54 175.57T480-172.92Zm0 53.69Q339-243.92 267.58-351.81q-71.43-107.88-71.43-196.34 0-126.93 82.66-209.39Q361.46-840 480-840q118.54 0 201.19 82.46 82.66 82.46 82.66 209.39 0 88.46-71.43 196.34Q621-243.92 480-119.23Zm0-436.15Z"/>
-                    </svg>
+    </section>
 
-                    <span>4 Ng. 181 P. Quan Nhân, Nhân Chính, Thanh Xuân, Hà Nội 11415, Vietnam</span>
-                </div>
-                <div class="py-2 d-flex gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
-                         fill="#5f6368">
-                        <path
-                            d="m625.85-305.85 28.3-28.3L500-488.33V-680h-40v208.31l165.85 165.84ZM480.13-120q-74.67 0-140.41-28.34-65.73-28.34-114.36-76.92-48.63-48.58-76.99-114.26Q120-405.19 120-479.87q0-74.67 28.34-140.41 28.34-65.73 76.92-114.36 48.58-48.63 114.26-76.99Q405.19-840 479.87-840q74.67 0 140.41 28.34 65.73 28.34 114.36 76.92 48.63 48.58 76.99 114.26Q840-554.81 840-480.13q0 74.67-28.34 140.41-28.34 65.73-76.92 114.36-48.58 48.63-114.26 76.99Q554.81-120 480.13-120ZM480-480Zm0 320q133 0 226.5-93.5T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160Z"/>
-                    </svg>
-                    <button>
-                        <span>Open</span>
-                        <span>Closes 11PM</span>
-                    </button>
-                </div>
-                <div class="py-2 d-flex gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
-                         fill="#5f6368">
-                        <path
-                            d="M480.13-120q-74.67 0-140.41-28.34-65.73-28.34-114.36-76.92-48.63-48.58-76.99-114.26Q120-405.19 120-479.87q0-74.67 28.34-140.41 28.34-65.73 76.92-114.36 48.58-48.63 114.26-76.99Q405.19-840 479.87-840q74.67 0 140.41 28.34 65.73 28.34 114.36 76.92 48.63 48.58 76.99 114.26Q840-554.81 840-480.13q0 74.67-28.34 140.41-28.34 65.73-76.92 114.36-48.58 48.63-114.26 76.99Q554.81-120 480.13-120ZM440-162v-78q-33 0-56.5-23.5T360-320v-40L168-552q-3 18-5.5 36t-2.5 36q0 121 79.5 212T440-162Zm276-102q20-22 36-47.5t26.5-53q10.5-27.5 16-56.5t5.5-59q0-98.58-54.12-180.06Q691.77-741.54 600-777.54V-760q0 33-23.5 56.5T520-680h-80v80q0 17-11.5 28.5T400-560h-80v80h240q17 0 28.5 11.5T600-440v120h40q26 0 47 15.5t29 40.5Z"/>
-                    </svg>
-                    <button>Facebook</button>
-                </div>
-                <div class="py-2 d-flex gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
-                         fill="#5f6368">
-                        <path
-                            d="M304.62-80Q277-80 258.5-98.5 240-117 240-144.62v-670.76q0-27.62 18.5-46.12Q277-880 304.62-880h350.76q27.62 0 46.12 18.5Q720-843 720-815.38v670.76q0 27.62-18.5 46.12Q683-80 655.38-80H304.62ZM280-258.46v113.84q0 9.24 7.69 16.93 7.69 7.69 16.93 7.69h350.76q9.24 0 16.93-7.69 7.69-7.69 7.69-16.93v-113.84H280Zm200 100q12.38 0 21.58-9.19 9.19-9.2 9.19-21.58 0-12.39-9.19-21.58Q492.38-220 480-220q-12.38 0-21.58 9.19-9.19 9.19-9.19 21.58 0 12.38 9.19 21.58 9.2 9.19 21.58 9.19Zm-200-140h400V-740H280v441.54ZM280-780h400v-35.38q0-9.24-7.69-16.93-7.69-7.69-16.93-7.69H304.62q-9.24 0-16.93 7.69-7.69 7.69-7.69 16.93V-780Zm0 521.54V-120v-138.46ZM280-780v-60 60Z"/>
-                    </svg>
-                    <button>037 767 0509</button>
-                </div>
-                <div class="py-2 d-flex gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
-                         fill="#5f6368">
-                        <path
-                            d="M184.62-200q-26.66 0-45.64-18.98T120-264.62v-430.76q0-26.66 18.98-45.64T184.62-760h408.46q15.34 0 29.07 6.66t22.62 18.42L840-480 644.77-225.08q-8.89 11.76-22.62 18.42-13.73 6.66-29.07 6.66H184.62Zm0-40h408.46q6.15 0 11.15-2.31t8.85-6.92L790-480 613.08-710.77q-3.85-4.61-8.85-6.92-5-2.31-11.15-2.31H184.62q-10.77 0-17.7 6.92-6.92 6.93-6.92 17.7v430.76q0 10.77 6.92 17.7 6.93 6.92 17.7 6.92Zm204.61-240Z"/>
-                    </svg>
-                    <button>Add Label</button>
-                </div>
-            </div>
-            <div class="border-bottom py-4 px-4">
-                <h6 class="mb-3 fs-4 fw-400">Photos & Videos</h6>
-
-                <div id="btnPhotoGroups" class="position-relative overflow-hidden swiper-container mb-1 btn-photo-groups">
-                    <div class="swiper-wrapper">
-                        @for (image of imageGroups(); track $index) {
-                            <div class="overflow-hidden rounded-3 swiper-slide">
-                                <div
-                                    class="position-relative w-100 h-100 fs-6 cursor-pointer text-white image-group"
-                                    [ngStyle]="{backgroundImage: 'url(' + image + ')'}"
-                                >
-                                    <div class="px-3 py-2 d-flex align-items-end justify-content-start fw-semibold fs-6 overlay">All</div>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                    <div class="rounded-circle c-text-gray bg-white swiper-button-prev"></div>
-                    <div class="rounded-circle c-text-gray bg-white swiper-button-next"></div>
-                </div>
-            </div>
-        }
-
-        @if (currentTab() === EAddressDetailTab.OVERVIEW || currentTab() === EAddressDetailTab.REVIEW) {
-            <app-address-reviews></app-address-reviews>
-        }
-
-        @if (currentTab() === EAddressDetailTab.PRODUCT) {
-            <app-products></app-products>
-        }
-
-    </div>
-
-</section>
+}
