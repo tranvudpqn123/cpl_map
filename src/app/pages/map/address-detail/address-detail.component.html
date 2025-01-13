@@ -55,7 +55,7 @@
             @if (currentTab() === EAddressDetailTab.OVERVIEW) {
                 <div
                     class="position-relative p-3 d-flex align-items-end justify-content-start cursor-pointer address-avatar"
-                    [ngStyle]="{backgroundImage: 'url(' + selectedMerchant()?.avatarSmall + ')'}"
+                    [ngStyle]="{backgroundImage: 'url(' + selectedMerchant()?.avatar + ')'}"
                 >
             <span class="position-relative px-3 py-2 d-flex align-items-center gap-2 text-white border rounded text">
                 <i class="bi bi-images"></i>
@@ -79,7 +79,7 @@
                     <div class="d-flex align-items-center gap-2 c-text-gray">
                         <span>{{ selectedMerchant()!.rating }}</span>
                         <div [appStarRating]="selectedMerchant()!.rating" class="star-icons"></div>
-                        <span>(52)</span>
+                        <span>({{selectedMerchant()!.totalRating}})</span>
                     </div>
                     <div class="d-flex mt-1">
                         <p class="c-text-gray">Loại dịch vụ</p>
