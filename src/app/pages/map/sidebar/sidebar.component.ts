@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
-import {IAddressGroup, MerchantFilterService} from '@services/merchant-filter.service';
+import { MerchantFilterService} from '@services/merchant-filter.service';
+import {IAddressGroup} from '@models/address-merchant.interface';
 
 @Component({
     selector: 'app-sidebar',
