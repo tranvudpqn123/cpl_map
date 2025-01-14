@@ -1,4 +1,5 @@
 import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
+import {GoogleMapsModule} from '@angular/google-maps';
 // Services
 import {IMerchant, MerchantFilterService} from '@services/merchant-filter.service';
 // Components
@@ -17,7 +18,8 @@ import {AutomaticallyUnsubscribe} from '@constants/automatically-unsubscribe';
         SliderPhotosComponent,
         FilterComponent,
         PersonalGroupsComponent,
-        AddressDetailComponent
+        AddressDetailComponent,
+        GoogleMapsModule
     ],
     templateUrl: './map.component.html',
     styleUrl: './map.component.scss',
@@ -27,6 +29,11 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit{
     private readonly merchantFilterService = inject(MerchantFilterService);
     selectedMerchant = signal<IMerchant | null>(null);
     isShowMerchantGroups = signal<boolean>(false);
+    options: google.maps.MapOptions = {
+        mapId: "DEMO_MAP_ID",
+        center: { lat: -31, lng: 147 },
+        zoom: 4,
+    };
 
     ngOnInit() {
         this.merchantFilterService.selectedMerchant$
