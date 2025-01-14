@@ -107,6 +107,7 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit 
         this.searchFrom.valueChanges
             .pipe(debounceTime(500))
             .subscribe(() => {
+                this.isShowResultSearch.set(true)
                 this.getMerchants(this.allMerchants());
             });
         this.getMerchants(this.allMerchants());
@@ -120,7 +121,7 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit 
     onSelectAddressOption(addressOption: IAddressOption) {
         const selectedMerchant = this.responseMerchants().find(it => it.id === addressOption.id);
         if (selectedMerchant) {
-            this.searchFrom.reset({keySearch: selectedMerchant.name});
+            this.searchFrom.reset({keySearch: selectedMerchant.name}, {emitEvent: false});
             this.merchantFilterService.updateSelectedMerchant(selectedMerchant);
         }
         this.isShowResultSearch.set(false);

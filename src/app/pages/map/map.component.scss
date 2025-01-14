@@ -28,9 +28,9 @@
 
 }
 
-.main-screen {
+.merchant-map {
     top: 0;
-    left: 0;
-    width: 100dvw;
+    left: 70px;
+    width: calc(100dvw - 70px);
     height: 100dvh;
 }
