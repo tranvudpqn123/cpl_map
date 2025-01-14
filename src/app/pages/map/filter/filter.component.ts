@@ -1,4 +1,14 @@
-import {ChangeDetectionStrategy, Component, inject, OnInit, signal, ViewChild} from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    EventEmitter,
+    inject,
+    Input,
+    OnInit,
+    Output,
+    signal,
+    ViewChild
+} from '@angular/core';
 import {
     MerchantFilterService
 } from '@services/merchant-filter.service';
@@ -39,6 +49,8 @@ const CLOCK_ICON = `<svg class="c-text-gray" xmlns="http://www.w3.org/2000/svg" 
 })
 export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit {
     @ViewChild(CdkPortal) portal!: CdkPortal;
+
+    // @Input() keyS: string | null = null;
     private readonly merchantFilterService = inject(MerchantFilterService);
     private readonly fb = inject(FormBuilder);
     private readonly storageService = inject(StorageService);
@@ -58,6 +70,7 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit 
     options = signal<IAddressOption[]>([]);
     selectedMerchant = signal<IMerchant | null>(null);
     isShowMerchantGroups = signal<boolean>(false);
+    @Input() keyS = signal('');
 
     ngOnInit() {
         this.merchantFilterService.selectedMerchant$
@@ -125,7 +138,6 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit 
         if (selectedMerchant) {
             this.searchFrom.reset({keySearch: selectedMerchant.name});
             this.merchantFilterService.updateSelectedMerchant(selectedMerchant);
-
             this.saveInfoMerchantSeen(selectedMerchant);
         }
         this.isShowResultSearch.set(false);
@@ -137,7 +149,10 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit 
 
 
 
+
+
     private saveInfoMerchantSeen(selectedMerchant: IMerchant) {
+
         const newAddress: IAddress = {
             id: selectedMerchant.id,
             title: selectedMerchant.name,
