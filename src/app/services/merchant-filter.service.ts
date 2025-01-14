@@ -4,6 +4,9 @@ import {HttpClient} from '@angular/common/http';
 import {IResponseData} from '@models/response-data.interface';
 import {UtilsService} from '@services/utils.service';
 import data from './merchant.data.json';
+import {environment} from '@environments/environment';
+import {IMerchant, IMerchantFilterRequest, IMerchantResponse} from '@models/merchant.interface';
+import {IAddress, IAddressGroup, IAddressGroupData} from '@models/address-merchant.interface';
 
 @Injectable({
     providedIn: 'root'
@@ -33,6 +36,7 @@ export class MerchantFilterService {
             merchantGroups: [],
         }
     );
+    private  readonly  API_URL = environment.apiUrl;
 
     get addressData$() {
         return this.addressData.asObservable();
@@ -170,98 +174,18 @@ export class MerchantFilterService {
     }
 
     getMerchants(merchantFilterRequest: IMerchantFilterRequest) {
-        const url = `https://apigw.cashplus.vn/api/app/customer/home/listPartnerV2?page_size=10`;
+        const url = this.API_URL + `/app/customer/home/listPartnerV2?page_size=10`;
         // return of(this.utilsService.convertKeysToCamelCase<IResponseData<IMerchantResponse>>(data));
         return this.httpClient.post<IResponseData<IMerchantResponse>>(url, merchantFilterRequest)
             .pipe(map(res => this.utilsService.convertKeysToCamelCase<IResponseData<IMerchantResponse>>(res)));
     }
+
+    getMerchantDetail(data: { partner_id: string; latitude: number; longtitude: number })   {
+        const url = this.API_URL + `/app/customer/partner/detail` + `?latitude=${data.latitude}`+`&longtitude=${data.longtitude}` + `&partner_id=${data.partner_id}`;
+        // return of(this.utilsService.convertKeysToCamelCase<IResponseData<IMerchantResponse>>(data));
+        return this.httpClient.get<IResponseData<string>>(url)
+            .pipe(map(res =>
+                this.utilsService.convertKeysToCamelCase<IResponseData<IMerchant>>(res)));
+    }
 }
 
-export interface IMerchantFilterRequest {
-    search: string;
-}
-
-export interface IAddressGroup {
-    id: string;
-    title: string;
-    avatars: string[];
-    numberAddresses: number;
-}
-
-export interface IAddressGroupData {
-    id: string;
-    title: string;
-    addresses: IAddress[];
-}
-
-export interface IAddress {
-    id: string;
-    title: string;
-    avatar: string;
-    ratingNumber: number;
-    ratingAmount: number;
-    imageGroups: IAddressImageGroup[];
-    addressDetail: string;
-}
-
-export interface IAddressImageGroup {
-    id: string,
-    title: string;
-    images: string[];
-}
-
-export interface IMerchantResponse {
-    totalElements: number
-    zoom: number
-    maxDistanceAll: number
-    maxDistance: number
-    data: IMerchant[]
-    haveData: boolean
-    totalElementsInBound: number
-    totalPage: number
-    totalDocumentsInIndex: number
-}
-
-export interface IMerchant {
-    id: string
-    branchId: any
-    score: number
-    distance: number
-    isBranch: boolean
-    partnerId: string
-    serviceTypeId: string
-    code: string
-    name: string
-    avatar: string
-    startHour?: string
-    endHour?: string
-    serviceTypeIcons: string
-    rating: number
-    totalRating: number
-    discountRate: number
-    avatarSmall: string
-    description: string
-    address: string
-    phone: string
-    linkQR: string
-    fullAddress: string
-    status: number
-    isFavourite: boolean
-    latitude: number
-    longtitude: number
-    contractDiscount_rate: number
-    workingTimes: IWorkingTime[]
-    totalBillInMonth: any
-    totalBillAmountIn_Month: any
-    totalBill: any
-    totalBillAmount: any
-}
-
-export interface IWorkingTime {
-    id: number
-    partnerId: string
-    startHour: string
-    endHour: string
-    dateCreated: string
-    dateUpdated: string
-}

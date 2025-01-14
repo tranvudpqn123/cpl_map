@@ -9,7 +9,8 @@ import {
 } from '@angular/core';
 import {Swiper} from 'swiper';
 import {RedZoomModule} from 'ngx-red-zoom';
-import {IAddress, IAddressGroup, IAddressImageGroup, MerchantFilterService} from '@services/merchant-filter.service';
+import {IAddress, IAddressGroup, IAddressImageGroup} from '@models/address-merchant.interface';
+import {MerchantFilterService} from '@services/merchant-filter.service';
 import {CommonModule} from '@angular/common';
 
 @Component({
