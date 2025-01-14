@@ -187,5 +187,12 @@ export class MerchantFilterService {
             .pipe(map(res =>
                 this.utilsService.convertKeysToCamelCase<IResponseData<IMerchant>>(res)));
     }
+
+    getListServiceType()   {
+        const url = this.API_URL + `/portal/servicetype`;
+        return this.httpClient.get<IResponseData<string>>(url)
+            .pipe(map(res =>
+                this.utilsService.convertKeysToCamelCase<IResponseData<any>>(res)));
+    }
 }
 
