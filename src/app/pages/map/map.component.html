@@ -1,26 +1,15 @@
 <section class="position-relative map-page">
-    <div class="position-fixed main-screen">
-        <google-map height="100%" width="100%" [options]="options"> </google-map>
-    </div>
-
     <div class="position-absolute top-filter">
-
-        <ul class="d-none align-items-center gap-1">
-            <li><button class="px-3 btn-service-type">Restaurants</button></li>
-            <li><button class="px-3 btn-service-type">Hotels</button></li>
-            <li><button class="px-3 btn-service-type">Things to do</button></li>
-            <li><button class="px-3 btn-service-type">Museums</button></li>
-            <li><button class="px-3 btn-service-type">Transit</button></li>
-            <li><button class="px-3 btn-service-type">Pharmacies</button></li>
-            <li><button class="px-3 btn-service-type">ATMs</button></li>
+        <ul class="d-flex align-items-center gap-1">
+            <li  *ngFor="let item of listServiceTypeMerchant()">
+                <button class="px-3 btn-service-type">{{item.name}}</button>
+            </li>
         </ul>
     </div>
     <div class="position-absolute bg-white left-filter">
-        <app-filter></app-filter>
-
+        <app-filter ></app-filter>
 <!--        <app-slider-photos></app-slider-photos>-->
 <!--        <app-personal-groups></app-personal-groups>-->
-
 
         <app-sidebar></app-sidebar>
     </div>
