@@ -155,7 +155,6 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit 
             .subscribe(res => {
                 const {code, data} = res;
                 if (code === '200') {
-                    console.log('data: ', data);
                     const merchantOptions = data.data.map(it => {
                         const saved = recentMerchants.some(merchant => merchant.id === it.id);
 

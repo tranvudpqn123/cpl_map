@@ -45,7 +45,7 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
     private overlayRef: OverlayRef | null = null;
 
     selectedList = signal<IListAddress | null>(null);
-    selectedGroupType = signal<EAddressGroupType>(EAddressGroupType.SAVED);
+    selectedGroupType = signal<EAddressGroupType | null>(EAddressGroupType.SAVED);
     listAddress = signal<IListAddress[]>([]);
     openAddListForm = signal(false);
     newListName = '';
@@ -63,6 +63,17 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
             .subscribe((listAddress) => {
                 this.listAddress.set(listAddress);
             });
+        this.merchantFilterService.selectedGroupType$
+            .pipe(takeUntil(this.destroyFlag))
+            .subscribe((selectedGroupType) => {
+                this.selectedGroupType.set(selectedGroupType);
+            });
+        this.merchantFilterService.selectedListAddress$
+            .pipe(takeUntil(this.destroyFlag))
+            .subscribe((selectedList) => {
+                this.selectedList.set(selectedList);
+            });
+
     }
 
     onOpenAddListForm() {
@@ -84,7 +95,7 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
     }
 
     onOpenContextMenu(selectedList: IListAddress, event: MouseEvent) {
-
+        event.stopPropagation();
         if (this.overlayRef) {
             this.overlayRef.dispose();
         }
@@ -148,6 +159,10 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
             this.overlayRef.detach();
             this.newListName = '';
         }
+    }
+
+    onSelectList(list: IListAddress) {
+        this.merchantFilterService.selectListAddress(list.id);
     }
 
 }

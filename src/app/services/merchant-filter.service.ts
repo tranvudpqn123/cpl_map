@@ -24,7 +24,8 @@ export class MerchantFilterService {
         merchantGroups: IAddressGroupData[],
         isShowMerchantGroups: boolean,
         selectedGroupType: EAddressGroupType | null,
-        listAddress: IListAddress[]
+        listAddress: IListAddress[],
+        selectedListAddress: IListAddress | null
 
 
     }>(
@@ -38,6 +39,7 @@ export class MerchantFilterService {
             merchantGroups: [],
             selectedGroupType: null,
             listAddress: [],
+            selectedListAddress: null,
         }
     );
 
@@ -185,33 +187,34 @@ export class MerchantFilterService {
     }
     get selectedAddressGroupId$() {
         return this.addressData.asObservable().pipe(
-            distinctUntilChanged((prev, curr) => prev !== curr),
+            distinctUntilChanged((prev, curr) => prev === curr),
             map(data => data.selectedAddressGroupId));
     }
+    get selectedListAddress$() {
+        return this.addressData.asObservable().pipe(
+            map(data => data.selectedListAddress),
+            distinctUntilChanged((prev, curr) => {
+                return prev === curr;
+            }));
+    }
+
     updateAddressGroups(addressGroups: IAddressGroupData[]): void {
         this.addressData.next({...this.addressData.value, addressGroups});
     }
 
     updateSelectedAddressGroup(addressGroupId: string) {
-        const {addressGroups, selectedAddressGroupId} = this.addressData.value;
-        if (
-            addressGroupId === 'ALL' ||
-            addressGroupId === 'RECENT' ||
-            (selectedAddressGroupId !== addressGroupId && addressGroups.find(it => it.id === addressGroupId))
-        ) {
-            this.addressData.next({
-                ...this.addressData.value,
-                selectedAddressGroupId: addressGroupId,
-            });
-        }
+        this.addressData.next({
+            ...this.addressData.value,
+            selectedAddressGroupId: addressGroupId,
+        });
     }
+
     updateSelectedGroupType(selectedGroupType: EAddressGroupType | null) {
         this.addressData.next({
             ...this.addressData.value,
             selectedGroupType: selectedGroupType,
         });
     }
-
     updateSelectedMerchant(merchant: IMerchant | null) {
         this.addressData.next({...this.addressData.value, selectedMerchant: merchant});
     }
@@ -304,6 +307,16 @@ export class MerchantFilterService {
         }
     }
 
+    selectListAddress(listAddressId: string) {
+        const {listAddress} = this.addressData.value;
+        let selectedListAddress = listAddress.find(it => it.id === listAddressId) ?? null;
+        selectedListAddress = selectedListAddress ? {...selectedListAddress} : null;
+        this.addressData.next({
+            ...this.addressData.value,
+            selectedGroupType: EAddressGroupType.RECENT,
+            selectedListAddress
+        });
+    }
 
     getMerchants(merchantFilterRequest: IMerchantFilterRequest) {
         const url = `https://apigw.cashplus.vn/api/app/customer/home/listPartnerV2?page_size=10`;

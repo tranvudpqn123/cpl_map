@@ -20,6 +20,26 @@
     </ul>
 
     <ul class="position-relative px-1 pt-1 text-center d-flex flex-column align-items-center justify-content-start overflow-auto address-groups">
+
+        @if (selectedListAddress()) {
+            <li
+                class="address-group"
+                [class.selected]="selectedAddressGroupId() === selectedListAddress()!.id"
+            >
+                <button
+                    class="mx-auto p-0 btn"
+                    (click)="onSelectAddressGroup(selectedListAddress()!.id)"
+                >
+                    <div class="mx-auto mb-1 position-relative thumbnail-group" >
+                        <div class="d-inline-flex align-items-center justify-content-center thumbnail" [innerHTML]="(selectedListAddress()?.icon || '') | safeSvg">
+                        </div>
+
+                    </div>
+                    <span class="address-group-title">{{selectedListAddress()?.title}}</span>
+                </button>
+            </li>
+        }
+
         @for(addressGroup of addressGroups(); track $index) {
             <li
                 class="address-group"

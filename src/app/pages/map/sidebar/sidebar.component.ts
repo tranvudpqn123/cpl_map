@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
-import {EAddressGroupType, IAddressGroup, MerchantFilterService} from '@services/merchant-filter.service';
+import {EAddressGroupType, IAddressGroup, IListAddress, MerchantFilterService} from '@services/merchant-filter.service';
 import {takeUntil} from 'rxjs';
 import {AutomaticallyUnsubscribe} from '@constants/automatically-unsubscribe';
 import {IconPaths} from '@constants/image-paths';
@@ -22,6 +22,7 @@ export class SidebarComponent extends AutomaticallyUnsubscribe implements OnInit
     addressGroups = signal<IAddressGroup[]>([]);
     selectedAddressGroupId = signal('');
     selectedGroupType = signal<EAddressGroupType | null>(null);
+    selectedListAddress = signal<IListAddress | null>(null);
 
     ngOnInit() {
         this.merchantFilterService.addressGroups$
@@ -40,6 +41,12 @@ export class SidebarComponent extends AutomaticallyUnsubscribe implements OnInit
             .pipe(takeUntil(this.destroyFlag))
             .subscribe(selectedGroupType => {
                 this.selectedGroupType.set(selectedGroupType);
+            });
+
+        this.merchantFilterService.selectedListAddress$
+            .pipe(takeUntil(this.destroyFlag))
+            .subscribe(selectedListAddress => {
+                this.selectedListAddress.set(selectedListAddress);
             });
     }
 
