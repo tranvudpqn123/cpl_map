@@ -12,6 +12,7 @@
 
     .btn-service-type {
         height: 32px;
+        width: max-content;
         border-radius: 30px;
         box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
         background-color: white;
@@ -28,9 +29,14 @@
 
 }
 
-.main-screen {
+.merchant-map {
     top: 0;
-    left: 0;
-    width: 100dvw;
+    left: 70px;
+    width: calc(100dvw - 70px);
     height: 100dvh;
 }
+
+.list-sub-service-type{
+    top: 50px;
+}
+

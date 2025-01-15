@@ -1,12 +1,10 @@
 import {
     ChangeDetectionStrategy,
     Component,
-    EventEmitter,
     inject,
-    Input,
+    Input, OnChanges,
     OnInit,
-    Output,
-    signal,
+    signal, SimpleChanges,
     ViewChild
 } from '@angular/core';
 import {
@@ -47,16 +45,17 @@ const CLOCK_ICON = `<svg class="c-text-gray" xmlns="http://www.w3.org/2000/svg" 
     styleUrl: './filter.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit {
+export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit, OnChanges {
     @ViewChild(CdkPortal) portal!: CdkPortal;
+    @Input() keyS = '';
 
-    // @Input() keyS: string | null = null;
+
     private readonly merchantFilterService = inject(MerchantFilterService);
     private readonly fb = inject(FormBuilder);
     private readonly storageService = inject(StorageService);
 
     readonly searchFrom = this.fb.group({
-        keySearch: ['Coffee']
+        keySearch: [this.keyS]
     });
     addressGroups = signal<IAddressGroup[]>([]);
     addresses = signal<IAddress[]>([]);
@@ -70,7 +69,12 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit 
     options = signal<IAddressOption[]>([]);
     selectedMerchant = signal<IMerchant | null>(null);
     isShowMerchantGroups = signal<boolean>(false);
-    @Input() keyS = signal('');
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['keyS'] && changes['keyS'].currentValue !== changes['keyS'].previousValue) {
+            this.searchFrom.patchValue({ keySearch: this.keyS });
+        }
+    }
 
     ngOnInit() {
         this.merchantFilterService.selectedMerchant$
@@ -123,6 +127,7 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit 
         this.searchFrom.valueChanges
             .pipe(debounceTime(500))
             .subscribe(() => {
+                this.isShowResultSearch.set(true)
                 this.getMerchants(this.allMerchants());
             });
         this.getMerchants(this.allMerchants());
@@ -136,7 +141,7 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit 
     onSelectAddressOption(addressOption: IAddressOption) {
         const selectedMerchant = this.responseMerchants().find(it => it.id === addressOption.id);
         if (selectedMerchant) {
-            this.searchFrom.reset({keySearch: selectedMerchant.name});
+            this.searchFrom.reset({keySearch: selectedMerchant.name}, {emitEvent: false});
             this.merchantFilterService.updateSelectedMerchant(selectedMerchant);
             this.saveInfoMerchantSeen(selectedMerchant);
         }

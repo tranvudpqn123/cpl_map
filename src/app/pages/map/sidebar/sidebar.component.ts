@@ -21,7 +21,7 @@ export class SidebarComponent implements OnInit {
     ngOnInit() {
         this.merchantFilterService.addressData$.subscribe((addressData) => {
             const dataLocal = JSON.parse(JSON.stringify(this.storageService.getItem(EStorageKey.LIST_SEND_PARTNER)));
-            if(addressData.addressGroups.length < 1 && dataLocal.length > 0 ) {
+            if(addressData.addressGroups?.length < 1 && dataLocal?.length > 0 ) {
                 addressData.addressGroups = dataLocal;
             }
         })
