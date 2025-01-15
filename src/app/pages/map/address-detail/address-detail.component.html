@@ -23,11 +23,7 @@
             >
                 <button
                     class="p-0 d-flex align-items-center justify-content-center rounded-circle btn btn-go-back">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
-                         fill="currentColor">
-                        <path
-                            d="M396.15-267.69 183.85-480l212.3-212.31 28.31 28.77L260.92-500h515.23v40H260.92l163.54 163.54-28.31 28.77Z"/>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M396.15-267.69 183.85-480l212.3-212.31 28.31 28.77L260.92-500h515.23v40H260.92l163.54 163.54-28.31 28.77Z"/></svg>
                 </button>
 
                 <h5 class="fs-4">{{ selectedMerchant()!.name }}</h5>
@@ -176,12 +172,36 @@
                         <button>{{ selectedMerchant()!.phone }}</button>
                     </div>
                     <div class="py-2 d-flex gap-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
-                             fill="#5f6368">
-                            <path
-                                d="M184.62-200q-26.66 0-45.64-18.98T120-264.62v-430.76q0-26.66 18.98-45.64T184.62-760h408.46q15.34 0 29.07 6.66t22.62 18.42L840-480 644.77-225.08q-8.89 11.76-22.62 18.42-13.73 6.66-29.07 6.66H184.62Zm0-40h408.46q6.15 0 11.15-2.31t8.85-6.92L790-480 613.08-710.77q-3.85-4.61-8.85-6.92-5-2.31-11.15-2.31H184.62q-10.77 0-17.7 6.92-6.92 6.93-6.92 17.7v430.76q0 10.77 6.92 17.7 6.93 6.92 17.7 6.92Zm204.61-240Z"/>
-                        </svg>
-                        <button>Add Label</button>
+                        <span
+                            class="pin-icon"
+                            [class.transform-scale-875]="savedListAddress()"
+                            [innerHTML]="(savedListAddress() ? savedListAddress()!.icon : IconPaths.PIN) | safeSvg"></span>
+                        <button
+                            cdkOverlayOrigin
+                            #trigger="cdkOverlayOrigin"
+                            class="d-flex align-items-center gap-2"
+                            (click)="showListOptions.set(true)"
+                        >{{ savedListAddress() ? savedListAddress()?.title : 'Add to list' }}
+                            @if(savedListAddress()) {
+                                <span [innerHTML]="IconPaths.CHEVRON_DOWN | safeSvg"></span>
+                            }
+                        </button>
+
+                        <ng-template
+                            cdkConnectedOverlay
+                            [cdkConnectedOverlayOrigin]="trigger"
+                            [cdkConnectedOverlayOpen]="showListOptions()"
+                            (overlayOutsideClick)="showListOptions.set(false)"
+                        >
+                            <div class="p-2 shadow-md bg-white rounded border">
+                                @for(item of listAddress(); track item.id) {
+                                    <button
+                                        class="pe-2 ps-1 py-1 d-flex align-items-center gap-2"
+                                        (click)="onAddToList(item.id)"
+                                    ><span class="list-address-icon" [innerHTML]="item.icon | safeSvg"></span>{{item.title}}</button>
+                                }
+                            </div>
+                        </ng-template>
                     </div>
                 </div>
                 <div class="border-bottom py-4 px-4">
@@ -222,4 +242,8 @@
 
     </section>
 
+
+
 }
+
+

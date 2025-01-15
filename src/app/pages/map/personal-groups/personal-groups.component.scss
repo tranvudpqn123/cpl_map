@@ -2,8 +2,9 @@
 .search-box-wrapper {
     top: 0;
     left: 70px;
-    padding: 10px 0px 0 20px;
-    width: 410px;
+    //padding: 10px 0px 0 20px;
+    padding-top: 50px;
+    width: 450px;
     color: rgb(var(--c-gray));
 
     .key-search-box {
@@ -74,6 +75,38 @@
 
         .rating-point, .rating-amount {
             margin-top: 2px;
+        }
+    }
+}
+
+.address-group-types {
+    .group {
+        &:hover {
+            background-color: rgb(var(--c-gray), .15);
+        }
+    }
+
+    .btn-group-options {
+        width: 38px;
+        height: 38px;
+        &:hover {
+            background-color: rgb(var(--c-gray), .2);
+        }
+    }
+}
+
+.form-add-new-list {
+    width: 360px;
+
+    .btn-create-list {
+        min-width: 100px;
+        border: none;
+        transition: all .3s ease-in;
+        background-color: rgb(var(--c-primary));
+
+        &:disabled {
+            opacity: .7;
+
         }
     }
 }

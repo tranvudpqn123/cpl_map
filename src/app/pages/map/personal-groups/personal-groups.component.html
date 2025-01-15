@@ -2,373 +2,442 @@
     class="position-fixed search-box-wrapper"
     [class.large]="true"
 >
-    <form class="bg-white overflow-hidden rounded-30px border key-search-box">
-        <div class="px-3 h-100 input-group">
-            <input type="text" class="border-0 form-control" placeholder="Search Google Maps">
-            <button class="me-2 p-0 btn"><i class="fs-3 bi bi-search"></i></button>
-        </div>
-    </form>
-
-    <div class="mt-4 overflow-auto group">
-        <h5 class="position-sticky mb-4 d-flex align-items-center gap-2 fs-5 bg-white recent-addresses-title">Recents <svg class="d-inline-block"  xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M477.74-140q-135.2 0-232.48-92.31T140.54-459.9h50.67q8.12 113.77 89.96 191.71 81.83 77.93 196.57 77.93 121.88 0 206.55-85.21 84.68-85.22 84.68-207.09 0-120.39-85.09-203.79-85.09-83.39-206.14-83.39-64.87 0-122.1 28.57-57.23 28.58-99.84 77.27h102.05v50.26h-187.8v-187.64h50.26v100.72q49.1-55.98 116.08-87.71Q403.36-820 477.74-820q70.77 0 132.82 26.57 62.05 26.56 108.46 72.56t73.31 107.64q26.9 61.64 26.9 132.15 0 70.77-26.9 132.95-26.9 62.18-73.31 108.26-46.41 46.07-108.46 72.97T477.74-140Zm127.93-181.49-150-148.92v-211.08h50.25v190.41l135.54 133.8-35.79 35.79Z"/></svg></h5>
-
-        <div>
-            <div class="d-flex flex-wrap gap-2">
-                <button class="btn btn-address-group">All</button>
-                <button class="btn btn-address-group">Hà Nội <span>24</span></button>
-                <button class="btn btn-address-group">Thanh Hóa & Ninh Bình <span>24</span></button>
-                <button class="btn btn-address-group">Quảng Ngãi <span>24</span></button>
-                <button class="btn btn-address-group">Đồng Nai <span>24</span></button>
-                <button class="btn btn-address-group">TP Hồ Chí Minh <span>24</span></button>
-                <button class="btn btn-address-group">Hà Nội <span>24</span></button>
-                <button class="btn btn-address-group">Thanh Hóa & Ninh Bình <span>24</span></button>
-                <button class="btn btn-address-group">Quảng Ngãi <span>24</span></button>
-                <button class="btn btn-address-group">Đồng Nai <span>24</span></button>
-                <button class="btn btn-address-group">TP Hồ Chí Minh <span>24</span></button>
+    @if (selectedGroupType() === EAddressGroupType.SAVED) {
+        <div class="mt-4 overflow-auto group">
+            <div class="px-4 d-flex align-items-center justify-content-between fs-14px">
+                <h5 class="fw-500 fs-5">Your Lists</h5>
+                <button
+                    class="d-flex align-items-center gap-2 btn c-text-primary fw-400 fs-14px"
+                    (click)="onOpenAddListForm()"
+                >
+                    <span [innerHTML]="IconPaths.PLUS | safeSvg"></span>
+                    New list
+                </button>
             </div>
 
-            <div class="my-4 w-100"><hr></div>
-
-            <ul class="addresses">
-                <li>
-                    <button class="w-100 d-flex align-items-center justify-content-between gap-2 text-start btn btn-address">
-                        <div class="d-flex align-items-stretch gap-3">
-                            <div class="rounded overflow-hidden avatar">
-                                <img src="https://lh5.googleusercontent.com/p/AF1QipNaPSCMcNUemdfewArvDkrLbeUqtPf4hFN1xQho=w80-h92-p-k-no" alt="">
-                            </div>
-                            <div class="d-flex flex-column justify-content-between">
-                                <h5 class="address-title">Phúc Lang Viên</h5>
-                                <div class="lh-1 d-flex align-items-center gap-2 address-rating">
-                                    <div class="rating-point">4.6</div>
-                                    <div class="star-icons">
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-half"></i>
-                                    </div>
-                                    <div class="rating-amount">(84)</div>
-                                </div>
-                                <span>Thanh Hóa & Ninh Bình</span>
+            <ul class="py-3 address-group-types">
+                @for(list of listAddress(); track list.id) {
+                    <li class="py-3 px-4 d-flex align-items-center justify-content-between cursor-pointer group">
+                        <div class="d-flex align-items-center justify-content-between gap-3 ">
+                            <span [innerHTML]="list.icon | safeSvg"></span>
+                            <div>
+                                <p class="lh-1 fs-5">{{list.title}}</p>
+                                <p>{{list.merchants.length}} Places</p>
                             </div>
                         </div>
-
-                        <div>
-                            <input class="form-check-input" type="checkbox">
-                        </div>
-                    </button>
-                </li>
-                <li>
-                    <button class="w-100 d-flex align-items-center justify-content-between gap-2 text-start btn btn-address">
-                        <div class="d-flex align-items-stretch gap-3">
-                            <div class="rounded overflow-hidden avatar">
-                                <img src="https://lh5.googleusercontent.com/p/AF1QipNaPSCMcNUemdfewArvDkrLbeUqtPf4hFN1xQho=w80-h92-p-k-no" alt="">
-                            </div>
-                            <div class="d-flex flex-column justify-content-between">
-                                <h5 class="address-title">Phúc Lang Viên</h5>
-                                <div class="lh-1 d-flex align-items-center gap-2 address-rating">
-                                    <div class="rating-point">4.6</div>
-                                    <div class="star-icons">
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-half"></i>
-                                    </div>
-                                    <div class="rating-amount">(84)</div>
-                                </div>
-                                <span>Thanh Hóa & Ninh Bình</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <input class="form-check-input" type="checkbox">
-                        </div>
-                    </button>
-                </li><li>
-                <button class="w-100 d-flex align-items-center justify-content-between gap-2 text-start btn btn-address">
-                    <div class="d-flex align-items-stretch gap-3">
-                        <div class="rounded overflow-hidden avatar">
-                            <img src="https://lh5.googleusercontent.com/p/AF1QipNaPSCMcNUemdfewArvDkrLbeUqtPf4hFN1xQho=w80-h92-p-k-no" alt="">
-                        </div>
-                        <div class="d-flex flex-column justify-content-between">
-                            <h5 class="address-title">Phúc Lang Viên</h5>
-                            <div class="lh-1 d-flex align-items-center gap-2 address-rating">
-                                <div class="rating-point">4.6</div>
-                                <div class="star-icons">
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-half"></i>
-                                </div>
-                                <div class="rating-amount">(84)</div>
-                            </div>
-                            <span>Thanh Hóa & Ninh Bình</span>
-                        </div>
-                    </div>
-
-                    <div>
-                        <input class="form-check-input" type="checkbox">
-                    </div>
-                </button>
-            </li>
-                <li>
-                    <button class="w-100 d-flex align-items-center justify-content-between gap-2 text-start btn btn-address">
-                        <div class="d-flex align-items-stretch gap-3">
-                            <div class="rounded overflow-hidden avatar">
-                                <img src="https://lh5.googleusercontent.com/p/AF1QipNaPSCMcNUemdfewArvDkrLbeUqtPf4hFN1xQho=w80-h92-p-k-no" alt="">
-                            </div>
-                            <div class="d-flex flex-column justify-content-between">
-                                <h5 class="address-title">Phúc Lang Viên</h5>
-                                <div class="lh-1 d-flex align-items-center gap-2 address-rating">
-                                    <div class="rating-point">4.6</div>
-                                    <div class="star-icons">
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-half"></i>
-                                    </div>
-                                    <div class="rating-amount">(84)</div>
-                                </div>
-                                <span>Thanh Hóa & Ninh Bình</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <input class="form-check-input" type="checkbox">
-                        </div>
-                    </button>
-                </li>
-                <li>
-                    <button class="w-100 d-flex align-items-center justify-content-between gap-2 text-start btn btn-address">
-                        <div class="d-flex align-items-stretch gap-3">
-                            <div class="rounded overflow-hidden avatar">
-                                <img src="https://lh5.googleusercontent.com/p/AF1QipNaPSCMcNUemdfewArvDkrLbeUqtPf4hFN1xQho=w80-h92-p-k-no" alt="">
-                            </div>
-                            <div class="d-flex flex-column justify-content-between">
-                                <h5 class="address-title">Phúc Lang Viên</h5>
-                                <div class="lh-1 d-flex align-items-center gap-2 address-rating">
-                                    <div class="rating-point">4.6</div>
-                                    <div class="star-icons">
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-half"></i>
-                                    </div>
-                                    <div class="rating-amount">(84)</div>
-                                </div>
-                                <span>Thanh Hóa & Ninh Bình</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <input class="form-check-input" type="checkbox">
-                        </div>
-                    </button>
-                </li>
-                <li>
-                    <button class="w-100 d-flex align-items-center justify-content-between gap-2 text-start btn btn-address">
-                        <div class="d-flex align-items-stretch gap-3">
-                            <div class="rounded overflow-hidden avatar">
-                                <img src="https://lh5.googleusercontent.com/p/AF1QipNaPSCMcNUemdfewArvDkrLbeUqtPf4hFN1xQho=w80-h92-p-k-no" alt="">
-                            </div>
-                            <div class="d-flex flex-column justify-content-between">
-                                <h5 class="address-title">Phúc Lang Viên</h5>
-                                <div class="lh-1 d-flex align-items-center gap-2 address-rating">
-                                    <div class="rating-point">4.6</div>
-                                    <div class="star-icons">
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-half"></i>
-                                    </div>
-                                    <div class="rating-amount">(84)</div>
-                                </div>
-                                <span>Thanh Hóa & Ninh Bình</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <input class="form-check-input" type="checkbox">
-                        </div>
-                    </button>
-                </li>
-                <li>
-                    <button class="w-100 d-flex align-items-center justify-content-between gap-2 text-start btn btn-address">
-                        <div class="d-flex align-items-stretch gap-3">
-                            <div class="rounded overflow-hidden avatar">
-                                <img src="https://lh5.googleusercontent.com/p/AF1QipNaPSCMcNUemdfewArvDkrLbeUqtPf4hFN1xQho=w80-h92-p-k-no" alt="">
-                            </div>
-                            <div class="d-flex flex-column justify-content-between">
-                                <h5 class="address-title">Phúc Lang Viên</h5>
-                                <div class="lh-1 d-flex align-items-center gap-2 address-rating">
-                                    <div class="rating-point">4.6</div>
-                                    <div class="star-icons">
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-half"></i>
-                                    </div>
-                                    <div class="rating-amount">(84)</div>
-                                </div>
-                                <span>Thanh Hóa & Ninh Bình</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <input class="form-check-input" type="checkbox">
-                        </div>
-                    </button>
-                </li>
-                <li>
-                    <button class="w-100 d-flex align-items-center justify-content-between gap-2 text-start btn btn-address">
-                        <div class="d-flex align-items-stretch gap-3">
-                            <div class="rounded overflow-hidden avatar">
-                                <img src="https://lh5.googleusercontent.com/p/AF1QipNaPSCMcNUemdfewArvDkrLbeUqtPf4hFN1xQho=w80-h92-p-k-no" alt="">
-                            </div>
-                            <div class="d-flex flex-column justify-content-between">
-                                <h5 class="address-title">Phúc Lang Viên</h5>
-                                <div class="lh-1 d-flex align-items-center gap-2 address-rating">
-                                    <div class="rating-point">4.6</div>
-                                    <div class="star-icons">
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-half"></i>
-                                    </div>
-                                    <div class="rating-amount">(84)</div>
-                                </div>
-                                <span>Thanh Hóa & Ninh Bình</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <input class="form-check-input" type="checkbox">
-                        </div>
-                    </button>
-                </li>
-                <li>
-                    <button class="w-100 d-flex align-items-center justify-content-between gap-2 text-start btn btn-address">
-                        <div class="d-flex align-items-stretch gap-3">
-                            <div class="rounded overflow-hidden avatar">
-                                <img src="https://lh5.googleusercontent.com/p/AF1QipNaPSCMcNUemdfewArvDkrLbeUqtPf4hFN1xQho=w80-h92-p-k-no" alt="">
-                            </div>
-                            <div class="d-flex flex-column justify-content-between">
-                                <h5 class="address-title">Phúc Lang Viên</h5>
-                                <div class="lh-1 d-flex align-items-center gap-2 address-rating">
-                                    <div class="rating-point">4.6</div>
-                                    <div class="star-icons">
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-half"></i>
-                                    </div>
-                                    <div class="rating-amount">(84)</div>
-                                </div>
-                                <span>Thanh Hóa & Ninh Bình</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <input class="form-check-input" type="checkbox">
-                        </div>
-                    </button>
-                </li>
-                <li>
-                    <button class="w-100 d-flex align-items-center justify-content-between gap-2 text-start btn btn-address">
-                        <div class="d-flex align-items-stretch gap-3">
-                            <div class="rounded overflow-hidden avatar">
-                                <img src="https://lh5.googleusercontent.com/p/AF1QipNaPSCMcNUemdfewArvDkrLbeUqtPf4hFN1xQho=w80-h92-p-k-no" alt="">
-                            </div>
-                            <div class="d-flex flex-column justify-content-between">
-                                <h5 class="address-title">Phúc Lang Viên</h5>
-                                <div class="lh-1 d-flex align-items-center gap-2 address-rating">
-                                    <div class="rating-point">4.6</div>
-                                    <div class="star-icons">
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-half"></i>
-                                    </div>
-                                    <div class="rating-amount">(84)</div>
-                                </div>
-                                <span>Thanh Hóa & Ninh Bình</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <input class="form-check-input" type="checkbox">
-                        </div>
-                    </button>
-                </li>
-                <li>
-                    <button class="w-100 d-flex align-items-center justify-content-between gap-2 text-start btn btn-address">
-                        <div class="d-flex align-items-stretch gap-3">
-                            <div class="rounded overflow-hidden avatar">
-                                <img src="https://lh5.googleusercontent.com/p/AF1QipNaPSCMcNUemdfewArvDkrLbeUqtPf4hFN1xQho=w80-h92-p-k-no" alt="">
-                            </div>
-                            <div class="d-flex flex-column justify-content-between">
-                                <h5 class="address-title">Phúc Lang Viên</h5>
-                                <div class="lh-1 d-flex align-items-center gap-2 address-rating">
-                                    <div class="rating-point">4.6</div>
-                                    <div class="star-icons">
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-half"></i>
-                                    </div>
-                                    <div class="rating-amount">(84)</div>
-                                </div>
-                                <span>Thanh Hóa & Ninh Bình</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <input class="form-check-input" type="checkbox">
-                        </div>
-                    </button>
-                </li>
-                <li>
-                    <button class="w-100 d-flex align-items-center justify-content-between gap-2 text-start btn btn-address">
-                        <div class="d-flex align-items-stretch gap-3">
-                            <div class="rounded overflow-hidden avatar">
-                                <img src="https://lh5.googleusercontent.com/p/AF1QipNaPSCMcNUemdfewArvDkrLbeUqtPf4hFN1xQho=w80-h92-p-k-no" alt="">
-                            </div>
-                            <div class="d-flex flex-column justify-content-between">
-                                <h5 class="address-title">Phúc Lang Viên</h5>
-                                <div class="lh-1 d-flex align-items-center gap-2 address-rating">
-                                    <div class="rating-point">4.6</div>
-                                    <div class="star-icons">
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-half"></i>
-                                    </div>
-                                    <div class="rating-amount">(84)</div>
-                                </div>
-                                <span>Thanh Hóa & Ninh Bình</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <input class="form-check-input" type="checkbox">
-                        </div>
-                    </button>
-                </li>
-
-
+                        <button
+                            class="d-flex align-items-center justify-content-center rounded-circle border btn-group-options"
+                            [innerHTML]="IconPaths.VERTICAL_DOTS | safeSvg"
+                            (click)="onOpenContextMenu(list, $event)"
+                        ></button>
+                    </li>
+                }
             </ul>
-
         </div>
-    </div>
+    } @else {
+        <div class="mt-4 overflow-auto group">
+            <h5 class="position-sticky mb-4 d-flex align-items-center gap-2 fs-5 bg-white recent-addresses-title">
+                Recents
+                <span [innerHTML]="IconPaths.HISTORY | safeSvg"></span>
+            </h5>
+
+            <div>
+                <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-address-group">All</button>
+                    <button class="btn btn-address-group">Hà Nội <span>24</span></button>
+                    <button class="btn btn-address-group">Thanh Hóa & Ninh Bình <span>24</span></button>
+                    <button class="btn btn-address-group">Quảng Ngãi <span>24</span></button>
+                    <button class="btn btn-address-group">Đồng Nai <span>24</span></button>
+                    <button class="btn btn-address-group">TP Hồ Chí Minh <span>24</span></button>
+                    <button class="btn btn-address-group">Hà Nội <span>24</span></button>
+                    <button class="btn btn-address-group">Thanh Hóa & Ninh Bình <span>24</span></button>
+                    <button class="btn btn-address-group">Quảng Ngãi <span>24</span></button>
+                    <button class="btn btn-address-group">Đồng Nai <span>24</span></button>
+                    <button class="btn btn-address-group">TP Hồ Chí Minh <span>24</span></button>
+                </div>
+
+                <div class="my-4 w-100"><hr></div>
+
+                <ul class="addresses">
+                    <li>
+                        <button class="w-100 d-flex align-items-center justify-content-between gap-2 text-start btn btn-address">
+                            <div class="d-flex align-items-stretch gap-3">
+                                <div class="rounded overflow-hidden avatar">
+                                    <img src="https://lh5.googleusercontent.com/p/AF1QipNaPSCMcNUemdfewArvDkrLbeUqtPf4hFN1xQho=w80-h92-p-k-no" alt="">
+                                </div>
+                                <div class="d-flex flex-column justify-content-between">
+                                    <h5 class="address-title">Phúc Lang Viên</h5>
+                                    <div class="lh-1 d-flex align-items-center gap-2 address-rating">
+                                        <div class="rating-point">4.6</div>
+                                        <div class="star-icons">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-half"></i>
+                                        </div>
+                                        <div class="rating-amount">(84)</div>
+                                    </div>
+                                    <span>Thanh Hóa & Ninh Bình</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <input class="form-check-input" type="checkbox">
+                            </div>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="w-100 d-flex align-items-center justify-content-between gap-2 text-start btn btn-address">
+                            <div class="d-flex align-items-stretch gap-3">
+                                <div class="rounded overflow-hidden avatar">
+                                    <img src="https://lh5.googleusercontent.com/p/AF1QipNaPSCMcNUemdfewArvDkrLbeUqtPf4hFN1xQho=w80-h92-p-k-no" alt="">
+                                </div>
+                                <div class="d-flex flex-column justify-content-between">
+                                    <h5 class="address-title">Phúc Lang Viên</h5>
+                                    <div class="lh-1 d-flex align-items-center gap-2 address-rating">
+                                        <div class="rating-point">4.6</div>
+                                        <div class="star-icons">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-half"></i>
+                                        </div>
+                                        <div class="rating-amount">(84)</div>
+                                    </div>
+                                    <span>Thanh Hóa & Ninh Bình</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <input class="form-check-input" type="checkbox">
+                            </div>
+                        </button>
+                    </li><li>
+                    <button class="w-100 d-flex align-items-center justify-content-between gap-2 text-start btn btn-address">
+                        <div class="d-flex align-items-stretch gap-3">
+                            <div class="rounded overflow-hidden avatar">
+                                <img src="https://lh5.googleusercontent.com/p/AF1QipNaPSCMcNUemdfewArvDkrLbeUqtPf4hFN1xQho=w80-h92-p-k-no" alt="">
+                            </div>
+                            <div class="d-flex flex-column justify-content-between">
+                                <h5 class="address-title">Phúc Lang Viên</h5>
+                                <div class="lh-1 d-flex align-items-center gap-2 address-rating">
+                                    <div class="rating-point">4.6</div>
+                                    <div class="star-icons">
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-half"></i>
+                                    </div>
+                                    <div class="rating-amount">(84)</div>
+                                </div>
+                                <span>Thanh Hóa & Ninh Bình</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <input class="form-check-input" type="checkbox">
+                        </div>
+                    </button>
+                </li>
+                    <li>
+                        <button class="w-100 d-flex align-items-center justify-content-between gap-2 text-start btn btn-address">
+                            <div class="d-flex align-items-stretch gap-3">
+                                <div class="rounded overflow-hidden avatar">
+                                    <img src="https://lh5.googleusercontent.com/p/AF1QipNaPSCMcNUemdfewArvDkrLbeUqtPf4hFN1xQho=w80-h92-p-k-no" alt="">
+                                </div>
+                                <div class="d-flex flex-column justify-content-between">
+                                    <h5 class="address-title">Phúc Lang Viên</h5>
+                                    <div class="lh-1 d-flex align-items-center gap-2 address-rating">
+                                        <div class="rating-point">4.6</div>
+                                        <div class="star-icons">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-half"></i>
+                                        </div>
+                                        <div class="rating-amount">(84)</div>
+                                    </div>
+                                    <span>Thanh Hóa & Ninh Bình</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <input class="form-check-input" type="checkbox">
+                            </div>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="w-100 d-flex align-items-center justify-content-between gap-2 text-start btn btn-address">
+                            <div class="d-flex align-items-stretch gap-3">
+                                <div class="rounded overflow-hidden avatar">
+                                    <img src="https://lh5.googleusercontent.com/p/AF1QipNaPSCMcNUemdfewArvDkrLbeUqtPf4hFN1xQho=w80-h92-p-k-no" alt="">
+                                </div>
+                                <div class="d-flex flex-column justify-content-between">
+                                    <h5 class="address-title">Phúc Lang Viên</h5>
+                                    <div class="lh-1 d-flex align-items-center gap-2 address-rating">
+                                        <div class="rating-point">4.6</div>
+                                        <div class="star-icons">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-half"></i>
+                                        </div>
+                                        <div class="rating-amount">(84)</div>
+                                    </div>
+                                    <span>Thanh Hóa & Ninh Bình</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <input class="form-check-input" type="checkbox">
+                            </div>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="w-100 d-flex align-items-center justify-content-between gap-2 text-start btn btn-address">
+                            <div class="d-flex align-items-stretch gap-3">
+                                <div class="rounded overflow-hidden avatar">
+                                    <img src="https://lh5.googleusercontent.com/p/AF1QipNaPSCMcNUemdfewArvDkrLbeUqtPf4hFN1xQho=w80-h92-p-k-no" alt="">
+                                </div>
+                                <div class="d-flex flex-column justify-content-between">
+                                    <h5 class="address-title">Phúc Lang Viên</h5>
+                                    <div class="lh-1 d-flex align-items-center gap-2 address-rating">
+                                        <div class="rating-point">4.6</div>
+                                        <div class="star-icons">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-half"></i>
+                                        </div>
+                                        <div class="rating-amount">(84)</div>
+                                    </div>
+                                    <span>Thanh Hóa & Ninh Bình</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <input class="form-check-input" type="checkbox">
+                            </div>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="w-100 d-flex align-items-center justify-content-between gap-2 text-start btn btn-address">
+                            <div class="d-flex align-items-stretch gap-3">
+                                <div class="rounded overflow-hidden avatar">
+                                    <img src="https://lh5.googleusercontent.com/p/AF1QipNaPSCMcNUemdfewArvDkrLbeUqtPf4hFN1xQho=w80-h92-p-k-no" alt="">
+                                </div>
+                                <div class="d-flex flex-column justify-content-between">
+                                    <h5 class="address-title">Phúc Lang Viên</h5>
+                                    <div class="lh-1 d-flex align-items-center gap-2 address-rating">
+                                        <div class="rating-point">4.6</div>
+                                        <div class="star-icons">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-half"></i>
+                                        </div>
+                                        <div class="rating-amount">(84)</div>
+                                    </div>
+                                    <span>Thanh Hóa & Ninh Bình</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <input class="form-check-input" type="checkbox">
+                            </div>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="w-100 d-flex align-items-center justify-content-between gap-2 text-start btn btn-address">
+                            <div class="d-flex align-items-stretch gap-3">
+                                <div class="rounded overflow-hidden avatar">
+                                    <img src="https://lh5.googleusercontent.com/p/AF1QipNaPSCMcNUemdfewArvDkrLbeUqtPf4hFN1xQho=w80-h92-p-k-no" alt="">
+                                </div>
+                                <div class="d-flex flex-column justify-content-between">
+                                    <h5 class="address-title">Phúc Lang Viên</h5>
+                                    <div class="lh-1 d-flex align-items-center gap-2 address-rating">
+                                        <div class="rating-point">4.6</div>
+                                        <div class="star-icons">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-half"></i>
+                                        </div>
+                                        <div class="rating-amount">(84)</div>
+                                    </div>
+                                    <span>Thanh Hóa & Ninh Bình</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <input class="form-check-input" type="checkbox">
+                            </div>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="w-100 d-flex align-items-center justify-content-between gap-2 text-start btn btn-address">
+                            <div class="d-flex align-items-stretch gap-3">
+                                <div class="rounded overflow-hidden avatar">
+                                    <img src="https://lh5.googleusercontent.com/p/AF1QipNaPSCMcNUemdfewArvDkrLbeUqtPf4hFN1xQho=w80-h92-p-k-no" alt="">
+                                </div>
+                                <div class="d-flex flex-column justify-content-between">
+                                    <h5 class="address-title">Phúc Lang Viên</h5>
+                                    <div class="lh-1 d-flex align-items-center gap-2 address-rating">
+                                        <div class="rating-point">4.6</div>
+                                        <div class="star-icons">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-half"></i>
+                                        </div>
+                                        <div class="rating-amount">(84)</div>
+                                    </div>
+                                    <span>Thanh Hóa & Ninh Bình</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <input class="form-check-input" type="checkbox">
+                            </div>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="w-100 d-flex align-items-center justify-content-between gap-2 text-start btn btn-address">
+                            <div class="d-flex align-items-stretch gap-3">
+                                <div class="rounded overflow-hidden avatar">
+                                    <img src="https://lh5.googleusercontent.com/p/AF1QipNaPSCMcNUemdfewArvDkrLbeUqtPf4hFN1xQho=w80-h92-p-k-no" alt="">
+                                </div>
+                                <div class="d-flex flex-column justify-content-between">
+                                    <h5 class="address-title">Phúc Lang Viên</h5>
+                                    <div class="lh-1 d-flex align-items-center gap-2 address-rating">
+                                        <div class="rating-point">4.6</div>
+                                        <div class="star-icons">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-half"></i>
+                                        </div>
+                                        <div class="rating-amount">(84)</div>
+                                    </div>
+                                    <span>Thanh Hóa & Ninh Bình</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <input class="form-check-input" type="checkbox">
+                            </div>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="w-100 d-flex align-items-center justify-content-between gap-2 text-start btn btn-address">
+                            <div class="d-flex align-items-stretch gap-3">
+                                <div class="rounded overflow-hidden avatar">
+                                    <img src="https://lh5.googleusercontent.com/p/AF1QipNaPSCMcNUemdfewArvDkrLbeUqtPf4hFN1xQho=w80-h92-p-k-no" alt="">
+                                </div>
+                                <div class="d-flex flex-column justify-content-between">
+                                    <h5 class="address-title">Phúc Lang Viên</h5>
+                                    <div class="lh-1 d-flex align-items-center gap-2 address-rating">
+                                        <div class="rating-point">4.6</div>
+                                        <div class="star-icons">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-half"></i>
+                                        </div>
+                                        <div class="rating-amount">(84)</div>
+                                    </div>
+                                    <span>Thanh Hóa & Ninh Bình</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <input class="form-check-input" type="checkbox">
+                            </div>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="w-100 d-flex align-items-center justify-content-between gap-2 text-start btn btn-address">
+                            <div class="d-flex align-items-stretch gap-3">
+                                <div class="rounded overflow-hidden avatar">
+                                    <img src="https://lh5.googleusercontent.com/p/AF1QipNaPSCMcNUemdfewArvDkrLbeUqtPf4hFN1xQho=w80-h92-p-k-no" alt="">
+                                </div>
+                                <div class="d-flex flex-column justify-content-between">
+                                    <h5 class="address-title">Phúc Lang Viên</h5>
+                                    <div class="lh-1 d-flex align-items-center gap-2 address-rating">
+                                        <div class="rating-point">4.6</div>
+                                        <div class="star-icons">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-half"></i>
+                                        </div>
+                                        <div class="rating-amount">(84)</div>
+                                    </div>
+                                    <span>Thanh Hóa & Ninh Bình</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <input class="form-check-input" type="checkbox">
+                            </div>
+                        </button>
+                    </li>
+
+
+                </ul>
+
+            </div>
+        </div>
+    }
 </div>
+
+
+<ng-template cdkPortal>
+    <form class="p-3 bg-white rounded form-add-new-list" (submit)="onSaveList()" (keydown.enter)="onSaveList()">
+        <div class="mb-4 d-flex align-items-center justify-content-between fs-14px">
+            <h5 class="fw-500 fs-5">New List</h5>
+            <button class="p-0 btn fw-400 fs-14px" (click)="onCloseCreateListForm()">
+                <span [innerHTML]="IconPaths.CLOSE | safeSvg"></span>
+            </button>
+        </div>
+
+        <div class="mb-4">
+            <div class="mb-2 d-flex align-items-center justify-content-between c-text-gray">
+                <span>List name</span>
+                <span>{{newListName.length}}/40</span>
+            </div>
+            <input
+                type="text"
+                class="form-control"
+                name="list-name"
+                maxlength="40"
+                [(ngModel)]="newListName"
+            >
+        </div>
+        <div class="text-end">
+            <button class="py-2 text-white btn btn-create-list" [disabled]="!newListName">Create</button>
+        </div>
+    </form>
+</ng-template>
+
+<ng-template #contextMenuTemplate>
+    <div class="p-2 shadow-md bg-white rounded border context-menu">
+        <button class="px-3 py-1 d-block" (click)="onEditList()">Edit list</button>
+
+        @if (selectedList() && !selectedList()!.default) {
+            <button class="px-3 py-1 d-block" (click)="onRemoveList()">Remove list</button>
+        }
+    </div>
+</ng-template>

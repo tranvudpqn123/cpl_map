@@ -1,4 +1,7 @@
 <section class="position-relative map-page">
+    <div class="position-fixed merchant-map" id="map">
+    </div>
+
     <div class="position-absolute top-filter">
 
         <ul class="d-none align-items-center gap-1">
@@ -15,11 +18,13 @@
         <app-filter></app-filter>
 
 <!--        <app-slider-photos></app-slider-photos>-->
-<!--        <app-personal-groups></app-personal-groups>-->
 
+        @if (selectedGroupType()) {
+            <app-personal-groups></app-personal-groups>
+        }
 
         <app-sidebar></app-sidebar>
-
-
     </div>
+
+
 </section>

@@ -78,9 +78,6 @@
     }
 }
 
-.btn-pin {
-    transform: rotateZ(25deg);
-}
 .star-icons {
     color: rgb(255, 191, 0);
 }
@@ -136,4 +133,18 @@
         box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
         transform: translateY(-18%);
     }
+}
+
+.pin-icon {
+    transform: scale(1.375);
+    color: #555;
+}
+
+.list-address-icon {
+    transform: scale(.75);
+    color: #555;
+}
+
+.transform-scale-875 {
+    transform: scale(.875);
 }
