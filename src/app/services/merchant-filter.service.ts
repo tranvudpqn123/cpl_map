@@ -1,9 +1,11 @@
 import {inject, Injectable} from '@angular/core';
-import {BehaviorSubject, distinctUntilChanged, filter, map, of, shareReplay} from 'rxjs';
+import {BehaviorSubject, distinctUntilChanged, map, shareReplay} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {IResponseData} from '@models/response-data.interface';
 import {UtilsService} from '@services/utils.service';
-import data from './merchant.data.json';
+import {IconPaths} from '@constants/image-paths';
+import {StorageService} from '@services/storage.service';
+import {EStorageKey} from '@constants/store-key';
 
 @Injectable({
     providedIn: 'root'
@@ -11,6 +13,7 @@ import data from './merchant.data.json';
 export class MerchantFilterService {
     private readonly httpClient = inject(HttpClient);
     private readonly utilsService = inject(UtilsService);
+    private readonly storageService = inject(StorageService);
     private readonly addressData = new BehaviorSubject<{
         addressGroups: IAddressGroupData[],
         selectedAddress: IAddress | null,
@@ -20,6 +23,8 @@ export class MerchantFilterService {
         selectedMerchant: IMerchant | null,
         merchantGroups: IAddressGroupData[],
         isShowMerchantGroups: boolean,
+        selectedGroupType: EAddressGroupType | null,
+        listAddress: IListAddress[]
 
 
     }>(
@@ -31,8 +36,28 @@ export class MerchantFilterService {
             isShowMerchantGroups: false,
             selectedMerchant: null,
             merchantGroups: [],
+            selectedGroupType: null,
+            listAddress: [],
         }
     );
+
+    constructor() {
+        const listAddress = this.storageService.getItem<IListAddress[]>(EStorageKey.LIST_ADDRESS) ?? [
+            {
+                id: 'TRAVEL_PLANS', icon: IconPaths.TRAVEL_LUGGAGE_LG, title: 'Travel plans', default: true, merchants: []
+            },
+            {
+                id: 'WANT_TO_GO', icon: IconPaths.FLAG_LG, title: 'Want to go', default: true, merchants: []
+            },
+            {
+                id: 'STARRED_PLACES', icon: IconPaths.STAR_LG, title: 'Starred places', default: true, merchants: []
+            },
+            {
+                id: 'FAVORITES', icon: IconPaths.FAVOURITE_LG, title: 'Favourites', default: true, merchants: []
+            }
+        ];
+        this.addressData.next({...this.addressData.value, listAddress});
+    }
 
     get addressData$() {
         return this.addressData.asObservable();
@@ -62,6 +87,13 @@ export class MerchantFilterService {
                 return selectedAddressGroup ? selectedAddressGroup.addresses : [];
             }));
     }
+    get listAddress$() {
+        return this.addressData.asObservable().pipe(
+            map(data => data.listAddress),
+            distinctUntilChanged((prev, curr) => {
+                return prev === curr;
+            }));
+    }
     get allAddresses$() {
         return this.addressData.asObservable().pipe(
             distinctUntilChanged((prev, curr) => {
@@ -70,6 +102,13 @@ export class MerchantFilterService {
             map(data => {
                 const {addressGroups, selectedAddressGroupId} = data;
                 return addressGroups.flatMap(it => it.addresses);
+            }));
+    }
+    get selectedGroupType$() {
+        return this.addressData.asObservable().pipe(
+            map(data => data.selectedGroupType),
+            distinctUntilChanged((prev, curr) => {
+                return prev === curr;
             }));
     }
     get isShowListAddressGroups$() {
@@ -146,7 +185,7 @@ export class MerchantFilterService {
     }
     get selectedAddressGroupId$() {
         return this.addressData.asObservable().pipe(
-            distinctUntilChanged(),
+            distinctUntilChanged((prev, curr) => prev !== curr),
             map(data => data.selectedAddressGroupId));
     }
     updateAddressGroups(addressGroups: IAddressGroupData[]): void {
@@ -157,6 +196,7 @@ export class MerchantFilterService {
         const {addressGroups, selectedAddressGroupId} = this.addressData.value;
         if (
             addressGroupId === 'ALL' ||
+            addressGroupId === 'RECENT' ||
             (selectedAddressGroupId !== addressGroupId && addressGroups.find(it => it.id === addressGroupId))
         ) {
             this.addressData.next({
@@ -165,9 +205,105 @@ export class MerchantFilterService {
             });
         }
     }
+    updateSelectedGroupType(selectedGroupType: EAddressGroupType | null) {
+        this.addressData.next({
+            ...this.addressData.value,
+            selectedGroupType: selectedGroupType,
+        });
+    }
+
     updateSelectedMerchant(merchant: IMerchant | null) {
         this.addressData.next({...this.addressData.value, selectedMerchant: merchant});
     }
+
+    createOrUpdateListAddress(newListAddress: IListAddress) {
+        const {listAddress} = this.addressData.value;
+
+        if (newListAddress.id) {
+            const currentIndex = listAddress.findIndex(it => it.id === newListAddress.id);
+            if (currentIndex === -1) {
+                return;
+            }
+            listAddress[currentIndex] = newListAddress;
+        } else {
+            newListAddress.id = this.utilsService.generateGUID();
+            listAddress.push(newListAddress);
+        }
+
+        this.addressData.next({
+            ...this.addressData.value,
+            listAddress: [...listAddress],
+        });
+        this.storageService.setItem(JSON.stringify(listAddress), EStorageKey.LIST_ADDRESS);
+    }
+
+    removeListAddress(listAddressId: string) {
+        let {listAddress} = this.addressData.value;
+
+        const currentIndex = listAddress.findIndex(it => it.id === listAddressId);
+        if (currentIndex === -1) {
+            return;
+        }
+        listAddress.splice(currentIndex, 1);
+
+        this.addressData.next({
+            ...this.addressData.value,
+            listAddress: [...listAddress],
+        });
+        this.storageService.setItem(JSON.stringify(listAddress), EStorageKey.LIST_ADDRESS);
+    }
+
+    addToList(listAddressId: string, merchant: IMerchant) {
+        let {listAddress} = this.addressData.value;
+
+        const currentIndex = listAddress.findIndex(it => it.id === listAddressId);
+        if (currentIndex === -1) {
+            return;
+        }
+
+        const isExist = listAddress[currentIndex].merchants.find(it => it.id === merchant.id);
+        if (isExist) {
+            return;
+        }
+
+        listAddress.forEach(group => {
+            if (group.id !== 'FAVORITES' && group.id !== listAddressId) {
+                const index = group.merchants.findIndex(it => it.id === merchant.id);
+                if (index !== -1) {
+                    group.merchants.splice(index, 1);
+                }
+            }
+        })
+
+        listAddress[currentIndex].merchants.push(merchant);
+
+        this.addressData.next({
+            ...this.addressData.value,
+            listAddress: [...listAddress],
+        });
+        this.storageService.setItem(JSON.stringify(listAddress), EStorageKey.LIST_ADDRESS);
+    }
+
+    removeFromList(listAddressId: string, merchantId: string) {
+        let {listAddress} = this.addressData.value;
+
+        const currentListIndex = listAddress.findIndex(it => it.id === listAddressId);
+        if (currentListIndex === -1) {
+            return;
+        }
+
+        const merchantIndex = listAddress[currentListIndex].merchants.findIndex(it => it.id === merchantId);
+        if (merchantIndex !== -1) {
+            listAddress[currentListIndex].merchants.splice(merchantIndex, 1);
+            this.addressData.next({
+                ...this.addressData.value,
+                listAddress: [...listAddress],
+            });
+            this.storageService.setItem(JSON.stringify(listAddress), EStorageKey.LIST_ADDRESS);
+
+        }
+    }
+
 
     getMerchants(merchantFilterRequest: IMerchantFilterRequest) {
         const url = `https://apigw.cashplus.vn/api/app/customer/home/listPartnerV2?page_size=10`;
@@ -264,4 +400,18 @@ export interface IWorkingTime {
     endHour: string
     dateCreated: string
     dateUpdated: string
+}
+
+export enum EAddressGroupType {
+    'ALL' = 'ALL',
+    'SAVED' = 'SAVED',
+    'RECENT' = 'RECENT',
+}
+
+export interface IListAddress {
+    id: string;
+    icon: string;
+    title: string;
+    default: boolean;
+    merchants: IMerchant[];
 }

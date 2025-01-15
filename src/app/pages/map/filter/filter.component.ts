@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject, OnInit, signal, ViewChild} from '@angular/core';
 import {
+    EAddressGroupType,
     IAddress,
     IAddressGroup, IMerchant,
     IMerchantFilterRequest,
@@ -11,7 +12,7 @@ import {CdkPortal} from '@angular/cdk/portal';
 import {CdkConnectedOverlay, CdkOverlayOrigin} from '@angular/cdk/overlay';
 import {SafeSvgPipe} from '@pipes/safe-svg.pipe';
 import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
-import {debounceTime} from 'rxjs';
+import {debounceTime, skip, takeUntil} from 'rxjs';
 import {AutomaticallyUnsubscribe} from '@constants/automatically-unsubscribe';
 import {AddressDetailComponent} from '@pages/map/address-detail/address-detail.component';
 
@@ -41,7 +42,7 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit 
     private readonly merchantFilterService = inject(MerchantFilterService);
     private readonly fb = inject(FormBuilder);
     readonly searchFrom = this.fb.group({
-        keySearch: ['Coffee']
+        keySearch: ['']
     });
     addressGroups = signal<IAddressGroup[]>([]);
     addresses = signal<IAddress[]>([]);
@@ -49,12 +50,14 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit 
     allMerchants = signal<IMerchant[]>([]);
     selectedAddressGroupId = signal('');
     isShowListAddressGroups = signal(false);
-    isShowResultSearch = signal(true);
+    isShowResultSearch = signal(false);
 
     responseMerchants = signal<IMerchant[]>([]);
     options = signal<IAddressOption[]>([]);
     selectedMerchant = signal<IMerchant | null>(null);
     isShowMerchantGroups = signal<boolean>(false);
+    selectedGroupType = signal<EAddressGroupType | null>(null);
+
 
     ngOnInit() {
         this.merchantFilterService.selectedMerchant$
@@ -105,12 +108,19 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit 
             });
 
         this.searchFrom.valueChanges
-            .pipe(debounceTime(500))
+            .pipe(skip(1), debounceTime(500))
             .subscribe(() => {
                 this.isShowResultSearch.set(true)
                 this.getMerchants(this.allMerchants());
             });
-        this.getMerchants(this.allMerchants());
+
+        this.merchantFilterService.selectedGroupType$
+            .pipe(takeUntil(this.destroyFlag))
+            .subscribe(selectedGroupType => {
+                this.selectedGroupType.set(selectedGroupType);
+            });
+
+
 
     }
 
@@ -125,10 +135,13 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit 
             this.merchantFilterService.updateSelectedMerchant(selectedMerchant);
         }
         this.isShowResultSearch.set(false);
+        this.merchantFilterService.updateSelectedGroupType(null);
     }
 
     onCloseAddressDetail() {
         this.merchantFilterService.updateSelectedMerchant(null);
+        this.merchantFilterService.updateSelectedGroupType(null);
+
     }
 
     private getMerchants(recentMerchants: IMerchant[]) {

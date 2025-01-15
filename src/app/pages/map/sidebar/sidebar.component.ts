@@ -1,32 +1,56 @@
 import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
-import {IAddressGroup, MerchantFilterService} from '@services/merchant-filter.service';
+import {EAddressGroupType, IAddressGroup, MerchantFilterService} from '@services/merchant-filter.service';
+import {takeUntil} from 'rxjs';
+import {AutomaticallyUnsubscribe} from '@constants/automatically-unsubscribe';
+import {IconPaths} from '@constants/image-paths';
+import {SafeSvgPipe} from '@pipes/safe-svg.pipe';
 
 @Component({
     selector: 'app-sidebar',
     standalone: true,
-    imports: [],
+    imports: [
+        SafeSvgPipe
+    ],
     templateUrl: './sidebar.component.html',
     styleUrl: './sidebar.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent extends AutomaticallyUnsubscribe implements OnInit {
+    protected readonly EAddressGroupType = EAddressGroupType;
+    protected readonly IconPaths = IconPaths;
     private readonly merchantFilterService = inject(MerchantFilterService);
     addressGroups = signal<IAddressGroup[]>([]);
     selectedAddressGroupId = signal('');
+    selectedGroupType = signal<EAddressGroupType | null>(null);
 
     ngOnInit() {
         this.merchantFilterService.addressGroups$
+            .pipe(takeUntil(this.destroyFlag))
             .subscribe((addressGroups) => {
                 this.addressGroups.set(addressGroups);
             });
 
         this.merchantFilterService.selectedAddressGroupId$
+            .pipe(takeUntil(this.destroyFlag))
             .subscribe((selectedAddressGroupId) => {
                 this.selectedAddressGroupId.set(selectedAddressGroupId);
+            });
+
+        this.merchantFilterService.selectedGroupType$
+            .pipe(takeUntil(this.destroyFlag))
+            .subscribe(selectedGroupType => {
+                this.selectedGroupType.set(selectedGroupType);
             });
     }
 
     onSelectAddressGroup(addressGroupId: string) {
         this.merchantFilterService.updateSelectedAddressGroup(addressGroupId);
     }
+
+    onShowCustomerGroup(addressGroupType: EAddressGroupType) {
+
+        this.merchantFilterService.updateSelectedGroupType(addressGroupType);
+    }
+
+
 }

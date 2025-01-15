@@ -1,7 +1,7 @@
 import {AfterViewInit, ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
 import {GoogleMapsModule} from '@angular/google-maps';
 // Services
-import {IMerchant, MerchantFilterService} from '@services/merchant-filter.service';
+import {EAddressGroupType, IMerchant, MerchantFilterService} from '@services/merchant-filter.service';
 // Components
 import {SidebarComponent} from '@pages/map/sidebar/sidebar.component';
 import {SliderPhotosComponent} from '@pages/map/slider-photos/slider-photos.component';
@@ -31,6 +31,7 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit, Af
     private readonly merchantFilterService = inject(MerchantFilterService);
     selectedMerchant = signal<IMerchant | null>(null);
     isShowMerchantGroups = signal<boolean>(false);
+    selectedGroupType = signal<EAddressGroupType | null>(null);
     map: google.maps.Map | null = null;
     markers: any[] = [];
 
@@ -46,6 +47,11 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit, Af
         this.merchantFilterService.isShowMerchantGroups$
             .subscribe(isShowMerchantGroups => {
                 this.isShowMerchantGroups.set(isShowMerchantGroups);
+            });
+
+        this.merchantFilterService.selectedGroupType$
+            .subscribe(selectedGroupType => {
+                this.selectedGroupType.set(selectedGroupType);
             });
     }
 
