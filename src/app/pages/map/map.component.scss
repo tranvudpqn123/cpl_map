@@ -8,7 +8,7 @@
     min-width: 500px;
     height: 50px;
     top: 20px;
-    left: 27vw;
+    left: 27%;
 
     .btn-service-type {
         height: 32px;
@@ -19,6 +19,11 @@
 
         &:hover {
             background-color: rgb(243, 243, 243);
+        }
+
+        img {
+            filter: grayscale(1) brightness(0);
+            width: 12px
         }
     }
 }
@@ -40,3 +45,8 @@
     top: 50px;
 }
 
+@media (max-width: 1600px) {
+    .top-filter {
+        padding-left: calc(150px);
+    }
+}

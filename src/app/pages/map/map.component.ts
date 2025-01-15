@@ -9,6 +9,7 @@ import {IMerchant} from '@models/merchant.interface';
 import {NgForOf, NgIf} from '@angular/common';
 import {CategoryService} from '@services/category.service';
 import {ICategory} from '@models/category.interface';
+import {ClickOutsideDirective} from 'directives/click-outside.directive';
 
 @Component({
     selector: 'app-map',
@@ -18,6 +19,7 @@ import {ICategory} from '@models/category.interface';
         FilterComponent,
         NgForOf,
         NgIf,
+        ClickOutsideDirective,
     ],
     templateUrl: './map.component.html',
     styleUrl: './map.component.scss',
@@ -69,5 +71,11 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit {
         this.serviceTypeSelected = type;
         this.listSubTypeService.set([]);
     }
+
+    closeModal() {
+        this.listSubTypeService.set([]);
+        this.selectedServiceId.set(null);
+    }
+
 }
 

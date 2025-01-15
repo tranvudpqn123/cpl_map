@@ -3,11 +3,13 @@
     </div>
 
     <div class="position-absolute top-filter">
-        <ul class="d-flex align-items-center gap-1">
+        <ul class="d-flex flex-wrap align-items-center gap-1">
             <li *ngFor="let item of listServiceTypeMerchant()" class="list-group">
                 <button class="px-3 mx-1 btn-service-type fw-medium d-flex align-items-center"
-                        (click)="toggleSubServiceList(item.id); valueService(item.name)">
-                    {{ item.name }}
+                        (mouseover)="toggleSubServiceList(item.id)"
+                (click)="valueService(item.name)">
+                    <img [src]="item.icons" alt="{{item.name}}">
+                    <span class="mx-2">{{ item.name }}</span>
                     <span *ngIf="item.id === selectedServiceId()"
                           class="material-symbols-outlined">
                         arrow_drop_down
@@ -15,18 +17,18 @@
                 </button>
                 <ul *ngIf="item.id === selectedServiceId()"
                     class="list-unstyled list-group position-absolute"
-                    [style.top]="'100%'">
+                    [style.top]="'100%'"
+                    appClickOutside (clickOutside)="closeModal()">
                     <li class="p-1 list-group-item" *ngFor="let subService of listSubTypeService()">
                         <div class="px-3 d-flex align-items-center"
                              role="button"
-                             (click)="valueService(subService.name)">
+                             (click)="valueService(subService.name); closeModal()">
                             {{ subService.name }}
                         </div>
                     </li>
                 </ul>
             </li>
         </ul>
-
 
     </div>
     <div class="position-absolute bg-white left-filter">
