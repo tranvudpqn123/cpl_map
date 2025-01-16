@@ -51,4 +51,12 @@ export class UtilsService {
         return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     }
 
+    generateGUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (char) {
+            const random = Math.random() * 16 | 0; // Generate a random number between 0 and 15
+            const value = char === 'x' ? random : (random & 0x3 | 0x8); // Use specific bits for 'y'
+            return value.toString(16); // Convert to hexadecimal
+        });
+    }
+
 }

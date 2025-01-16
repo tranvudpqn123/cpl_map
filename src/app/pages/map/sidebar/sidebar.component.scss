@@ -99,6 +99,7 @@
 
     &.selected {
         button {
+            color: rgb(var(--c-primary));
             .thumbnail {
                 border: var(--thumbnail-border-width) solid rgb(var(--c-primary));
             }

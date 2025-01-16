@@ -36,6 +36,10 @@
         <!--        <app-slider-photos></app-slider-photos>-->
         <!--        <app-personal-groups></app-personal-groups>-->
 
+        @if (selectedGroupType()) {
+            <app-personal-groups></app-personal-groups>
+        }
+
         <app-sidebar></app-sidebar>
     </div>
 

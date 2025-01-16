@@ -5,9 +5,12 @@
                 <svg class="d-inline-block"  xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="30px" fill="currentColor"><path d="M160-269.23v-33.85h640v33.85H160Zm0-193.85v-33.84h640v33.84H160Zm0-193.84v-33.85h640v33.85H160Z"/></svg>
             </button>
         </li>
-        <li class="address-group">
-            <button class="btn">
-                <svg class="d-inline-block" xmlns="http://www.w3.org/2000/svg" height="36px" viewBox="0 -960 960 960" width="40px" fill="currentColor"><path d="m598.05-453.03 65.03 62.11v33.84H496.92v200.16L480-140l-16.92-16.92v-200.16H296.92v-33.84L360-453.03v-313.12h-43.08V-800h324.21v33.85h-43.08v313.12Zm-254.26 62.11h270.47l-50.05-48.93v-326.3H393.85v326.3l-50.06 48.93Zm135.24 0Z"/></svg>Saved</button>
+        <li class="address-group" [class.selected]="selectedGroupType() === EAddressGroupType.SAVED">
+            <button
+                class="btn"
+                (click)="onShowCustomerGroup(EAddressGroupType.SAVED)"
+            >
+                <span [innerHTML]="IconPaths.PIN_XL | safeSvg"></span>Saved</button>
         </li>
         <li class="address-group">
             <button class="btn">
@@ -17,6 +20,26 @@
     </ul>
 
     <ul class="position-relative px-1 pt-1 text-center d-flex flex-column align-items-center justify-content-start overflow-auto address-groups">
+
+        @if (selectedListAddress()) {
+            <li
+                class="address-group"
+                [class.selected]="selectedAddressGroupId() === selectedListAddress()!.id"
+            >
+                <button
+                    class="mx-auto p-0 btn"
+                    (click)="onSelectAddressGroup(selectedListAddress()!.id)"
+                >
+                    <div class="mx-auto mb-1 position-relative thumbnail-group" >
+                        <div class="d-inline-flex align-items-center justify-content-center thumbnail" [innerHTML]="(selectedListAddress()?.icon || '') | safeSvg">
+                        </div>
+
+                    </div>
+                    <span class="address-group-title">{{selectedListAddress()?.title}}</span>
+                </button>
+            </li>
+        }
+
         @for(addressGroup of addressGroups(); track $index) {
             <li
                 class="address-group"

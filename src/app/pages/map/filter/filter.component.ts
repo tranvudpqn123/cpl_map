@@ -8,6 +8,7 @@ import {
     ViewChild
 } from '@angular/core';
 import {
+    EAddressGroupType,
     MerchantFilterService
 } from '@services/merchant-filter.service';
 import {CommonModule, DecimalPipe} from '@angular/common';
@@ -16,7 +17,7 @@ import {CdkPortal} from '@angular/cdk/portal';
 import {CdkConnectedOverlay, CdkOverlayOrigin} from '@angular/cdk/overlay';
 import {SafeSvgPipe} from '@pipes/safe-svg.pipe';
 import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
-import {debounceTime} from 'rxjs';
+import {debounceTime, skip, takeUntil} from 'rxjs';
 import {AutomaticallyUnsubscribe} from '@constants/automatically-unsubscribe';
 import {AddressDetailComponent} from '@pages/map/address-detail/address-detail.component';
 import {IAddress, IAddressGroup, IAddressGroupData} from '@models/address-merchant.interface';
@@ -63,12 +64,14 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit,
     allMerchants = signal<IMerchant[]>([]);
     selectedAddressGroupId = signal('');
     isShowListAddressGroups = signal(false);
-    isShowResultSearch = signal(true);
+    isShowResultSearch = signal(false);
 
     responseMerchants = signal<IMerchant[]>([]);
     options = signal<IAddressOption[]>([]);
     selectedMerchant = signal<IMerchant | null>(null);
     isShowMerchantGroups = signal<boolean>(false);
+    selectedGroupType = signal<EAddressGroupType | null>(null);
+
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['keyS'] && changes['keyS'].currentValue !== changes['keyS'].previousValue) {
@@ -125,12 +128,19 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit,
             });
 
         this.searchFrom.valueChanges
-            .pipe(debounceTime(500))
+            .pipe(skip(1), debounceTime(500))
             .subscribe(() => {
                 this.isShowResultSearch.set(true)
                 this.getMerchants(this.allMerchants());
             });
-        this.getMerchants(this.allMerchants());
+
+        this.merchantFilterService.selectedGroupType$
+            .pipe(takeUntil(this.destroyFlag))
+            .subscribe(selectedGroupType => {
+                this.selectedGroupType.set(selectedGroupType);
+            });
+
+
 
     }
 
@@ -146,10 +156,13 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit,
             this.saveInfoMerchantSeen(selectedMerchant);
         }
         this.isShowResultSearch.set(false);
+        this.merchantFilterService.updateSelectedGroupType(null);
     }
 
     onCloseAddressDetail() {
         this.merchantFilterService.updateSelectedMerchant(null);
+        this.merchantFilterService.updateSelectedGroupType(null);
+
     }
 
 
