@@ -217,7 +217,6 @@ export class MerchantFilterService {
     updateSelectedGroupType(selectedGroupType: EAddressGroupType | null) {
         this.addressData.next({
             ...this.addressData.value,
-            selectedMerchant: null,
             selectedGroupType: selectedGroupType,
         });
     }

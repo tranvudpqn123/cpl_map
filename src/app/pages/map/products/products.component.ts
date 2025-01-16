@@ -1,15 +1,24 @@
-import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    inject, Input,
+    OnInit,
+    signal
+} from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {IProduct, IProductGroup} from '@models/product.interface';
+import {DotSeparatorPipe} from '@pipes/dot-separator.pipe';
+import {ProductsService} from '@services/products.service';
 
 @Component({
     selector: 'app-products',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, DotSeparatorPipe],
     templateUrl: './products.component.html',
     styleUrl: './products.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProductsComponent {
+export class ProductsComponent implements OnInit {
     originalImages = signal([
         'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/472445WTa/mat-tien-b0010979.jpg',
         'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455210yCJcAm/cmv-welcom-center_interior-12.jpg',
@@ -31,182 +40,33 @@ export class ProductsComponent {
         'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
     ]);
 
-    productGroups = signal<IProductGroup[]>([
-        {
-            id: '1', title: 'Combo bá cháy bò chét',
-            products: [
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                }
-            ]
-        },
-        {
-            id: '1', title: 'Combo bá cháy bò chét',
-            products: [
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                }
-            ]
-        },
-        {
-            id: '1', title: 'Combo bá cháy bò chét',
-            products: [
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                }
-            ]
-        },
-        {
-            id: '1', title: 'Combo bá cháy bò chét',
-            products: [
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                },
-                {
-                    id: '1', title: 'Gà chiên mắm',
-                    avatar: 'https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://gcs.tripi.vn/hms_prod/photo/img/455211AtUwtE/cmv-kid-playground-9.jpg'
-                }
-            ]
-        }
-    ]);
+    listProduct = signal<IProduct[]>([]);
+    listGroupsProduct = signal<IProductGroup[]>([]);
+    showFullImage = signal('')
+    selectedImage = signal<IProduct | null>(null);
+    private readonly productsService = inject(ProductsService);
+    @Input() merchantId!: string | undefined;
+
+    ngOnInit(): void {
+        const id = this.merchantId
+        this.productsService.getProduct(id).subscribe(res => {
+            const {data, code} = res;
+            if(code === '200' && data){
+                this.listProduct.set(data.data);
+            }
+        })
+        this.productsService.getListProductType(id).subscribe(res => {
+            const {data, code} = res;
+            if(code === '200' && data){
+                this.listGroupsProduct.set(data);
+                console.log(this.listGroupsProduct());
+            }
+        })
+    }
+
+
+    showDetailImage(data: IProduct): void {
+        this.selectedImage.set(data);
+    }
 }
 
-export interface IProductGroup {
-    id: string;
-    title: string;
-    products: IProduct[];
-}
-
-export interface IProduct {
-    id: string;
-    avatar: string;
-    title: string;
-}

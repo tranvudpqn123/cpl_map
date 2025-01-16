@@ -16,7 +16,7 @@
         bottom: 0;
         right: 0;
 
-        background-image: linear-gradient(0deg, rgba(0,0,0,.5) 10%, rgba(0,0,0,0) 145%);
+        background-image: linear-gradient(0deg, rgba(0, 0, 0, .5) 10%, rgba(0, 0, 0, 0) 145%);
     }
 }
 
@@ -27,3 +27,44 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
 }
+
+.full-product {
+    position: fixed;
+    top: 0;
+    left: calc(30dvw - 55px);
+    width: calc(70dvw + 67px);
+    background: aqua;
+    height: 100dvh;
+
+    .image-full img {
+        height: 100dvh;
+    }
+
+    .button-zoom {
+        bottom: 0;
+        right: 5%;
+    }
+
+}
+
+.info-image {
+    top: 10px;
+    left: 10px;
+}
+
+.nav-link.active {
+    background-color: rgb(var(--c-primary));
+    color: white;
+}
+
+.nav-link {
+    background-color: transparent;
+    color: #000;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.nav-link:hover {
+    background-color: rgb(var(--c-primary), 0.4)
+}
+
+
