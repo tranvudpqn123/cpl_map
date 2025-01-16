@@ -1,43 +1,50 @@
 import {AfterViewInit, ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
-import {GoogleMapsModule} from '@angular/google-maps';
 // Services
-import {EAddressGroupType} from '@services/merchant-filter.service';
-import { MerchantFilterService} from '@services/merchant-filter.service';
+import {CategoryService} from '@services/category.service';
+import {EAddressGroupType, MerchantFilterService} from '@services/merchant-filter.service';
+
 // Components
 import {SidebarComponent} from '@pages/map/sidebar/sidebar.component';
-import {SliderPhotosComponent} from '@pages/map/slider-photos/slider-photos.component';
 import {FilterComponent} from '@pages/map/filter/filter.component';
 import {PersonalGroupsComponent} from '@pages/map/personal-groups/personal-groups.component';
-import {AddressDetailComponent} from '@pages/map/address-detail/address-detail.component';
+
 import {AutomaticallyUnsubscribe} from '@constants/automatically-unsubscribe';
-
-//Interface
 import {IMerchant} from '@models/merchant.interface';
+import {NgForOf, NgIf} from '@angular/common';
+import {ICategory} from '@models/category.interface';
+import {ClickOutsideDirective} from 'directives/click-outside.directive';
+import {GoogleMapsModule} from '@angular/google-maps';
 
-import {MapAdvancedMarker} from '@angular/google-maps';
 
 @Component({
     selector: 'app-map',
     standalone: true,
     imports: [
         SidebarComponent,
-        SliderPhotosComponent,
         FilterComponent,
         PersonalGroupsComponent,
-        AddressDetailComponent,
-        GoogleMapsModule
+        GoogleMapsModule,
+        NgForOf,
+        NgIf,
+        ClickOutsideDirective
     ],
     templateUrl: './map.component.html',
     styleUrl: './map.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MapComponent extends AutomaticallyUnsubscribe implements OnInit, AfterViewInit{
+export class MapComponent extends AutomaticallyUnsubscribe implements OnInit{
     private readonly merchantFilterService = inject(MerchantFilterService);
+    private readonly categoryService = inject(CategoryService);
     selectedMerchant = signal<IMerchant | null>(null);
     isShowMerchantGroups = signal<boolean>(false);
     selectedGroupType = signal<EAddressGroupType | null>(null);
     map: google.maps.Map | null = null;
     markers: any[] = [];
+
+    listServiceTypeMerchant = signal<ICategory[]>([]);
+    listSubTypeService = signal<ICategory[] >([]);
+    selectedServiceId = signal<string | null>(null);
+    serviceTypeSelected = ''
 
     ngOnInit() {
         this.merchantFilterService.selectedMerchant$
@@ -53,36 +60,33 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit, Af
                 this.isShowMerchantGroups.set(isShowMerchantGroups);
             });
 
+
+
         this.merchantFilterService.selectedGroupType$
             .subscribe(selectedGroupType => {
                 this.selectedGroupType.set(selectedGroupType);
             });
-    }
+        this.getListServiceType();
+    };
 
-    ngAfterViewInit() {
-        window.setTimeout(() => {
-            this.initMap()
-        }, 300);
-    }
 
-    private async initMap() {
-        const { AdvancedMarkerElement } = await google.maps.importLibrary("marker") as google.maps.MarkerLibrary;
-
-        this.map = new google.maps.Map(
-            document.getElementById("map") as HTMLElement,
-            {
-                center: { lat: 21.02930786179391, lng: 105.83593350505639 },
-                zoom: 15,
-                mapId: '4504f8b37365c3d0',
+    getListServiceType()   {
+        this.categoryService.getListServiceType().subscribe(res => {
+            const { data, code } = res;
+            if (code === '200') {
+                this.listServiceTypeMerchant.set(data);
             }
-        );
+        })
+    }
 
-
-        this.markers.push(new AdvancedMarkerElement({
-            map: this.map,
-            position: { lat: 21.02930786179391, lng: 105.83593350505639 },
-        }));
-
+    toggleSubServiceList(serviceId: string) {
+        this.selectedServiceId.set(serviceId);
+        this.categoryService.getListSubServiceType(serviceId.toString()).subscribe(res => {
+            const { data, code } = res;
+            if (code === '200') {
+                this.listSubTypeService.set(data);
+            }
+        })
     }
 
     private async setMarkers(map: google.maps.Map, merchants: IMerchant[]) {
@@ -106,7 +110,7 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit, Af
 
         this.fitMapToBounds(this.markers, map);
 
-    }
+}
 
     private fitMapToBounds(markers: any[], map: google.maps.Map) {
         if (markers.length === 0) return;
@@ -121,5 +125,14 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit, Af
 
         // Fit the map to the calculated bounds
         map.panToBounds(bounds, 50);
+    }
+    valueService(type: string) {
+        this.serviceTypeSelected = type;
+        this.listSubTypeService.set([]);
+    }
+
+    closeModal() {
+        this.listSubTypeService.set([]);
+        this.selectedServiceId.set(null);
     }
 }

@@ -23,7 +23,11 @@
             >
                 <button
                     class="p-0 d-flex align-items-center justify-content-center rounded-circle btn btn-go-back">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M396.15-267.69 183.85-480l212.3-212.31 28.31 28.77L260.92-500h515.23v40H260.92l163.54 163.54-28.31 28.77Z"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                         fill="currentColor">
+                        <path
+                            d="M396.15-267.69 183.85-480l212.3-212.31 28.31 28.77L260.92-500h515.23v40H260.92l163.54 163.54-28.31 28.77Z"/>
+                    </svg>
                 </button>
 
                 <h5 class="fs-4">{{ selectedMerchant()!.name }}</h5>
@@ -34,6 +38,11 @@
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
                          fill="#5f6368">
+                        <path
+                            d="M256-213.85 213.85-256l224-224-224-224L256-746.15l224 224 224-224L746.15-704l-224 224 224 224L704-213.85l-224-224-224 224Z"/>
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                         fill="currentColor">
                         <path
                             d="M256-213.85 213.85-256l224-224-224-224L256-746.15l224 224 224-224L746.15-704l-224 224 224 224L704-213.85l-224-224-224 224Z"/>
                     </svg>
@@ -70,12 +79,19 @@
                                 <path
                                     d="m598.05-453.03 65.03 62.11v33.84H496.92v200.16L480-140l-16.92-16.92v-200.16H296.92v-33.84L360-453.03v-313.12h-43.08V-800h324.21v33.85h-43.08v313.12Zm-254.26 62.11h270.47l-50.05-48.93v-326.3H393.85v326.3l-50.06 48.93Zm135.24 0Z"></path>
                             </svg>
+                            <h5 class="mb-2 fs-4">{{ selectedMerchant()!.name }}</h5>
+                            <button
+                                class="c-text-gray btn-add-to-favourite"
+                                [innerHTML]="(mapMerchantsFavourite()!.get(selectedMerchant()!.id) ? IconPaths.FAVOURITE_FILL_LG : IconPaths.FAVOURITE_LG) | safeSvg"
+                                (click)="onAddOrRemoveToFavorite()"
+                            >
+                            </button>
                         </button>
                     </div>
                     <div class="d-flex align-items-center gap-2 c-text-gray">
                         <span>{{ selectedMerchant()!.rating }}</span>
                         <div [appStarRating]="selectedMerchant()!.rating" class="star-icons"></div>
-                        <span>({{selectedMerchant()!.totalRating}})</span>
+                        <span>({{ selectedMerchant()!.totalRating }})</span>
                     </div>
                     <div class="d-flex mt-1">
                         <p class="c-text-gray">Loại dịch vụ</p>
@@ -141,7 +157,7 @@
                                     } @else {
                                         <div class="text-warning">Sắp đóng cửa sau ⋅ {{ timeUntilClose }}</div>
                                     }
-                                        <div> ⋅ Mở cửa lại vào {{ selectedMerchant()!.workingTimes[0].startHour }}</div>
+                                       <div> ⋅ Mở cửa lại vào {{ selectedMerchant()!.workingTimes[0].startHour }}</div>
                                     </div>
                                 </span>
                             </div>
@@ -182,7 +198,7 @@
                             class="d-flex align-items-center gap-2"
                             (click)="showListOptions.set(true)"
                         >{{ savedListAddress() ? savedListAddress()?.title : 'Add to list' }}
-                            @if(savedListAddress()) {
+                            @if (savedListAddress()) {
                                 <span [innerHTML]="IconPaths.CHEVRON_DOWN | safeSvg"></span>
                             }
                         </button>
@@ -194,11 +210,13 @@
                             (overlayOutsideClick)="showListOptions.set(false)"
                         >
                             <div class="p-2 shadow-md bg-white rounded border">
-                                @for(item of listAddress(); track item.id) {
+                                @for (item of listAddress(); track item.id) {
                                     <button
                                         class="pe-2 ps-1 py-1 d-flex align-items-center gap-2"
                                         (click)="onAddToList(item.id)"
-                                    ><span class="list-address-icon" [innerHTML]="item.icon | safeSvg"></span>{{item.title}}</button>
+                                    ><span class="list-address-icon"
+                                           [innerHTML]="item.icon | safeSvg"></span>{{ item.title }}
+                                    </button>
                                 }
                             </div>
                         </ng-template>
@@ -241,7 +259,6 @@
         </div>
 
     </section>
-
 
 
 }

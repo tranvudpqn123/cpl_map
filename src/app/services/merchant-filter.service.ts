@@ -46,7 +46,6 @@ export class MerchantFilterService {
             selectedListAddress: null,
         }
     );
-    private  readonly  API_URL = environment.apiUrl;
 
     constructor() {
         const listAddress = this.storageService.getItem<IListAddress[]>(EStorageKey.LIST_ADDRESS) ?? [
@@ -65,6 +64,7 @@ export class MerchantFilterService {
         ];
         this.addressData.next({...this.addressData.value, listAddress});
     }
+    private  readonly  API_URL = environment.apiUrl;
 
     get addressData$() {
         return this.addressData.asObservable();
@@ -337,6 +337,10 @@ export class MerchantFilterService {
             .pipe(map(res =>
                 this.utilsService.convertKeysToCamelCase<IResponseData<IMerchant>>(res)));
     }
+
+
+
+
 }
 
 

@@ -6,6 +6,7 @@ import {
     input,
     OnInit,
     output,
+    Output,
     signal
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
@@ -19,13 +20,15 @@ import {CdkConnectedOverlay, CdkOverlayOrigin} from '@angular/cdk/overlay';
 import {AddressReviewsComponent} from '@pages/map/address-reviews/address-reviews.component';
 import {ProductsComponent} from '@pages/map/products/products.component';
 // Services
+import {IListAddress, MerchantFilterService} from '@services/merchant-filter.service';
 // Directives
 import {StarRatingDirective} from 'directives/star-rating.directive';
 import {ScrollDirectionDirective} from 'directives/scroll-directive.directive';
 import {takeUntil} from 'rxjs';
 
-import {IListAddress, MerchantFilterService} from '@services/merchant-filter.service';
 import {EAddressDetailTab} from '@models/address-merchant.interface';
+//Model
+
 import {IMerchant} from '@models/merchant.interface';
 
 @Component({
@@ -41,7 +44,8 @@ import {IMerchant} from '@models/merchant.interface';
         ProductsComponent,
         SafeSvgPipe,
         CdkOverlayOrigin,
-        CdkConnectedOverlay
+        CdkConnectedOverlay,
+        ProductsComponent,
     ],
     templateUrl: './address-detail.component.html',
     styleUrl: './address-detail.component.scss',
@@ -49,13 +53,13 @@ import {IMerchant} from '@models/merchant.interface';
 })
 export class AddressDetailComponent extends AutomaticallyUnsubscribe implements AfterViewInit, OnInit{
     protected readonly IconPaths = IconPaths;
+    protected readonly EAddressDetailTab = EAddressDetailTab;
     private readonly merchantFilterService = inject(MerchantFilterService);
     changeTab = output<EAddressDetailTab>()
     isShowMerchantGroups = input();
     selectedMerchant = input<IMerchant | null>();
-    timeUntilClose: string | null = null;
-    readonly EAddressDetailTab = EAddressDetailTab;
 
+    timeUntilClose: string | null = null;
     imageGroups = signal([
         'https://s3.ap-southeast-1.amazonaws.com/mytourcdn.com/resources/pictures/hotels/17/zm0h0Jr-Ti2eyZbrH5VM3A-77.jpeg',
         'https://s3.ap-southeast-1.amazonaws.com/mytourcdn.com/resources/pictures/hotels/17/kIAtLS5rRK6w6g1wdGuaBg-64.jpeg',
