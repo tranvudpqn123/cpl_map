@@ -126,4 +126,13 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit{
         // Fit the map to the calculated bounds
         map.panToBounds(bounds, 50);
     }
+    valueService(type: string) {
+        this.serviceTypeSelected = type;
+        this.listSubTypeService.set([]);
+    }
+
+    closeModal() {
+        this.listSubTypeService.set([]);
+        this.selectedServiceId.set(null);
+    }
 }
