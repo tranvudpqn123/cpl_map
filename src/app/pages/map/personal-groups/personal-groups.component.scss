@@ -2,7 +2,6 @@
 .search-box-wrapper {
     top: 0;
     left: 70px;
-    //padding: 10px 0px 0 20px;
     padding-top: 50px;
     width: 450px;
     color: rgb(var(--c-gray));
@@ -73,8 +72,12 @@
         }
 
         .address-title {
-            font-size: 18px;
+            font-size: 14px;
             color: rgb(var(--c-text-primary));
+        }
+
+        .address-full {
+            font-size: 12px;
         }
 
         .rating-point, .rating-amount {
@@ -83,9 +86,9 @@
 
         .btn-remove-from-list {
             display: none;
-            padding: 6px;
-            width: 34px;
-            height: 34px;
+            padding: 4px;
+            width: 28px;
+            height: 28px;
             top: 0;
             left: 0;
             transform: translate(-50%, -50%);

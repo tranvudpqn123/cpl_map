@@ -18,6 +18,7 @@ export const IconPaths = {
     CLOSE: `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M256-213.85 213.85-256l224-224-224-224L256-746.15l224 224 224-224L746.15-704l-224 224 224 224L704-213.85l-224-224-224 224Z"/></svg>`,
     PIN_XL: `<svg class="d-inline-block" xmlns="http://www.w3.org/2000/svg" height="36px" viewBox="0 -960 960 960" width="40px" fill="currentColor"><path d="m598.05-453.03 65.03 62.11v33.84H496.92v200.16L480-140l-16.92-16.92v-200.16H296.92v-33.84L360-453.03v-313.12h-43.08V-800h324.21v33.85h-43.08v313.12Zm-254.26 62.11h270.47l-50.05-48.93v-326.3H393.85v326.3l-50.06 48.93Zm135.24 0Z"/></svg>`,
     PIN: `<svg class="d-inline-block" xmlns="http://www.w3.org/2000/svg" height="36px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="m598.05-453.03 65.03 62.11v33.84H496.92v200.16L480-140l-16.92-16.92v-200.16H296.92v-33.84L360-453.03v-313.12h-43.08V-800h324.21v33.85h-43.08v313.12Zm-254.26 62.11h270.47l-50.05-48.93v-326.3H393.85v326.3l-50.06 48.93Zm135.24 0Z"/></svg>`,
-    CHEVRON_DOWN: `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M480-357.85 253.85-584 296-626.15l184 184 184-184L706.15-584 480-357.85Z"/></svg>`
+    CHEVRON_DOWN: `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M480-357.85 253.85-584 296-626.15l184 184 184-184L706.15-584 480-357.85Z"/></svg>`,
+
 
 };

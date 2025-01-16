@@ -153,4 +153,8 @@ export class AddressDetailComponent extends AutomaticallyUnsubscribe implements 
             this.onAddToList('FAVORITES');
         }
     }
+
+    onCloseSlideMerchantDetail() {
+        this.merchantFilterService.updateSelectedMerchant(null);
+    }
 }

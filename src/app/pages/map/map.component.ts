@@ -1,13 +1,19 @@
-import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit, signal, ViewChild} from '@angular/core';
 // Services
-import {EAddressGroupType, IListAddress, MerchantFilterService} from '@services/merchant-filter.service';
+import {
+    EAddressGroupType,
+    IListAddress,
+    IServiceType,
+    ISubServiceType,
+    MerchantFilterService
+} from '@services/merchant-filter.service';
 // Components
 import {SidebarComponent} from '@pages/map/sidebar/sidebar.component';
 import {FilterComponent} from '@pages/map/filter/filter.component';
 import {PersonalGroupsComponent} from '@pages/map/personal-groups/personal-groups.component';
 import {AutomaticallyUnsubscribe} from '@constants/automatically-unsubscribe';
 
-import {takeUntil} from 'rxjs';
+import {firstValueFrom, takeUntil} from 'rxjs';
 import {CommonModule} from '@angular/common';
 import {IconPaths} from '@constants/image-paths';
 import CollisionBehavior = google.maps.CollisionBehavior;
@@ -16,6 +22,8 @@ import {ClickOutsideDirective} from 'directives/click-outside.directive';
 import {CategoryService} from '@services/category.service';
 import {ICategory} from '@models/category.interface';
 import {IMerchant} from '@models/merchant.interface';
+import {CdkPortal} from '@angular/cdk/portal';
+import {Overlay, OverlayConfig, OverlayRef} from '@angular/cdk/overlay';
 
 @Component({
     selector: 'app-map',
@@ -26,16 +34,19 @@ import {IMerchant} from '@models/merchant.interface';
         FilterComponent,
         PersonalGroupsComponent,
         GoogleMapsModule,
-        ClickOutsideDirective
+        ClickOutsideDirective,
+        CdkPortal
     ],
     templateUrl: './map.component.html',
     styleUrl: './map.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MapComponent extends AutomaticallyUnsubscribe implements OnInit {
-
+    @ViewChild(CdkPortal) portal!: CdkPortal;
+    private readonly overlay = inject(Overlay);
     private readonly merchantFilterService = inject(MerchantFilterService);
     private readonly categoryService = inject(CategoryService);
+    private overlayRef: OverlayRef | null = null;
     selectedMerchant = signal<IMerchant | null>(null);
     isShowMerchantGroups = signal<boolean>(false);
     selectedGroupType = signal<EAddressGroupType | null>(null);
@@ -44,9 +55,9 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit {
     map: google.maps.Map | null = null;
     markers: any[] = [];
 
-    listServiceTypeMerchant = signal<ICategory[]>([]);
-    listSubTypeService = signal<ICategory[] >([]);
-    selectedServiceId = signal<string | null>(null);
+    serviceTypes = signal<IServiceType[]>([]);
+    subServiceTypes = signal<ISubServiceType[] >([]);
+    selectedService = signal<IServiceType | null>(null);
     serviceTypeSelected = ''
 
     ngOnInit() {
@@ -65,12 +76,11 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit {
                 this.isShowMerchantGroups.set(isShowMerchantGroups);
             });
 
-
-
         this.merchantFilterService.selectedGroupType$
             .pipe(takeUntil(this.destroyFlag))
             .subscribe(selectedGroupType => {
                 this.selectedGroupType.set(selectedGroupType);
+                console.log('selectedGroupType: ', selectedGroupType);
             });
         this.merchantFilterService.selectedListAddress$
             .pipe(takeUntil(this.destroyFlag))
@@ -81,27 +91,32 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit {
                     this.setMarkers(this.map, selectedList?.merchants ?? []);
                 }
             });
-        this.getListServiceType();
+
+        this.merchantFilterService.serviceTypes$.subscribe((serviceTypes) => {
+            this.serviceTypes.set(serviceTypes);
+        });
+        this.initMap();
     };
 
-
-    getListServiceType()   {
-        this.categoryService.getListServiceType().subscribe(res => {
-            const { data, code } = res;
+    async onOpenSubServiceTypesModal(service: IServiceType) {
+        this.selectedService.set(service);
+        const cachedSubServiceTypes = service.subServiceTypes ?? [];
+        if (cachedSubServiceTypes.length > 0) {
+            this.subServiceTypes.set(cachedSubServiceTypes);
+        } else {
+            const serviceId = service.id;
+            const {code, data} = await firstValueFrom(this.merchantFilterService.getSubServiceTypes(serviceId));
             if (code === '200') {
-                this.listServiceTypeMerchant.set(data);
+                this.merchantFilterService.cacheSubServiceTypes(serviceId, data);
+                this.subServiceTypes.set(data);
             }
-        })
+        }
+        this.openSubServiceTypesModal();
     }
 
-    toggleSubServiceList(serviceId: string) {
-        this.selectedServiceId.set(serviceId);
-        this.categoryService.getListSubServiceType(serviceId.toString()).subscribe(res => {
-            const { data, code } = res;
-            if (code === '200') {
-                this.listSubTypeService.set(data);
-            }
-        })
+    onSelectSubServiceType(subService: ISubServiceType) {
+        this.merchantFilterService.updateSelectedSubService(subService);
+        this.overlayRef?.detach();
     }
 
     private async initMap() {
@@ -297,14 +312,16 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit {
         }
     }
 
-    protected readonly IconPaths = IconPaths;
-    valueService(type: string) {
-        this.serviceTypeSelected = type;
-        this.listSubTypeService.set([]);
+    private openSubServiceTypesModal() {
+        const config: OverlayConfig = {
+            hasBackdrop: true,
+            positionStrategy: this.overlay.position().global().centerHorizontally().centerVertically()
+        };
+        this.overlayRef = this.overlay.create(config);
+        this.overlayRef.attach(this.portal);
+        this.overlayRef.backdropClick().subscribe(() => {
+            this.overlayRef?.detach();
+        });
     }
 
-    closeModal() {
-        this.listSubTypeService.set([]);
-        this.selectedServiceId.set(null);
-    }
 }

@@ -15,6 +15,7 @@ import {IAddress, IAddressGroup, IAddressGroupData} from '@models/address-mercha
     providedIn: 'root'
 })
 export class MerchantFilterService {
+    private readonly TOKEN = `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjAzNzc2NzA1MDkiLCJuYW1laWQiOiJjdXN0b21lciIsImZhbWlseV9uYW1lIjoiMmE2MDM3OGUtZDEyMy00YjA1LThmYzAtNjU5ZDM5YTJmNWU5IiwibmJmIjoxNzM2ODQyMTU4LCJleHAiOjE3MzgwNTE3NTgsImlhdCI6MTczNjg0MjE1OH0.nplOmu-WL8i_tzB5cDj0dkaSY5PgwzZmmq1zPmgJMLc`
     private readonly httpClient = inject(HttpClient);
     private readonly utilsService = inject(UtilsService);
     private readonly storageService = inject(StorageService);
@@ -29,8 +30,8 @@ export class MerchantFilterService {
         isShowMerchantGroups: boolean,
         selectedGroupType: EAddressGroupType | null,
         listAddress: IListAddress[],
-        selectedListAddress: IListAddress | null
-
+        selectedListAddress: IListAddress | null,
+        selectedSubService: ISubServiceType | null
 
     }>(
         {
@@ -44,8 +45,11 @@ export class MerchantFilterService {
             selectedGroupType: null,
             listAddress: [],
             selectedListAddress: null,
+            selectedSubService: null,
         }
     );
+
+    serviceTypes$ = new BehaviorSubject<IServiceType[]>([]);
 
     constructor() {
         const listAddress = this.storageService.getItem<IListAddress[]>(EStorageKey.LIST_ADDRESS) ?? [
@@ -63,6 +67,13 @@ export class MerchantFilterService {
             }
         ];
         this.addressData.next({...this.addressData.value, listAddress});
+
+        this.getServiceTypes().subscribe(res => {
+            const {code, data} = res;
+            if (code === '200' && data) {
+                this.serviceTypes$.next(data);
+            }
+        });
     }
     private  readonly  API_URL = environment.apiUrl;
 
@@ -116,7 +127,8 @@ export class MerchantFilterService {
             map(data => data.selectedGroupType),
             distinctUntilChanged((prev, curr) => {
                 return prev === curr;
-            }));
+            })
+        );
     }
     get isShowListAddressGroups$() {
         return this.addressData.asObservable().pipe(
@@ -203,6 +215,10 @@ export class MerchantFilterService {
             }));
     }
 
+    updateSelectedSubService(subService: ISubServiceType | null) {
+        this.addressData.next({...this.addressData.value, selectedSubService: subService});
+    }
+
     updateAddressGroups(addressGroups: IAddressGroupData[]): void {
         this.addressData.next({...this.addressData.value, addressGroups});
     }
@@ -217,7 +233,6 @@ export class MerchantFilterService {
     updateSelectedGroupType(selectedGroupType: EAddressGroupType | null) {
         this.addressData.next({
             ...this.addressData.value,
-            selectedMerchant: null,
             selectedGroupType: selectedGroupType,
         });
     }
@@ -339,11 +354,39 @@ export class MerchantFilterService {
                 this.utilsService.convertKeysToCamelCase<IResponseData<IMerchant>>(res)));
     }
 
+    cacheSubServiceTypes(serviceTypeId: string, subServiceTypes: ISubServiceType[]) {
+        const serviceTypes = this.serviceTypes$.value;
+        const currentIndex = serviceTypes.findIndex(it => it.id === serviceTypeId);
+        if (currentIndex === -1) {
+            return;
+        }
+        serviceTypes[currentIndex].subServiceTypes = subServiceTypes;
+        this.serviceTypes$.next([...serviceTypes]);
+    }
 
 
+    private getServiceTypes()   {
+        const url = this.API_URL + `/app/dropdownapp/servicetype`;
+        return this.httpClient.get(url,{
+            headers: {
+                Authorization: this.TOKEN
+            }
+        })
+            .pipe(map(res =>
+                this.utilsService.convertKeysToCamelCase<IResponseData<IServiceType[]>>(res)));
+    }
 
+    getSubServiceTypes(serviceTypeId: string)   {
+        const url = this.API_URL + `/app/dropdownapp/subservicetype` + `?service_type_id=${serviceTypeId}`;
+        return this.httpClient.get<IResponseData<string>>(url,{
+            headers: {
+                Authorization: this.TOKEN
+            }
+        })
+            .pipe(map(res =>
+                this.utilsService.convertKeysToCamelCase<IResponseData<any>>(res)));
+    }
 }
-
 
 export enum EAddressGroupType {
     'ALL' = 'ALL',
@@ -357,4 +400,22 @@ export interface IListAddress {
     title: string;
     default: boolean;
     merchants: IMerchant[];
+}
+
+export interface IServiceType {
+    code: string;
+    discountRate: number;
+    icons: string;
+    iconsInMap: string;
+    id: string;
+    name: string;
+    orders: number;
+    serviceTypeTags: any[];
+    subServiceTypes: ISubServiceType[];
+}
+
+export interface ISubServiceType {
+    avatar: string;
+    id: string;
+    name: string;
 }

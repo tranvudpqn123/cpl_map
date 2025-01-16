@@ -50,3 +50,33 @@
         padding-left: calc(150px);
     }
 }
+
+.sub-service-types {
+    width: 420px;
+    box-shadow: rgba(255, 255, 255, 0.35) 1.95px 1.95px 2.6px;
+
+
+    .grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.btn-sub-service-type {
+    .avatar {
+        width: 60px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background-color: #f1f1f1;
+        border: 2px solid rgb(var(--c-gray), .15);
+
+        img {
+            transition: all .3s ease-in;
+        }
+    }
+
+    &:hover {
+        img {
+            transform: scale(1.25);
+        }
+    }
+}

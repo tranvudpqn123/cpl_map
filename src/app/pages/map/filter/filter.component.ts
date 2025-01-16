@@ -112,8 +112,6 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit,
                     };
                     return option;
                 });
-
-                this.options.set(addressOptions);
                 this.allAddresses.set(addresses);
             });
 
@@ -161,11 +159,8 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit,
     }
 
 
-
-
-
     private saveInfoMerchantSeen(selectedMerchant: IMerchant) {
-
+        console.log('saveInfoMerchantSeen', selectedMerchant);
         const newAddress: IAddress = {
             id: selectedMerchant.id,
             title: selectedMerchant.name,

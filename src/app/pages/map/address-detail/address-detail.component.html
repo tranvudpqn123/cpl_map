@@ -12,6 +12,7 @@
                 <button
                     class="p-0 d-flex align-items-center justify-content-center rounded-circle btn bg-white border btn-close-popup"
                     [ngStyle]="{opacity: isShowMerchantGroups() ? 1 : 0}"
+                    (click)="onCloseSlideMerchantDetail()"
                 >
                     <i class="fs-5 bi bi-x-lg"></i>
                 </button>
@@ -73,20 +74,11 @@
                     <div class="d-flex align-items-center justify-content-between">
                         <h5 class="mb-2 fs-4">{{ selectedMerchant()!.name }}</h5>
 
-                        <button class="c-text-gray btn-pin">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="32px"
-                                 fill="currentColor" class="d-inline-block">
-                                <path
-                                    d="m598.05-453.03 65.03 62.11v33.84H496.92v200.16L480-140l-16.92-16.92v-200.16H296.92v-33.84L360-453.03v-313.12h-43.08V-800h324.21v33.85h-43.08v313.12Zm-254.26 62.11h270.47l-50.05-48.93v-326.3H393.85v326.3l-50.06 48.93Zm135.24 0Z"></path>
-                            </svg>
-                            <h5 class="mb-2 fs-4">{{ selectedMerchant()!.name }}</h5>
-                            <button
-                                class="c-text-gray btn-add-to-favourite"
-                                [innerHTML]="(mapMerchantsFavourite()!.get(selectedMerchant()!.id) ? IconPaths.FAVOURITE_FILL_LG : IconPaths.FAVOURITE_LG) | safeSvg"
-                                (click)="onAddOrRemoveToFavorite()"
-                            >
-                            </button>
-                        </button>
+                        <button
+                            class="c-text-gray btn-add-to-favourite"
+                            [innerHTML]="(mapMerchantsFavourite()!.get(selectedMerchant()!.id) ? IconPaths.FAVOURITE_FILL_LG : IconPaths.FAVOURITE_LG) | safeSvg"
+                            (click)="onAddOrRemoveToFavorite()"
+                        ></button>
                     </div>
                     <div class="d-flex align-items-center gap-2 c-text-gray">
                         <span>{{ selectedMerchant()!.rating }}</span>

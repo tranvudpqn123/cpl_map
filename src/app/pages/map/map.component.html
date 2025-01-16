@@ -4,30 +4,17 @@
 
     <div class="position-absolute top-filter">
         <ul class="d-flex flex-wrap align-items-center gap-1">
-            <li *ngFor="let item of listServiceTypeMerchant()" class="list-group">
-                <button class="px-3 mx-1 btn-service-type fw-medium d-flex align-items-center"
-                        (mouseover)="toggleSubServiceList(item.id)"
-                (click)="valueService(item.name)">
-                    <img [src]="item.icons" alt="{{item.name}}">
-                    <span class="mx-2">{{ item.name }}</span>
-                    <span *ngIf="item.id === selectedServiceId()"
-                          class="material-symbols-outlined">
-                        arrow_drop_down
-                    </span>
-                </button>
-                <ul *ngIf="item.id === selectedServiceId()"
-                    class="list-unstyled list-group position-absolute"
-                    [style.top]="'100%'"
-                    appClickOutside (clickOutside)="closeModal()">
-                    <li class="p-1 list-group-item" *ngFor="let subService of listSubTypeService()">
-                        <div class="px-3 d-flex align-items-center"
-                             role="button"
-                             (click)="valueService(subService.name); closeModal()">
-                            {{ subService.name }}
-                        </div>
-                    </li>
-                </ul>
-            </li>
+            @for(serviceType of serviceTypes(); track serviceType.id) {
+                <li class="list-group">
+                    <button
+                        class="px-3 mx-1 btn-service-type fw-medium d-flex align-items-center"
+                        (click)="onOpenSubServiceTypesModal(serviceType)"
+                    >
+                        <img [src]="serviceType.icons" alt="{{serviceType.name}}">
+                        <span class="mx-2">{{ serviceType.name }}</span>
+                    </button>
+                </li>
+            }
         </ul>
 
     </div>
@@ -43,5 +30,32 @@
         <app-sidebar></app-sidebar>
     </div>
 </section>
+
+<ng-template cdkPortal>
+    <div class="pt-3 px-3 pb-4 rounded bg-white sub-service-types">
+        <div class="fw-500 fs-5 pt-2 pb-3 text-center">{{selectedService()!.name}}</div>
+        <hr class="mb-4 mx-auto w-50">
+        <div class="d-grid gap-3 grid">
+            @for(subServiceType of subServiceTypes(); track subServiceType.id) {
+                <button
+                    class="p-0 d-flex align-items-center justify-content-center flex-column btn btn-sub-service-type"
+                    [title]="subServiceType.name"
+                    (click)="onSelectSubServiceType(subServiceType)"
+                >
+                    <div class="overflow-hidden avatar">
+                        <img class="d-inline-block" [src]="subServiceType.avatar" [alt]="subServiceType.name">
+
+                    </div>
+                    <div class="c-text-truncate">
+                        {{ subServiceType.name }}
+
+                    </div>
+                </button>
+            }
+        </div>
+
+
+    </div>
+</ng-template>
 
 
