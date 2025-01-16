@@ -1,7 +1,6 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
-import {GoogleMapsModule} from '@angular/google-maps';
+import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
 // Services
-import {EAddressGroupType, IListAddress, IMerchant, MerchantFilterService} from '@services/merchant-filter.service';
+import {EAddressGroupType, IListAddress, MerchantFilterService} from '@services/merchant-filter.service';
 // Components
 import {SidebarComponent} from '@pages/map/sidebar/sidebar.component';
 import {FilterComponent} from '@pages/map/filter/filter.component';
@@ -12,6 +11,11 @@ import {takeUntil} from 'rxjs';
 import {CommonModule} from '@angular/common';
 import {IconPaths} from '@constants/image-paths';
 import CollisionBehavior = google.maps.CollisionBehavior;
+import {GoogleMapsModule} from '@angular/google-maps';
+import {ClickOutsideDirective} from 'directives/click-outside.directive';
+import {CategoryService} from '@services/category.service';
+import {ICategory} from '@models/category.interface';
+import {IMerchant} from '@models/merchant.interface';
 
 @Component({
     selector: 'app-map',
@@ -21,14 +25,17 @@ import CollisionBehavior = google.maps.CollisionBehavior;
         SidebarComponent,
         FilterComponent,
         PersonalGroupsComponent,
-        GoogleMapsModule
+        GoogleMapsModule,
+        ClickOutsideDirective
     ],
     templateUrl: './map.component.html',
     styleUrl: './map.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MapComponent extends AutomaticallyUnsubscribe implements OnInit, AfterViewInit {
+export class MapComponent extends AutomaticallyUnsubscribe implements OnInit {
+
     private readonly merchantFilterService = inject(MerchantFilterService);
+    private readonly categoryService = inject(CategoryService);
     selectedMerchant = signal<IMerchant | null>(null);
     isShowMerchantGroups = signal<boolean>(false);
     selectedGroupType = signal<EAddressGroupType | null>(null);
@@ -36,6 +43,11 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit, Af
 
     map: google.maps.Map | null = null;
     markers: any[] = [];
+
+    listServiceTypeMerchant = signal<ICategory[]>([]);
+    listSubTypeService = signal<ICategory[] >([]);
+    selectedServiceId = signal<string | null>(null);
+    serviceTypeSelected = ''
 
     ngOnInit() {
         this.merchantFilterService.selectedMerchant$
@@ -53,6 +65,8 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit, Af
                 this.isShowMerchantGroups.set(isShowMerchantGroups);
             });
 
+
+
         this.merchantFilterService.selectedGroupType$
             .pipe(takeUntil(this.destroyFlag))
             .subscribe(selectedGroupType => {
@@ -67,12 +81,27 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit, Af
                     this.setMarkers(this.map, selectedList?.merchants ?? []);
                 }
             });
+        this.getListServiceType();
+    };
+
+
+    getListServiceType()   {
+        this.categoryService.getListServiceType().subscribe(res => {
+            const { data, code } = res;
+            if (code === '200') {
+                this.listServiceTypeMerchant.set(data);
+            }
+        })
     }
 
-    ngAfterViewInit() {
-        window.setTimeout(() => {
-            this.initMap()
-        }, 300);
+    toggleSubServiceList(serviceId: string) {
+        this.selectedServiceId.set(serviceId);
+        this.categoryService.getListSubServiceType(serviceId.toString()).subscribe(res => {
+            const { data, code } = res;
+            if (code === '200') {
+                this.listSubTypeService.set(data);
+            }
+        })
     }
 
     private async initMap() {
@@ -82,12 +111,12 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit, Af
             {
                 featureType: "road",
                 elementType: "labels",
-                stylers: [{ visibility: "simplified" }], // Hoặc "off" để ẩn
+                stylers: [{ visibility: "simplified" }], // Ho?c "off" d? ?n
             },
             {
                 featureType: "poi.business",
                 elementType: "labels",
-                stylers: [{ visibility: "off" }], // Ẩn quán cà phê
+                stylers: [{ visibility: "off" }], // ?n qu�n c� ph�
             }
         ]);
 
@@ -97,6 +126,7 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit, Af
                 center: {lat: 21.02930786179391, lng: 105.83593350505639},
                 zoom: 15,
                 mapId: '4504f8b37365c3d0',
+
                 mapTypeControlOptions: {
                     mapTypeIds: ["roadmap", "styled_map"],
                 },
@@ -110,7 +140,6 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit, Af
             map: this.map,
             position: {lat: 21.02930786179391, lng: 105.83593350505639},
         }));
-
         this.map.addListener("zoom_changed", () => this.checkCollisions(this.markers, this.map!));
         this.map.addListener("center_changed", () => this.checkCollisions(this.markers, this.map!));
 
@@ -150,9 +179,7 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit, Af
 
         this.fitMapToBounds(this.markers, map);
 
-    }
-
-
+}
 
     private fitMapToBounds(markers: any[], map: google.maps.Map) {
         if (markers.length === 0) return;
@@ -222,7 +249,7 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit, Af
                         </div>
                         <span>(52)</span>
                     </div>
-                    <p class="c-text-gray merchant-address">27 Trần Duy Hưng, quận Cầu Giấy, TP Hà Nội</p>
+                    <p class="c-text-gray merchant-address">27 Tr?n Duy Hung, qu?n C?u Gi?y, TP H� N?i</p>
                 </div>
             </div>
         `;
@@ -271,4 +298,13 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit, Af
     }
 
     protected readonly IconPaths = IconPaths;
+    valueService(type: string) {
+        this.serviceTypeSelected = type;
+        this.listSubTypeService.set([]);
+    }
+
+    closeModal() {
+        this.listSubTypeService.set([]);
+        this.selectedServiceId.set(null);
+    }
 }

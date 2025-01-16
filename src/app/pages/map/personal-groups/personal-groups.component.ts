@@ -9,7 +9,7 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import {AutomaticallyUnsubscribe} from '@constants/automatically-unsubscribe';
-import {EAddressGroupType, IListAddress, IMerchant, MerchantFilterService} from '@services/merchant-filter.service';
+import {EAddressGroupType, IListAddress, MerchantFilterService} from '@services/merchant-filter.service';
 import {takeUntil} from 'rxjs';
 import {IconPaths} from '@constants/image-paths';
 import {SafeSvgPipe} from '@pipes/safe-svg.pipe';
@@ -18,7 +18,7 @@ import {CdkPortal, PortalModule, TemplatePortal} from '@angular/cdk/portal';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {Browser} from 'leaflet';
-import win = Browser.win;
+import {IMerchant} from '@models/merchant.interface';
 
 @Component({
     selector: 'app-personal-groups',

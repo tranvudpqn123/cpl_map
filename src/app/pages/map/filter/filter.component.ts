@@ -1,9 +1,14 @@
-import {ChangeDetectionStrategy, Component, inject, OnInit, signal, ViewChild} from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    inject,
+    Input, OnChanges,
+    OnInit,
+    signal, SimpleChanges,
+    ViewChild
+} from '@angular/core';
 import {
     EAddressGroupType,
-    IAddress,
-    IAddressGroup, IMerchant,
-    IMerchantFilterRequest,
     MerchantFilterService
 } from '@services/merchant-filter.service';
 import {CommonModule, DecimalPipe} from '@angular/common';
@@ -15,6 +20,10 @@ import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {debounceTime, skip, takeUntil} from 'rxjs';
 import {AutomaticallyUnsubscribe} from '@constants/automatically-unsubscribe';
 import {AddressDetailComponent} from '@pages/map/address-detail/address-detail.component';
+import {IAddress, IAddressGroup, IAddressGroupData} from '@models/address-merchant.interface';
+import {IMerchant, IMerchantFilterRequest} from '@models/merchant.interface';
+import {EStorageKey} from '@constants/storage-key';
+import {StorageService} from '@services/storage.service';
 
 const PIN_ICON = `<svg class="c-text-gray" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M480.14-490.77q26.71 0 45.59-19.02 18.89-19.02 18.89-45.73 0-26.71-19.03-45.6Q506.57-620 479.86-620q-26.71 0-45.59 19.02-18.89 19.02-18.89 45.73 0 26.71 19.03 45.6 19.02 18.88 45.73 18.88ZM480-172.92q112.77-98.16 178.31-199.66t65.54-175.57q0-109.77-69.5-181.2-69.5-71.42-174.35-71.42t-174.35 71.42q-69.5 71.43-69.5 181.2 0 74.07 65.54 175.57T480-172.92Zm0 53.69Q339-243.92 267.58-351.81q-71.43-107.88-71.43-196.34 0-126.93 82.66-209.39Q361.46-840 480-840q118.54 0 201.19 82.46 82.66 82.46 82.66 209.39 0 88.46-71.43 196.34Q621-243.92 480-119.23Zm0-436.15Z"/></svg>`;
 const CLOCK_ICON = `<svg class="c-text-gray" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="m625.85-305.85 28.3-28.3L500-488.33V-680h-40v208.31l165.85 165.84ZM480.13-120q-74.67 0-140.41-28.34-65.73-28.34-114.36-76.92-48.63-48.58-76.99-114.26Q120-405.19 120-479.87q0-74.67 28.34-140.41 28.34-65.73 76.92-114.36 48.58-48.63 114.26-76.99Q405.19-840 479.87-840q74.67 0 140.41 28.34 65.73 28.34 114.36 76.92 48.63 48.58 76.99 114.26Q840-554.81 840-480.13q0 74.67-28.34 140.41-28.34 65.73-76.92 114.36-48.58 48.63-114.26 76.99Q554.81-120 480.13-120ZM480-480Zm0 320q133 0 226.5-93.5T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160Z"/></svg>`;
@@ -37,12 +46,17 @@ const CLOCK_ICON = `<svg class="c-text-gray" xmlns="http://www.w3.org/2000/svg" 
     styleUrl: './filter.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit {
+export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit, OnChanges {
     @ViewChild(CdkPortal) portal!: CdkPortal;
+    @Input() keyS = '';
+
+
     private readonly merchantFilterService = inject(MerchantFilterService);
     private readonly fb = inject(FormBuilder);
+    private readonly storageService = inject(StorageService);
+
     readonly searchFrom = this.fb.group({
-        keySearch: ['']
+        keySearch: [this.keyS]
     });
     addressGroups = signal<IAddressGroup[]>([]);
     addresses = signal<IAddress[]>([]);
@@ -57,6 +71,12 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit 
     selectedMerchant = signal<IMerchant | null>(null);
     isShowMerchantGroups = signal<boolean>(false);
 
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['keyS'] && changes['keyS'].currentValue !== changes['keyS'].previousValue) {
+            this.searchFrom.patchValue({ keySearch: this.keyS });
+        }
+    }
 
     ngOnInit() {
         this.merchantFilterService.selectedMerchant$
@@ -103,9 +123,9 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit 
             });
 
         this.searchFrom.valueChanges
-            .pipe(skip(1), debounceTime(500))
+            .pipe( debounceTime(500))
             .subscribe(() => {
-                this.isShowResultSearch.set(true)
+                this.isShowResultSearch.set(true);
                 this.getMerchants(this.allMerchants());
             });
 
@@ -128,6 +148,7 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit 
         if (selectedMerchant) {
             this.searchFrom.reset({keySearch: selectedMerchant.name}, {emitEvent: false});
             this.merchantFilterService.updateSelectedMerchant(selectedMerchant);
+            this.saveInfoMerchantSeen(selectedMerchant);
         }
         this.isShowResultSearch.set(false);
         this.merchantFilterService.updateSelectedGroupType(null);
@@ -137,6 +158,53 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit 
         this.merchantFilterService.updateSelectedMerchant(null);
         this.merchantFilterService.updateSelectedGroupType(null);
 
+    }
+
+
+
+
+
+    private saveInfoMerchantSeen(selectedMerchant: IMerchant) {
+
+        const newAddress: IAddress = {
+            id: selectedMerchant.id,
+            title: selectedMerchant.name,
+            avatar: selectedMerchant.avatar,
+            ratingNumber: selectedMerchant.rating,
+            ratingAmount: selectedMerchant.totalRating,
+            imageGroups: [],
+            addressDetail: selectedMerchant.fullAddress,
+        };
+        const newAddressGroup: IAddressGroupData = {
+            id: selectedMerchant.serviceTypeId,
+            title: `Nhóm dịch vụ: ${selectedMerchant.name}`,
+            addresses: [newAddress],
+        };
+
+        const listSeenMerchantLocal = this.storageService.getItem(EStorageKey.LIST_SEND_PARTNER);
+        let listSendPartner: IAddressGroupData[] = [];
+
+        if (listSeenMerchantLocal) {
+            try {
+                listSendPartner = JSON.parse(JSON.stringify(listSeenMerchantLocal));
+            } catch (error) {
+                console.error("Error parsing LIST_SEND_PARTNER from storage:", error);
+                listSendPartner = [];
+            }
+        }
+        const existingGroup = listSendPartner.find(group => group.id === newAddressGroup.id);
+
+        if (existingGroup) {
+            const isMerchantExists = existingGroup.addresses.some(address => address.id === newAddress.id);
+            if (!isMerchantExists) {
+                existingGroup.addresses.push(newAddress);
+            }
+        } else {
+            listSendPartner.push(newAddressGroup);
+            console.log(listSendPartner, 'listSendPartner');
+        }
+        this.merchantFilterService.updateAddressGroups(listSendPartner);
+        this.storageService.setItem(JSON.stringify(listSendPartner), EStorageKey.LIST_SEND_PARTNER);
     }
 
     private getMerchants(recentMerchants: IMerchant[]) {
