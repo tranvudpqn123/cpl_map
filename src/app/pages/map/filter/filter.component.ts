@@ -128,9 +128,9 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit,
             });
 
         this.searchFrom.valueChanges
-            .pipe(skip(1), debounceTime(500))
+            .pipe( debounceTime(500))
             .subscribe(() => {
-                this.isShowResultSearch.set(true)
+                this.isShowResultSearch.set(true);
                 this.getMerchants(this.allMerchants());
             });
 
