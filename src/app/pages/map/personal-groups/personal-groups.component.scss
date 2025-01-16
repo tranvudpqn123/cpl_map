@@ -42,10 +42,18 @@
     }
     .btn-address {
         &:hover {
-            border: 1px solid rgb(var(--c-gray));
+            border: 1px solid rgb(var(--c-gray), .15);
+
+            .btn-remove-from-list {
+                display: flex;
+            }
+        }
+        &.selected {
+            background-color: rgb(var(--c-gray), .1);
         }
 
         .avatar {
+            flex-shrink: 0;
             height: 64px;
             width: 64px;
 
@@ -71,6 +79,19 @@
 
         .rating-point, .rating-amount {
             margin-top: 2px;
+        }
+
+        .btn-remove-from-list {
+            display: none;
+            padding: 6px;
+            width: 34px;
+            height: 34px;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+
         }
     }
 }
@@ -109,4 +130,13 @@
 
 .merchants {
     max-height: calc(100vh - 70px);
+
+    .merchant-discount {
+        width: 32px;
+        height: 22px;
+        font-size: 12px;
+        color: red;
+        border: 1px solid red;
+        background-color: rgb(255, 0, 0, .15);
+    }
 }

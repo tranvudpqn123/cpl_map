@@ -18,7 +18,7 @@ import {CdkPortal, PortalModule, TemplatePortal} from '@angular/cdk/portal';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {Browser} from 'leaflet';
-import win = Browser.win;
+import {IMerchant} from '@models/merchant.interface';
 
 @Component({
     selector: 'app-personal-groups',
@@ -45,6 +45,7 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
     private overlayRef: OverlayRef | null = null;
 
     selectedList = signal<IListAddress | null>(null);
+    selectedMerchant = signal<IMerchant | null>(null);
     selectedGroupType = signal<EAddressGroupType | null>(EAddressGroupType.SAVED);
     listAddress = signal<IListAddress[]>([]);
     openAddListForm = signal(false);
@@ -72,6 +73,11 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
             .pipe(takeUntil(this.destroyFlag))
             .subscribe((selectedList) => {
                 this.selectedList.set(selectedList);
+            });
+        this.merchantFilterService.selectedMerchant$
+            .pipe(takeUntil(this.destroyFlag))
+            .subscribe((selectedMerchant) => {
+                this.selectedMerchant.set(selectedMerchant);
             });
 
     }
@@ -165,4 +171,12 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
         this.merchantFilterService.selectListAddress(list.id);
     }
 
+    onMerchantFromGroup(event: MouseEvent, listId: string, merchantId: string) {
+        event.stopPropagation();
+        this.merchantFilterService.removeFromList(listId, merchantId);
+    }
+
+    onSelectMerchant(merchant: IMerchant) {
+        this.merchantFilterService.updateSelectedMerchant(merchant);
+    }
 }

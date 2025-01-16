@@ -20,7 +20,7 @@ import {CdkConnectedOverlay, CdkOverlayOrigin} from '@angular/cdk/overlay';
 import {AddressReviewsComponent} from '@pages/map/address-reviews/address-reviews.component';
 import {ProductsComponent} from '@pages/map/products/products.component';
 // Services
-import {IListAddress, MerchantFilterService} from '@services/merchant-filter.service';
+import {EAddressGroupType, IListAddress, MerchantFilterService} from '@services/merchant-filter.service';
 // Directives
 import {StarRatingDirective} from 'directives/star-rating.directive';
 import {ScrollDirectionDirective} from 'directives/scroll-directive.directive';
