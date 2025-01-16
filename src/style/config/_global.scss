@@ -19,3 +19,18 @@
 .fs-14px {
     font-size: 14px;
 }
+
+.c-text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+
+    &.lines-2 {
+        -webkit-line-clamp: 2;
+    }
+    &.lines-4 {
+        -webkit-line-clamp: 4;
+    }
+}

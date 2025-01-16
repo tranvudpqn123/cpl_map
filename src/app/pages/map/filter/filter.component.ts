@@ -56,7 +56,6 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit 
     options = signal<IAddressOption[]>([]);
     selectedMerchant = signal<IMerchant | null>(null);
     isShowMerchantGroups = signal<boolean>(false);
-    selectedGroupType = signal<EAddressGroupType | null>(null);
 
 
     ngOnInit() {
@@ -64,10 +63,6 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit 
             .subscribe(merchant => {
                 this.selectedMerchant.set(merchant);
             });
-        this.merchantFilterService.isShowMerchantGroups$
-            .subscribe(isShowMerchantGroups => {
-                this.isShowMerchantGroups.set(isShowMerchantGroups);
-            })
 
         this.merchantFilterService.addressGroups$
             .subscribe((addressGroups) => {
@@ -117,7 +112,7 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit 
         this.merchantFilterService.selectedGroupType$
             .pipe(takeUntil(this.destroyFlag))
             .subscribe(selectedGroupType => {
-                this.selectedGroupType.set(selectedGroupType);
+                this.isShowMerchantGroups.set(!!selectedGroupType);
             });
 
 

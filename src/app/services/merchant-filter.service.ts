@@ -187,8 +187,8 @@ export class MerchantFilterService {
     }
     get selectedAddressGroupId$() {
         return this.addressData.asObservable().pipe(
-            distinctUntilChanged((prev, curr) => prev === curr),
-            map(data => data.selectedAddressGroupId));
+            map(data => data.selectedAddressGroupId),
+            distinctUntilChanged((prev, curr) => prev === curr));
     }
     get selectedListAddress$() {
         return this.addressData.asObservable().pipe(
@@ -212,6 +212,7 @@ export class MerchantFilterService {
     updateSelectedGroupType(selectedGroupType: EAddressGroupType | null) {
         this.addressData.next({
             ...this.addressData.value,
+            selectedMerchant: null,
             selectedGroupType: selectedGroupType,
         });
     }

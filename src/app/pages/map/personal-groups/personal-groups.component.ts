@@ -9,7 +9,7 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import {AutomaticallyUnsubscribe} from '@constants/automatically-unsubscribe';
-import {EAddressGroupType, IListAddress, MerchantFilterService} from '@services/merchant-filter.service';
+import {EAddressGroupType, IListAddress, IMerchant, MerchantFilterService} from '@services/merchant-filter.service';
 import {takeUntil} from 'rxjs';
 import {IconPaths} from '@constants/image-paths';
 import {SafeSvgPipe} from '@pipes/safe-svg.pipe';
@@ -45,6 +45,7 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
     private overlayRef: OverlayRef | null = null;
 
     selectedList = signal<IListAddress | null>(null);
+    selectedMerchant = signal<IMerchant | null>(null);
     selectedGroupType = signal<EAddressGroupType | null>(EAddressGroupType.SAVED);
     listAddress = signal<IListAddress[]>([]);
     openAddListForm = signal(false);
@@ -72,6 +73,11 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
             .pipe(takeUntil(this.destroyFlag))
             .subscribe((selectedList) => {
                 this.selectedList.set(selectedList);
+            });
+        this.merchantFilterService.selectedMerchant$
+            .pipe(takeUntil(this.destroyFlag))
+            .subscribe((selectedMerchant) => {
+                this.selectedMerchant.set(selectedMerchant);
             });
 
     }
@@ -165,4 +171,12 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
         this.merchantFilterService.selectListAddress(list.id);
     }
 
+    onMerchantFromGroup(event: MouseEvent, listId: string, merchantId: string) {
+        event.stopPropagation();
+        this.merchantFilterService.removeFromList(listId, merchantId);
+    }
+
+    onSelectMerchant(merchant: IMerchant) {
+        this.merchantFilterService.updateSelectedMerchant(merchant);
+    }
 }

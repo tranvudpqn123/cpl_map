@@ -1,0 +1,154 @@
+:root {
+    --building-color: #FF9800;
+    --house-color: #0288D1;
+    --shop-color: #7B1FA2;
+    --warehouse-color: #558B2F;
+}
+
+/*
+ * Optional: Makes the sample page fill the window.
+ */
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.gmnoprint.gm-style-mtc-bbw {
+    display: none;
+}
+
+
+
+/*
+ * Property styles in unhighlighted state.
+ */
+.property {
+    align-items: center;
+    background-color: #FFFFFF;
+    border-radius: 50%;
+    color: #263238;
+    display: flex;
+    font-size: 14px;
+    gap: 15px;
+    height: 30px;
+    justify-content: center;
+    padding: 4px;
+    position: relative;
+    position: relative;
+    transition: all 0.3s ease-out;
+    width: 30px;
+    cursor: pointer!important;
+
+    .title {
+        max-width: 200px;
+        h6 {
+            line-height: 1;
+            font-size: 12px;
+        }
+        span {
+            font-size: 10px;
+        }
+    }
+
+    &:before {
+        content: '';
+        display: block;
+        width: 20px;
+        height: 20px;
+        border: 4px solid red;
+
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+    }
+
+
+    &::after {
+        border-left: 9px solid transparent;
+        border-right: 9px solid transparent;
+        border-top: 9px solid #FFFFFF;
+
+        content: "";
+        height: 0;
+        left: 50%;
+        position: absolute;
+        top: 90%;
+        transform: translate(-50%, 0);
+        transition: all 0.3s ease-out;
+        width: 0;
+        z-index: 1;
+    }
+}
+
+/*
+ * Property styles in highlighted state.
+ */
+.property.highlight {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.2);
+    height: 80px;
+    padding: 8px 15px;
+    width: auto;
+
+    .merchant {
+        display: block;
+        z-index: 2;
+    }
+}
+
+.property.highlight::after {
+    border-top: 9px solid #FFFFFF;
+}
+
+.merchant {
+    display: none;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    width: 260px;
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+
+    &-avatar {
+        width: 100%;
+        height: 100px;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+
+        background-size: cover;
+        background-position: center;
+
+        .btn-close-merchant {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: white;
+
+        }
+    }
+
+    &-name {
+        font-size: 15px;
+    }
+    &-address {
+        font-size: 10px;
+    }
+
+    .btn-add-to-favorites {
+        transform-origin: center;
+        transform: scale(.75);
+    }
+
+
+}
+
+.star-icons {
+    color: rgb(255, 191, 0);
+}
+
