@@ -245,7 +245,7 @@
             }
 
             @if (currentTab() === EAddressDetailTab.PRODUCT) {
-                <app-products></app-products>
+                <app-products [merchantId]="selectedMerchant()?.id"></app-products>
             }
 
         </div>
