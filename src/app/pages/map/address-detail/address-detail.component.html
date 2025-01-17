@@ -63,16 +63,18 @@
                     class="position-relative p-3 d-flex align-items-end justify-content-start cursor-pointer address-avatar"
                     [ngStyle]="{backgroundImage: 'url(' + selectedMerchant()?.avatar + ')'}"
                 >
-            <span class="position-relative px-3 py-2 d-flex align-items-center gap-2 text-white border rounded text">
-                <i class="bi bi-images"></i>
-                See Photos
-            </span>
-
+                    <span class="position-relative px-3 py-2 d-flex align-items-center gap-2 text-white border rounded text">
+                        <i class="bi bi-images"></i>
+                        See Photos
+                    </span>
                 </div>
 
                 <div class="py-3 px-4">
                     <div class="d-flex align-items-center justify-content-between">
-                        <h5 class="mb-2 fs-4">{{ selectedMerchant()!.name }}</h5>
+                        <div class="mb-2 text-center d-flex align-items-center gap-2">
+                            <div class="rounded merchant-discount">{{selectedMerchant()!.discountRate}}%</div>
+                            <h5 class="text-start c-text-truncate fs-4">{{ selectedMerchant()!.name }}</h5>
+                        </div>
 
                         <button
                             class="c-text-gray btn-add-to-favourite"
@@ -86,11 +88,8 @@
                         <span>({{ selectedMerchant()!.totalRating }})</span>
                     </div>
                     <div class="d-flex mt-1">
-                        <p class="c-text-gray">Loại dịch vụ</p>
-                        <img class="mx-2 opacity-50" width="20px" height="20px"
-                             [src]="selectedMerchant()?.serviceTypeIcons"/>
+                        <p class="c-text-gray">{{selectedMerchant()?.serviceName}}</p>
                     </div>
-
                 </div>
             }
 

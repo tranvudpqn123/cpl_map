@@ -148,3 +148,12 @@
 .transform-scale-875 {
     transform: scale(.875);
 }
+
+.merchant-discount {
+    width: 36px;
+    font-size: 14px;
+    flex-shrink: 0;
+    color: red;
+    border: 1px solid red;
+    background-color: rgb(255, 0, 0, .1);
+}

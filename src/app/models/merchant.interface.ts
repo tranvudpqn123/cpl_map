@@ -1,6 +1,7 @@
 ﻿
 export interface IMerchantFilterRequest {
     search: string;
+    subServiceTypeId: string;
 }
 
 
@@ -24,7 +25,8 @@ export interface IMerchant {
     distance: number
     isBranch: boolean
     partnerId: string
-    serviceTypeId: string
+    serviceTypeId: string;
+    serviceName: string;
     code: string
     name: string
     avatar: string

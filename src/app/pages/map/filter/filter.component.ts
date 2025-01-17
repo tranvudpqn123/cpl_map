@@ -8,7 +8,7 @@ import {
     ViewChild
 } from '@angular/core';
 import {
-    EAddressGroupType,
+    EAddressGroupType, IServiceType, ISubServiceType,
     MerchantFilterService
 } from '@services/merchant-filter.service';
 import {CommonModule, DecimalPipe} from '@angular/common';
@@ -17,7 +17,7 @@ import {CdkPortal} from '@angular/cdk/portal';
 import {CdkConnectedOverlay, CdkOverlayOrigin} from '@angular/cdk/overlay';
 import {SafeSvgPipe} from '@pipes/safe-svg.pipe';
 import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
-import {debounceTime, skip, takeUntil} from 'rxjs';
+import {debounceTime, skip, take, takeUntil} from 'rxjs';
 import {AutomaticallyUnsubscribe} from '@constants/automatically-unsubscribe';
 import {AddressDetailComponent} from '@pages/map/address-detail/address-detail.component';
 import {IAddress, IAddressGroup, IAddressGroupData} from '@models/address-merchant.interface';
@@ -56,7 +56,8 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit,
     private readonly storageService = inject(StorageService);
 
     readonly searchFrom = this.fb.group({
-        keySearch: [this.keyS]
+        keySearch: [this.keyS],
+        subServiceTypeId: [''],
     });
     addressGroups = signal<IAddressGroup[]>([]);
     addresses = signal<IAddress[]>([]);
@@ -70,7 +71,8 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit,
     options = signal<IAddressOption[]>([]);
     selectedMerchant = signal<IMerchant | null>(null);
     isShowMerchantGroups = signal<boolean>(false);
-
+    selectedSubService = signal<ISubServiceType | null>(null);
+    mapServices = signal<Map<string, IServiceType>>(new Map());
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['keyS'] && changes['keyS'].currentValue !== changes['keyS'].previousValue) {
@@ -133,8 +135,25 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit,
                 this.isShowMerchantGroups.set(!!selectedGroupType);
             });
 
+        this.merchantFilterService.selectedSubService$
+            .pipe(takeUntil(this.destroyFlag))
+            .subscribe(selectedSubService => {
+                this.selectedSubService.set(selectedSubService);
+                this.searchFrom.patchValue({
+                    keySearch: selectedSubService?.name ?? '',
+                    subServiceTypeId: selectedSubService?.id ?? null
+                });
+            });
 
-
+        this.merchantFilterService.serviceTypes$
+            .pipe(take(2))
+            .subscribe(selectedSubService => {
+                const mapServices = new Map<string, IServiceType>();
+                selectedSubService.forEach(service => {
+                    mapServices.set(service.id, service);
+                });
+                this.mapServices.set(mapServices);
+            });
     }
 
     onSelectAddressGroup(addressGroupId: string) {
@@ -145,6 +164,10 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit,
         const selectedMerchant = this.responseMerchants().find(it => it.id === addressOption.id);
         if (selectedMerchant) {
             this.searchFrom.reset({keySearch: selectedMerchant.name}, {emitEvent: false});
+            const service = this.mapServices().get(selectedMerchant.serviceTypeId);
+            if (service) {
+                selectedMerchant.serviceName = service.name;
+            }
             this.merchantFilterService.updateSelectedMerchant(selectedMerchant);
             this.saveInfoMerchantSeen(selectedMerchant);
         }
@@ -160,7 +183,6 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit,
 
 
     private saveInfoMerchantSeen(selectedMerchant: IMerchant) {
-        console.log('saveInfoMerchantSeen', selectedMerchant);
         const newAddress: IAddress = {
             id: selectedMerchant.id,
             title: selectedMerchant.name,
@@ -172,7 +194,7 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit,
         };
         const newAddressGroup: IAddressGroupData = {
             id: selectedMerchant.serviceTypeId,
-            title: `Nhóm dịch vụ: ${selectedMerchant.name}`,
+            title: selectedMerchant.serviceName,
             addresses: [newAddress],
         };
 
@@ -196,17 +218,17 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit,
             }
         } else {
             listSendPartner.push(newAddressGroup);
-            console.log(listSendPartner, 'listSendPartner');
         }
         this.merchantFilterService.updateAddressGroups(listSendPartner);
         this.storageService.setItem(JSON.stringify(listSendPartner), EStorageKey.LIST_SEND_PARTNER);
     }
 
     private getMerchants(recentMerchants: IMerchant[]) {
-        const {keySearch} = this.searchFrom.value;
+        const {keySearch, subServiceTypeId} = this.searchFrom.value;
 
         const request: IMerchantFilterRequest = {
-            search: keySearch ?? ''
+            search: keySearch ?? '',
+            subServiceTypeId: subServiceTypeId ?? '',
         };
 
         this.merchantFilterService.getMerchants(request)

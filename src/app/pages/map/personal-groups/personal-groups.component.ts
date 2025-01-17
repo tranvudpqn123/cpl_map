@@ -19,6 +19,7 @@ import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {Browser} from 'leaflet';
 import {IMerchant} from '@models/merchant.interface';
+import {IAddressGroup} from '@models/address-merchant.interface';
 
 @Component({
     selector: 'app-personal-groups',
@@ -45,10 +46,13 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
     private overlayRef: OverlayRef | null = null;
 
     selectedList = signal<IListAddress | null>(null);
+    merchants = signal<IMerchant[]>([]);
     selectedMerchant = signal<IMerchant | null>(null);
     selectedGroupType = signal<EAddressGroupType | null>(EAddressGroupType.SAVED);
     listAddress = signal<IListAddress[]>([]);
     openAddListForm = signal(false);
+    addressGroups = signal<IAddressGroup[]>([]);
+    selectedAddressGroupId = signal('');
     newListName = '';
 
 
@@ -73,11 +77,26 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
             .pipe(takeUntil(this.destroyFlag))
             .subscribe((selectedList) => {
                 this.selectedList.set(selectedList);
+                this.merchants.set(selectedList?.merchants || []);
             });
         this.merchantFilterService.selectedMerchant$
             .pipe(takeUntil(this.destroyFlag))
             .subscribe((selectedMerchant) => {
                 this.selectedMerchant.set(selectedMerchant);
+            });
+
+        this.merchantFilterService.addressGroups$
+            .pipe(takeUntil(this.destroyFlag))
+            .subscribe((addressGroups) => {
+                this.addressGroups.set(addressGroups);
+            });
+
+        this.merchantFilterService.selectedAddressGroupId$
+            .pipe(takeUntil(this.destroyFlag))
+            .subscribe((selectedAddressGroupId) => {
+                this.selectedAddressGroupId.set(selectedAddressGroupId);
+                const selectedGroup = this.addressGroups()?.find(group => group.id === selectedAddressGroupId);
+
             });
 
     }

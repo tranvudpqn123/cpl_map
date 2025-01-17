@@ -214,6 +214,14 @@ export class MerchantFilterService {
                 return prev === curr;
             }));
     }
+    get selectedSubService$() {
+        return this.addressData.asObservable().pipe(
+            map(data => data.selectedSubService),
+            distinctUntilChanged((prev, curr) => {
+                return prev === curr;
+            }));
+    }
+
 
     updateSelectedSubService(subService: ISubServiceType | null) {
         this.addressData.next({...this.addressData.value, selectedSubService: subService});
@@ -341,8 +349,13 @@ export class MerchantFilterService {
 
     getMerchants(merchantFilterRequest: IMerchantFilterRequest) {
         const url = this.API_URL + `/app/customer/home/listPartnerV2?page_size=10`;
-        // return of(this.utilsService.convertKeysToCamelCase<IResponseData<IMerchantResponse>>(data));
-        return this.httpClient.post<IResponseData<IMerchantResponse>>(url, merchantFilterRequest)
+        const {search, subServiceTypeId} = merchantFilterRequest;
+
+        const requestBody = {
+            search,
+            sub_service_type_id: subServiceTypeId
+        }
+        return this.httpClient.post<IResponseData<IMerchantResponse>>(url, requestBody)
             .pipe(map(res => this.utilsService.convertKeysToCamelCase<IResponseData<IMerchantResponse>>(res)));
     }
 
