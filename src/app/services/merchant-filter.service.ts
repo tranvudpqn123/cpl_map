@@ -15,6 +15,7 @@ import {IAddress, IAddressGroup, IAddressGroupData} from '@models/address-mercha
     providedIn: 'root'
 })
 export class MerchantFilterService {
+    private  readonly  API_URL = environment.apiUrl;
     private readonly TOKEN = `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjAzNzc2NzA1MDkiLCJuYW1laWQiOiJjdXN0b21lciIsImZhbWlseV9uYW1lIjoiMmE2MDM3OGUtZDEyMy00YjA1LThmYzAtNjU5ZDM5YTJmNWU5IiwibmJmIjoxNzM2ODQyMTU4LCJleHAiOjE3MzgwNTE3NTgsImlhdCI6MTczNjg0MjE1OH0.nplOmu-WL8i_tzB5cDj0dkaSY5PgwzZmmq1zPmgJMLc`
     private readonly httpClient = inject(HttpClient);
     private readonly utilsService = inject(UtilsService);
@@ -25,7 +26,6 @@ export class MerchantFilterService {
         selectedAddressGroupId: string,
         isShowListAddressGroups: boolean,
 
-        selectedMerchant: IMerchant | null,
         merchantGroups: IAddressGroupData[],
         isShowMerchantGroups: boolean,
         selectedGroupType: EAddressGroupType | null,
@@ -35,6 +35,9 @@ export class MerchantFilterService {
 
         // Custom Data
         merchantGroups_v2: IMerchantGroup[],
+        showMerchantGroupType: EShowMerchantGroupType | null,
+        selectedMerchant: IMerchant | null,
+
 
     }>(
         {
@@ -43,25 +46,23 @@ export class MerchantFilterService {
             selectedAddressGroupId: 'ALL',
             isShowListAddressGroups: false,
             isShowMerchantGroups: false,
-            selectedMerchant: null,
             merchantGroups: [],
             selectedGroupType: null,
             listAddress: [],
             selectedListAddress: null,
             selectedSubService: null,
 
-
-
-
             // Custom Data
             merchantGroups_v2: [],
+            showMerchantGroupType: null,
+            selectedMerchant: null,
+
         }
     );
 
     serviceTypes$ = new BehaviorSubject<IServiceType[]>([]);
 
     constructor() {
-
 
         const systemGroupMerchants: IMerchantGroup[] = this.storageService.getItem<IMerchantGroup[]>(EStorageKey.GROUP_MERCHANTS) ?? [
             {
@@ -71,7 +72,8 @@ export class MerchantFilterService {
                 merchants: [],
                 avatars: [],
                 type: EMerchantGroupType.SYSTEM,
-                showOnSidebar: true,
+                showOnSidebar: false,
+                selected: false,
             },
             {
                 id: ESystemMerchantGroupType.WANT_TO_GO,
@@ -80,7 +82,9 @@ export class MerchantFilterService {
                 merchants: [],
                 avatars: [],
                 type: EMerchantGroupType.SYSTEM,
-                showOnSidebar: true,
+                showOnSidebar: false,
+                selected: false,
+
             },
             {
                 id: ESystemMerchantGroupType.STARRED_PLACES,
@@ -89,7 +93,9 @@ export class MerchantFilterService {
                 merchants: [],
                 avatars: [],
                 type: EMerchantGroupType.SYSTEM,
-                showOnSidebar: true,
+                showOnSidebar: false,
+                selected: false,
+
             },
             {
                 id: ESystemMerchantGroupType.FAVORITES,
@@ -98,7 +104,9 @@ export class MerchantFilterService {
                 merchants: [],
                 avatars: [],
                 type: EMerchantGroupType.SYSTEM,
-                showOnSidebar: true,
+                showOnSidebar: false,
+                selected: false,
+
             }
         ];
         this.addressData.next({
@@ -113,53 +121,7 @@ export class MerchantFilterService {
             }
         });
     }
-    private  readonly  API_URL = environment.apiUrl;
 
-    get addressData$() {
-        return this.addressData.asObservable();
-    }
-    get selectedAddressGroup$() {
-        return this.addressData.asObservable().pipe(
-            distinctUntilChanged((prev, curr) => {
-                return prev === curr;
-            }),
-            map(data => {
-                const {addressGroups, selectedAddressGroupId} = data;
-                return addressGroups.find(it => it.id === selectedAddressGroupId) ?? null;
-            }));
-    }
-    get addresses$() {
-        return this.addressData.asObservable().pipe(
-            distinctUntilChanged((prev, curr) => {
-                return prev === curr;
-            }),
-            map(data => {
-                const {addressGroups, selectedAddressGroupId} = data;
-                if (selectedAddressGroupId === 'ALL') {
-                    return addressGroups.flatMap(it => it.addresses);
-                }
-
-                const selectedAddressGroup = addressGroups.find(it => it.id === selectedAddressGroupId)
-                return selectedAddressGroup ? selectedAddressGroup.addresses : [];
-            }));
-    }
-    get listAddress$() {
-        return this.addressData.asObservable().pipe(
-            map(data => data.listAddress),
-            distinctUntilChanged((prev, curr) => {
-                return prev === curr;
-            }));
-    }
-    get allAddresses$() {
-        return this.addressData.asObservable().pipe(
-            distinctUntilChanged((prev, curr) => {
-                return prev === curr;
-            }),
-            map(data => {
-                const {addressGroups, selectedAddressGroupId} = data;
-                return addressGroups.flatMap(it => it.addresses);
-            }));
-    }
     get selectedGroupType$() {
         return this.addressData.asObservable().pipe(
             map(data => data.selectedGroupType),
@@ -167,15 +129,6 @@ export class MerchantFilterService {
                 return prev === curr;
             })
         );
-    }
-    get isShowListAddressGroups$() {
-        return this.addressData.asObservable().pipe(
-            distinctUntilChanged((prev, curr) => {
-                return prev === curr;
-            }),
-            map(data => {
-                return data.isShowListAddressGroups;
-            }));
     }
     get isShowMerchantGroups$() {
         return this.addressData.asObservable().pipe(
@@ -185,14 +138,6 @@ export class MerchantFilterService {
             map(data => {
                 return data.isShowMerchantGroups;
             }));
-    }
-    get selectedAddress$() {
-        return this.addressData.asObservable().pipe(
-            map(data => data.selectedAddress),
-            distinctUntilChanged((prev, curr) => {
-                return prev === curr;
-            }),
-            map(data => data));
     }
     get selectedMerchant$() {
         return this.addressData.asObservable().pipe(
@@ -221,36 +166,10 @@ export class MerchantFilterService {
                 }) as IAddressGroup[];
             }), shareReplay(1));
     }
-    get merchantGroups$() {
-        return this.addressData.asObservable().pipe(
-            map(data => data.merchantGroups),
-            distinctUntilChanged((prev, curr) => {
-                return prev === curr;
-            }),
-            map(data => {
-                return data.map(it => {
-                    const avatars = it.addresses.slice(it.addresses.length - 2).map(address => address.avatar);
-
-                    return {
-                        id: it.id,
-                        title: it.title,
-                        avatars,
-                        numberAddresses: it.addresses.length
-                    }
-                }) as IAddressGroup[];
-            }), shareReplay(1));
-    }
     get selectedAddressGroupId$() {
         return this.addressData.asObservable().pipe(
             map(data => data.selectedAddressGroupId),
             distinctUntilChanged((prev, curr) => prev === curr));
-    }
-    get selectedListAddress$() {
-        return this.addressData.asObservable().pipe(
-            map(data => data.selectedListAddress),
-            distinctUntilChanged((prev, curr) => {
-                return prev === curr;
-            }));
     }
     get selectedSubService$() {
         return this.addressData.asObservable().pipe(
@@ -267,26 +186,44 @@ export class MerchantFilterService {
                 return prev === curr;
             }));
     }
+    get showMerchantGroupType$() {
+        return this.addressData.asObservable().pipe(
+            map(data => data.showMerchantGroupType),
+            distinctUntilChanged((prev, curr) => {
+                return prev === curr;
+            }));
+    }
 
     updateSelectedSubService(subService: ISubServiceType | null) {
         this.addressData.next({...this.addressData.value, selectedSubService: subService});
     }
 
-    updateAddressGroups(addressGroups: IAddressGroupData[]): void {
-        this.addressData.next({...this.addressData.value, addressGroups});
-    }
-
     updateSelectedAddressGroup(addressGroupId: string) {
+        const {merchantGroups_v2} = this.addressData.value;
+        merchantGroups_v2.forEach(group => {
+            group.selected = group.id === addressGroupId;
+        });
         this.addressData.next({
             ...this.addressData.value,
-            selectedAddressGroupId: addressGroupId,
+            merchantGroups_v2: [...merchantGroups_v2],
+            isShowMerchantGroups: true,
+            isShowListAddressGroups: true
         });
     }
 
     updateSelectedGroupType(selectedGroupType: EAddressGroupType | null) {
         this.addressData.next({
             ...this.addressData.value,
+            isShowMerchantGroups: false,
+            isShowListAddressGroups: false,
             selectedGroupType: selectedGroupType,
+        });
+    }
+
+    updateShowMerchantGroupType(type: EShowMerchantGroupType | null) {
+        this.addressData.next({
+            ...this.addressData.value,
+            showMerchantGroupType: type,
         });
     }
     updateSelectedMerchant(merchant: IMerchant | null) {
@@ -333,6 +270,7 @@ export class MerchantFilterService {
 
     addToList(groupId: string, merchant: IMerchant) {
         let {merchantGroups_v2} = this.addressData.value;
+        merchantGroups_v2.forEach(group => {group.selected = false;});
 
         const currentIndex = merchantGroups_v2.findIndex(it => it.id === groupId);
         if (currentIndex === -1) {
@@ -345,21 +283,13 @@ export class MerchantFilterService {
                 type: EMerchantGroupType.SERVICE_TYPE,
                 merchants: [merchant],
                 showOnSidebar: true,
+                selected: true,
             });
         } else {
             const isExist = merchantGroups_v2[currentIndex].merchants.find(it => it.id === merchant.id);
             if (isExist) {
                 return;
             }
-
-            merchantGroups_v2.forEach(group => {
-                if (group.id !== 'FAVORITES' && group.id !== groupId) {
-                    const index = group.merchants.findIndex(it => it.id === merchant.id);
-                    if (index !== -1) {
-                        group.merchants.splice(index, 1);
-                    }
-                }
-            })
 
             merchantGroups_v2[currentIndex].merchants.push(merchant);
             const lastTwoAvatars = merchantGroups_v2[currentIndex].merchants.slice(merchantGroups_v2[currentIndex].merchants.length - 2).map(it => it.avatar);
@@ -371,26 +301,6 @@ export class MerchantFilterService {
             merchantGroups_v2: [...merchantGroups_v2],
         });
         this.storageService.setItem(JSON.stringify(merchantGroups_v2), EStorageKey.GROUP_MERCHANTS);
-    }
-
-    removeFromList(listAddressId: string, merchantId: string) {
-        let {listAddress} = this.addressData.value;
-
-        const currentListIndex = listAddress.findIndex(it => it.id === listAddressId);
-        if (currentListIndex === -1) {
-            return;
-        }
-
-        const merchantIndex = listAddress[currentListIndex].merchants.findIndex(it => it.id === merchantId);
-        if (merchantIndex !== -1) {
-            listAddress[currentListIndex].merchants.splice(merchantIndex, 1);
-            this.addressData.next({
-                ...this.addressData.value,
-                listAddress: [...listAddress],
-            });
-            this.storageService.setItem(JSON.stringify(listAddress), EStorageKey.LIST_ADDRESS);
-
-        }
     }
 
     removeFromGroup(groupId: string, merchantId: string) {
@@ -411,6 +321,22 @@ export class MerchantFilterService {
             this.storageService.setItem(JSON.stringify(merchantGroups_v2), EStorageKey.GROUP_MERCHANTS);
 
         }
+    }
+
+    selectMerchantGroup(groupId: string) {
+        const {merchantGroups_v2} = this.addressData.value;
+        merchantGroups_v2.forEach(group => {
+            group.selected = group.id === groupId;
+            if (group.type === EMerchantGroupType.SYSTEM) {
+                group.showOnSidebar = group.selected;
+            }
+        });
+        this.addressData.next({
+            ...this.addressData.value,
+            merchantGroups_v2: [...merchantGroups_v2],
+        });
+        this.storageService.setItem(JSON.stringify(merchantGroups_v2), EStorageKey.GROUP_MERCHANTS);
+
     }
 
     getMerchants(merchantFilterRequest: IMerchantFilterRequest) {
@@ -443,6 +369,16 @@ export class MerchantFilterService {
         this.serviceTypes$.next([...serviceTypes]);
     }
 
+    getSubServiceTypes(serviceTypeId: string)   {
+        const url = this.API_URL + `/app/dropdownapp/subservicetype` + `?service_type_id=${serviceTypeId}`;
+        return this.httpClient.get<IResponseData<string>>(url,{
+            headers: {
+                Authorization: this.TOKEN
+            }
+        })
+            .pipe(map(res =>
+                this.utilsService.convertKeysToCamelCase<IResponseData<any>>(res)));
+    }
 
     private getServiceTypes()   {
         const url = this.API_URL + `/app/dropdownapp/servicetype`;
@@ -453,17 +389,6 @@ export class MerchantFilterService {
         })
             .pipe(map(res =>
                 this.utilsService.convertKeysToCamelCase<IResponseData<IServiceType[]>>(res)));
-    }
-
-    getSubServiceTypes(serviceTypeId: string)   {
-        const url = this.API_URL + `/app/dropdownapp/subservicetype` + `?service_type_id=${serviceTypeId}`;
-        return this.httpClient.get<IResponseData<string>>(url,{
-            headers: {
-                Authorization: this.TOKEN
-            }
-        })
-            .pipe(map(res =>
-                this.utilsService.convertKeysToCamelCase<IResponseData<any>>(res)));
     }
 }
 
@@ -517,4 +442,9 @@ export interface IMerchantGroup {
     type: EMerchantGroupType,
     merchants: IMerchant[];
     showOnSidebar: boolean;
+    selected: boolean;
+}
+
+export enum EShowMerchantGroupType {
+    CLIENT = 'CLIENT', HISTORY = 'HISTORY'
 }

@@ -11,22 +11,24 @@ import {
 import {AutomaticallyUnsubscribe} from '@constants/automatically-unsubscribe';
 import {
     EAddressGroupType,
-    EMerchantGroupType,
+    EMerchantGroupType, EShowMerchantGroupType,
     ESystemMerchantGroupType,
     IListAddress,
     IMerchantGroup,
     MerchantFilterService
 } from '@services/merchant-filter.service';
-import {takeUntil} from 'rxjs';
+import {filter, takeUntil} from 'rxjs';
 import {IconPaths} from '@constants/image-paths';
 import {SafeSvgPipe} from '@pipes/safe-svg.pipe';
 import {Overlay, OverlayConfig, OverlayRef} from '@angular/cdk/overlay';
 import {CdkPortal, PortalModule, TemplatePortal} from '@angular/cdk/portal';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
+// Models
 import {IMerchant} from '@models/merchant.interface';
 import {IAddressGroup} from '@models/address-merchant.interface';
 import {FilterPipe} from '@pipes/filter.pipe';
+import {StarRatingDirective} from 'directives/star-rating.directive';
 
 @Component({
     selector: 'app-personal-groups',
@@ -36,7 +38,8 @@ import {FilterPipe} from '@pipes/filter.pipe';
         SafeSvgPipe,
         PortalModule,
         FormsModule,
-        FilterPipe
+        FilterPipe,
+        StarRatingDirective,
     ],
     templateUrl: './personal-groups.component.html',
     styleUrl: './personal-groups.component.scss',
@@ -54,14 +57,16 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
     private overlayRef: OverlayRef | null = null;
 
     selectedGroup = signal<IMerchantGroup | null>(null);
-    merchants = signal<IMerchant[]>([]);
     selectedMerchant = signal<IMerchant | null>(null);
-    selectedGroupType = signal<EAddressGroupType | null>(EAddressGroupType.SAVED);
-    listAddress = signal<IListAddress[]>([]);
+    showMerchantGroupType = signal<EShowMerchantGroupType | null>(null);
     openAddListForm = signal(false);
     addressGroups = signal<IAddressGroup[]>([]);
     selectedAddressGroupId = signal('');
-    merchantGroups = signal<IMerchantGroup[]>([])
+    systemMerchantGroups = signal<IMerchantGroup[]>([]);
+
+    merchantGroups = signal<IMerchantGroup[]>([]);
+    selectedMerchantGroupId = signal('');
+    merchants = signal<IMerchant[]>([]);
 
     newGroupName = '';
 
@@ -72,22 +77,6 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
             .subscribe((selectedAddressGroupId) => {
                 console.log('selectedAddressGroupId', selectedAddressGroupId);
                 // this.selectedAddressGroupId.set(selectedAddressGroupId);
-            });
-        this.merchantFilterService.listAddress$
-            .pipe(takeUntil(this.destroyFlag))
-            .subscribe((listAddress) => {
-                this.listAddress.set(listAddress);
-            });
-        this.merchantFilterService.selectedGroupType$
-            .pipe(takeUntil(this.destroyFlag))
-            .subscribe((selectedGroupType) => {
-                this.selectedGroupType.set(selectedGroupType);
-            });
-
-        this.merchantFilterService.selectedMerchant$
-            .pipe(takeUntil(this.destroyFlag))
-            .subscribe((selectedMerchant) => {
-                this.selectedMerchant.set(selectedMerchant);
             });
 
         this.merchantFilterService.addressGroups$
@@ -107,10 +96,31 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
         this.merchantFilterService.merchantGroups_v2$
             .pipe(takeUntil(this.destroyFlag))
             .subscribe((merchantGroups) => {
-                this.merchantGroups.set(merchantGroups.filter(group =>
-                    group.type === EMerchantGroupType.CUSTOM
-                    || group.type === EMerchantGroupType.SYSTEM
-                ));
+                const systemMerchantGroups: IMerchantGroup[] = [];
+                let selectedMerchantGroupId = this.selectedMerchantGroupId();
+                let merchants: IMerchant[] = [];
+                merchantGroups.forEach(group => {
+
+                    if (group.type === EMerchantGroupType.CUSTOM
+                        || group.type === EMerchantGroupType.SYSTEM) {
+                        systemMerchantGroups.push(group);
+                    }
+                    if (group.selected) {
+                        selectedMerchantGroupId = group.id;
+                        merchants = group.merchants;
+                    }
+                });
+                this.merchants.set(merchants);
+                this.selectedMerchantGroupId.set(selectedMerchantGroupId);
+                this.merchantGroups.set(merchantGroups);
+                this.systemMerchantGroups.set(systemMerchantGroups);
+
+            });
+
+        this.merchantFilterService.showMerchantGroupType$
+            .pipe(takeUntil(this.destroyFlag))
+            .subscribe((showMerchantGroupType) => {
+                this.showMerchantGroupType.set(showMerchantGroupType);
             });
 
     }
@@ -173,6 +183,7 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
                 type: EMerchantGroupType.CUSTOM,
                 avatars: [],
                 showOnSidebar: false,
+                selected: false,
             });
             this.onCloseCreateGroupForm();
         };
@@ -207,15 +218,31 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
         // this.merchantFilterService.selectListAddress(list.id);
     }
 
-    onMerchantFromGroup(event: MouseEvent, listId: string, merchantId: string) {
+    onSelectSystemGroup(groupId: string) {
+        this.merchantFilterService.selectMerchantGroup(groupId);
+    }
+
+    onRemoveMerchantFromGroup(event: MouseEvent, listId: string, merchantId: string) {
         event.stopPropagation();
-        this.merchantFilterService.removeFromList(listId, merchantId);
+        this.merchantFilterService.removeFromGroup(listId, merchantId);
     }
 
     onSelectMerchant(merchant: IMerchant) {
         this.merchantFilterService.updateSelectedMerchant(merchant);
     }
 
+    onSelectMerchantGroup(groupId: string) {
+        this.merchantFilterService.selectMerchantGroup(groupId);
+        this.selectedMerchantGroupId.set(groupId);
+
+        if (groupId === 'ALL') {
+            const merchants = this.merchantGroups().map(group => group.merchants).flat();
+            this.merchants.set(merchants);
+        }
+    }
+
     protected readonly ESystemMerchantGroupType = ESystemMerchantGroupType;
     protected readonly EMerchantGroupType = EMerchantGroupType;
+    protected readonly EShowMerchantGroupType = EShowMerchantGroupType;
+    protected readonly filter = filter;
 }

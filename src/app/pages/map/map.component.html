@@ -23,8 +23,15 @@
         <!--        <app-slider-photos></app-slider-photos>-->
         <!--        <app-personal-groups></app-personal-groups>-->
 
-        @if (selectedGroupType()) {
+        @if (showMerchantGroupType()) {
             <app-personal-groups></app-personal-groups>
+        }
+
+        @if (selectedMerchant()) {
+            <app-address-detail
+                [isShowMerchantGroups]="isShowMerchantGroups()"
+                [selectedMerchant]="selectedMerchant()"
+            ></app-address-detail>
         }
 
         <app-sidebar></app-sidebar>

@@ -8,7 +8,7 @@ import {
     ViewChild
 } from '@angular/core';
 import {
-    EAddressGroupType, IServiceType, ISubServiceType,
+    EAddressGroupType, IMerchantGroup, IServiceType, ISubServiceType,
     MerchantFilterService
 } from '@services/merchant-filter.service';
 import {CommonModule, DecimalPipe} from '@angular/common';
@@ -22,7 +22,6 @@ import {AutomaticallyUnsubscribe} from '@constants/automatically-unsubscribe';
 import {AddressDetailComponent} from '@pages/map/address-detail/address-detail.component';
 import {IAddress, IAddressGroup, IAddressGroupData} from '@models/address-merchant.interface';
 import {IMerchant, IMerchantFilterRequest} from '@models/merchant.interface';
-import {EStorageKey} from '@constants/storage-key';
 import {StorageService} from '@services/storage.service';
 
 const PIN_ICON = `<svg class="c-text-gray" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M480.14-490.77q26.71 0 45.59-19.02 18.89-19.02 18.89-45.73 0-26.71-19.03-45.6Q506.57-620 479.86-620q-26.71 0-45.59 19.02-18.89 19.02-18.89 45.73 0 26.71 19.03 45.6 19.02 18.88 45.73 18.88ZM480-172.92q112.77-98.16 178.31-199.66t65.54-175.57q0-109.77-69.5-181.2-69.5-71.42-174.35-71.42t-174.35 71.42q-69.5 71.43-69.5 181.2 0 74.07 65.54 175.57T480-172.92Zm0 53.69Q339-243.92 267.58-351.81q-71.43-107.88-71.43-196.34 0-126.93 82.66-209.39Q361.46-840 480-840q118.54 0 201.19 82.46 82.66 82.46 82.66 209.39 0 88.46-71.43 196.34Q621-243.92 480-119.23Zm0-436.15Z"/></svg>`;
@@ -53,18 +52,12 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit,
 
     private readonly merchantFilterService = inject(MerchantFilterService);
     private readonly fb = inject(FormBuilder);
-    private readonly storageService = inject(StorageService);
 
     readonly searchFrom = this.fb.group({
         keySearch: [this.keyS],
         subServiceTypeId: [''],
     });
-    addressGroups = signal<IAddressGroup[]>([]);
-    addresses = signal<IAddress[]>([]);
-    allAddresses = signal<IAddress[]>([]);
-    allMerchants = signal<IMerchant[]>([]);
     selectedAddressGroupId = signal('');
-    isShowListAddressGroups = signal(false);
     isShowResultSearch = signal(false);
 
     responseMerchants = signal<IMerchant[]>([]);
@@ -73,6 +66,8 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit,
     isShowMerchantGroups = signal<boolean>(false);
     selectedSubService = signal<ISubServiceType | null>(null);
     mapServices = signal<Map<string, IServiceType>>(new Map());
+    merchantGroups = signal<IMerchantGroup[]>([]);
+    merchants = signal<IMerchant[]>([]);
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['keyS'] && changes['keyS'].currentValue !== changes['keyS'].previousValue) {
@@ -86,47 +81,11 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit,
                 this.selectedMerchant.set(merchant);
             });
 
-        this.merchantFilterService.addressGroups$
-            .subscribe((addressGroups) => {
-                this.addressGroups.set(addressGroups);
-            });
-
-        this.merchantFilterService.selectedAddressGroupId$
-            .subscribe((selectedAddressGroupId) => {
-                this.selectedAddressGroupId.set(selectedAddressGroupId);
-            });
-
-        this.merchantFilterService.addresses$
-            .subscribe((addresses) => {
-                this.addresses.set(addresses);
-            });
-
-        this.merchantFilterService.allAddresses$
-            .subscribe((addresses) => {
-                const addressOptions = addresses.map(it => {
-                    const option: IAddressOption = {
-                        id: it.id,
-                        icon: CLOCK_ICON,
-                        title: it.title,
-                        address: it.addressDetail,
-                        type: 'type',
-                        saved: true
-                    };
-                    return option;
-                });
-                this.allAddresses.set(addresses);
-            });
-
-        this.merchantFilterService.isShowListAddressGroups$
-            .subscribe((isShowListAddressGroups) => {
-                this.isShowListAddressGroups.set(isShowListAddressGroups);
-            });
-
         this.searchFrom.valueChanges
             .pipe( debounceTime(500))
             .subscribe(() => {
                 this.isShowResultSearch.set(true);
-                this.getMerchants(this.allMerchants());
+                this.getMerchants(this.merchants());
             });
 
         this.merchantFilterService.selectedGroupType$
@@ -154,10 +113,17 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit,
                 });
                 this.mapServices.set(mapServices);
             });
-    }
 
-    onSelectAddressGroup(addressGroupId: string) {
-        this.merchantFilterService.updateSelectedAddressGroup(addressGroupId);
+        this.merchantFilterService.merchantGroups_v2$
+            .pipe(takeUntil(this.destroyFlag))
+            .subscribe(merchantGroups => {
+                const selectedGroup = merchantGroups.find(group => group.selected);
+                merchantGroups = merchantGroups.filter(group => group.showOnSidebar);
+                console.log('selectedGroup', selectedGroup);
+                this.merchantGroups.set(merchantGroups);
+                this.merchants.set(selectedGroup?.merchants ?? []);
+                this.selectedAddressGroupId.set(selectedGroup?.id ?? 'ALL');
+            });
     }
 
     onSelectAddressOption(addressOption: IAddressOption) {

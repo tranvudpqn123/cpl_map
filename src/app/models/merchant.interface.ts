@@ -28,7 +28,7 @@ export interface IMerchant {
     serviceTypeId: string;
     serviceName: string;
     code: string
-    name: string
+    name: string;
     avatar: string
     startHour?: string
     endHour?: string

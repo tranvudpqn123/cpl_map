@@ -2,7 +2,7 @@
     class="position-fixed search-box-wrapper"
     [class.large]="true"
 >
-    @if (selectedGroupType() === EAddressGroupType.SAVED) {
+    @if (showMerchantGroupType() === EShowMerchantGroupType.CLIENT) {
         <div class="mt-4 overflow-auto merchants">
             <div class="px-4 d-flex align-items-center justify-content-between fs-14px">
                 <h5 class="fw-500 fs-5">Your Lists</h5>
@@ -16,10 +16,10 @@
             </div>
 
             <ul class="py-3 address-group-types">
-                @for(group of merchantGroups(); track group.id) {
+                @for(group of systemMerchantGroups(); track group.id) {
                     <li
                         class="py-3 px-4 d-flex align-items-center justify-content-between cursor-pointer group"
-                        (click)="onSelectList(group.id)"
+                        (click)="onSelectSystemGroup(group.id)"
                     >
                         <div class="d-flex align-items-center justify-content-between gap-3 ">
                             <span [innerHTML]="group.icon | safeSvg"></span>
@@ -46,17 +46,19 @@
 
             <div>
                 <div class="d-flex flex-wrap gap-2">
-                    <button class="btn btn-address-group">All</button>
-                    <button class="btn btn-address-group">Hà Nội <span>24</span></button>
-                    <button class="btn btn-address-group">Thanh Hóa & Ninh Bình <span>24</span></button>
-                    <button class="btn btn-address-group">Quảng Ngãi <span>24</span></button>
-                    <button class="btn btn-address-group">Đồng Nai <span>24</span></button>
-                    <button class="btn btn-address-group">TP Hồ Chí Minh <span>24</span></button>
-                    <button class="btn btn-address-group">Hà Nội <span>24</span></button>
-                    <button class="btn btn-address-group">Thanh Hóa & Ninh Bình <span>24</span></button>
-                    <button class="btn btn-address-group">Quảng Ngãi <span>24</span></button>
-                    <button class="btn btn-address-group">Đồng Nai <span>24</span></button>
-                    <button class="btn btn-address-group">TP Hồ Chí Minh <span>24</span></button>
+                    <button
+                        class="btn btn-address-group"
+                        [class.selected]="selectedMerchantGroupId() === 'ALL'"
+                        (click)="onSelectMerchantGroup('ALL')"
+                    >All</button>
+                    @for(group of merchantGroups() | filter: 'SERVICE_TYPE': 'type'; track group.id) {
+                        <button
+                            class="btn btn-address-group"
+                            [class.selected]="selectedMerchantGroupId() === group.id"
+                            (click)="onSelectMerchantGroup(group.id)"
+                        >{{group.title}} <span>{{group.merchants.length > 1 ? group.merchants.length : ''}}</span></button>
+                    }
+
                 </div>
 
                 <div class="my-4 w-100"><hr></div>
@@ -73,7 +75,7 @@
                                     <button
                                         class="position-absolute align-items-center justify-content-center border rounded-circle btn btn-remove-from-list"
                                         [innerHTML]="IconPaths.CLOSE | safeSvg"
-                                        (click)="onMerchantFromGroup($event, selectedGroup()!.id, merchant.id)"
+                                        (click)="onRemoveMerchantFromGroup($event, merchant.serviceTypeId, merchant.id)"
                                     ></button>
 
                                     <div class="rounded overflow-hidden avatar">
@@ -82,18 +84,12 @@
                                     <div class="d-flex flex-column justify-content-between">
                                         <div class="d-flex align-items-center gap-2">
                                             <div class="d-flex align-items-center justify-content-center rounded merchant-discount">{{merchant.discountRate}}%</div>
-                                            <h5 class="c-text-truncate address-title">{{merchant.name}}</h5>
+                                            <h5 class="lh-1 c-text-truncate address-title">{{merchant.name}}</h5>
                                         </div>
                                         <div class="lh-1 d-flex align-items-center gap-2 address-rating">
-                                            <div class="rating-point">4.6</div>
-                                            <div class="star-icons">
-                                                <i class="bi bi-star-fill"></i>
-                                                <i class="bi bi-star-fill"></i>
-                                                <i class="bi bi-star-fill"></i>
-                                                <i class="bi bi-star-fill"></i>
-                                                <i class="bi bi-star-half"></i>
-                                            </div>
-                                            <div class="rating-amount">(84)</div>
+                                            <div class="rating-point">{{merchant.rating}}</div>
+                                            <div class="star-icons" [appStarRating]="merchant.rating"></div>
+                                            <div class="rating-amount">({{merchant.totalRating}})</div>
                                         </div>
                                         <span class="address-full">{{merchant.fullAddress}}</span>
                                     </div>

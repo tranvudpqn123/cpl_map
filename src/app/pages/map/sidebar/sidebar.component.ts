@@ -1,10 +1,12 @@
 import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
 //Service
-import {EAddressGroupType, IListAddress, IMerchantGroup} from '@services/merchant-filter.service';
-import {MerchantFilterService} from '@services/merchant-filter.service';
+import {
+    EAddressGroupType,
+    EShowMerchantGroupType,
+    IMerchantGroup,
+    MerchantFilterService
+} from '@services/merchant-filter.service';
 import {StorageService} from '@services/storage.service';
-
-import {IAddressGroup} from '@models/address-merchant.interface';
 import {EStorageKey} from '@constants/storage-key';
 // rxjs
 import {takeUntil} from 'rxjs';
@@ -32,7 +34,7 @@ export class SidebarComponent extends AutomaticallyUnsubscribe implements OnInit
     merchantGroups = signal<IMerchantGroup[]>([]);
 
     selectedAddressGroupId = signal('');
-    selectedGroupType = signal<EAddressGroupType | null>(null);
+    showMerchantGroupType = signal<EShowMerchantGroupType | null>(null);
 
     ngOnInit() {
         this.merchantFilterService.merchantGroups_v2$
@@ -40,12 +42,6 @@ export class SidebarComponent extends AutomaticallyUnsubscribe implements OnInit
             .subscribe((merchantGroups) => {
                 this.merchantGroups.set(merchantGroups);
             });
-        this.merchantFilterService.addressData$.subscribe((addressData) => {
-            const dataLocal = JSON.parse(JSON.stringify(this.storageService.getItem(EStorageKey.LIST_SEND_PARTNER)));
-            if(addressData.addressGroups?.length < 1 && dataLocal?.length > 0 ) {
-                addressData.addressGroups = dataLocal;
-            }
-        })
         this.getListSeenMerchant();
 
         this.merchantFilterService.selectedAddressGroupId$
@@ -54,10 +50,11 @@ export class SidebarComponent extends AutomaticallyUnsubscribe implements OnInit
                 this.selectedAddressGroupId.set(selectedAddressGroupId);
             });
 
-        this.merchantFilterService.selectedGroupType$
+        this.merchantFilterService.showMerchantGroupType$
             .pipe(takeUntil(this.destroyFlag))
-            .subscribe(selectedGroupType => {
-                this.selectedGroupType.set(selectedGroupType);
+            .subscribe(showMerchantGroupType => {
+                console.log('showMerchantGroupType', showMerchantGroupType);
+                this.showMerchantGroupType.set(showMerchantGroupType);
             });
     }
 
@@ -71,12 +68,15 @@ export class SidebarComponent extends AutomaticallyUnsubscribe implements OnInit
 
     onSelectAddressGroup(addressGroupId: string) {
         this.merchantFilterService.updateSelectedAddressGroup(addressGroupId);
+        this.merchantFilterService.updateShowMerchantGroupType(EShowMerchantGroupType.HISTORY);
+
     }
 
-    onShowCustomerGroup(addressGroupType: EAddressGroupType) {
+    onShowCustomGroup(type: EShowMerchantGroupType) {
+        this.merchantFilterService.updateShowMerchantGroupType(type);
 
-        this.merchantFilterService.updateSelectedGroupType(addressGroupType);
     }
 
 
+    protected readonly EShowMerchantGroupType = EShowMerchantGroupType;
 }

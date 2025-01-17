@@ -25,6 +25,13 @@
 
 .btn-address-group {
     border: 1px solid rgb(var(--c-gray));
+
+    &.selected {
+        border: 1px solid rgb(var(--c-primary));
+        color: rgb(var(--c-primary));
+        background-color: rgb(var(--c-primary), .1);
+
+    }
 }
 
 .rounded-30px {

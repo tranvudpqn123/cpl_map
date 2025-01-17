@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, inject, OnInit, signal, ViewChild} from '@angular/core';
 // Services
 import {
-    EAddressGroupType,
+    EAddressGroupType, EShowMerchantGroupType,
     IListAddress,
     IServiceType,
     ISubServiceType,
@@ -24,6 +24,7 @@ import {ICategory} from '@models/category.interface';
 import {IMerchant} from '@models/merchant.interface';
 import {CdkPortal} from '@angular/cdk/portal';
 import {Overlay, OverlayConfig, OverlayRef} from '@angular/cdk/overlay';
+import {AddressDetailComponent} from '@pages/map/address-detail/address-detail.component';
 
 @Component({
     selector: 'app-map',
@@ -35,7 +36,8 @@ import {Overlay, OverlayConfig, OverlayRef} from '@angular/cdk/overlay';
         PersonalGroupsComponent,
         GoogleMapsModule,
         ClickOutsideDirective,
-        CdkPortal
+        CdkPortal,
+        AddressDetailComponent
     ],
     templateUrl: './map.component.html',
     styleUrl: './map.component.scss',
@@ -49,8 +51,7 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit {
     private overlayRef: OverlayRef | null = null;
     selectedMerchant = signal<IMerchant | null>(null);
     isShowMerchantGroups = signal<boolean>(false);
-    selectedGroupType = signal<EAddressGroupType | null>(null);
-    selectedList = signal<IListAddress | null>(null);
+    showMerchantGroupType = signal<EShowMerchantGroupType | null>(null);
 
     map: google.maps.Map | null = null;
     markers: any[] = [];
@@ -76,20 +77,10 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit {
                 this.isShowMerchantGroups.set(isShowMerchantGroups);
             });
 
-        this.merchantFilterService.selectedGroupType$
+        this.merchantFilterService.showMerchantGroupType$
             .pipe(takeUntil(this.destroyFlag))
-            .subscribe(selectedGroupType => {
-                this.selectedGroupType.set(selectedGroupType);
-                console.log('selectedGroupType: ', selectedGroupType);
-            });
-        this.merchantFilterService.selectedListAddress$
-            .pipe(takeUntil(this.destroyFlag))
-            .subscribe((selectedList) => {
-                this.selectedList.set(selectedList);
-
-                if (this.map) {
-                    this.setMarkers(this.map, selectedList?.merchants ?? []);
-                }
+            .subscribe(showMerchantGroupType => {
+                this.showMerchantGroupType.set(showMerchantGroupType);
             });
 
         this.merchantFilterService.serviceTypes$.subscribe((serviceTypes) => {

@@ -1,7 +1,4 @@
-<div
-    class="position-fixed search-box-wrapper"
-    [class.large]="isShowListAddressGroups()"
->
+<div class="position-fixed search-box-wrapper">
     <form
         cdkOverlayOrigin
         #trigger="cdkOverlayOrigin"
@@ -37,84 +34,11 @@
         </div>
     </form>
 
-    @if (isShowListAddressGroups()) {
-        <div class="mt-4 overflow-auto recent-addresses">
-            <h5 class="position-sticky mb-4 d-flex align-items-center gap-2 fs-5 bg-white recent-addresses-title">
-                Recents
-                <svg class="d-inline-block" xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960"
-                     width="20px" fill="currentColor">
-                    <path
-                        d="M477.74-140q-135.2 0-232.48-92.31T140.54-459.9h50.67q8.12 113.77 89.96 191.71 81.83 77.93 196.57 77.93 121.88 0 206.55-85.21 84.68-85.22 84.68-207.09 0-120.39-85.09-203.79-85.09-83.39-206.14-83.39-64.87 0-122.1 28.57-57.23 28.58-99.84 77.27h102.05v50.26h-187.8v-187.64h50.26v100.72q49.1-55.98 116.08-87.71Q403.36-820 477.74-820q70.77 0 132.82 26.57 62.05 26.56 108.46 72.56t73.31 107.64q26.9 61.64 26.9 132.15 0 70.77-26.9 132.95-26.9 62.18-73.31 108.26-46.41 46.07-108.46 72.97T477.74-140Zm127.93-181.49-150-148.92v-211.08h50.25v190.41l135.54 133.8-35.79 35.79Z"/>
-                </svg>
-            </h5>
-
-            <div>
-                <div class="d-flex flex-wrap gap-2">
-                    <button
-                        class="btn btn-address-group"
-                        [class.selected]="selectedAddressGroupId() === 'ALL'"
-                        (click)="onSelectAddressGroup('ALL')"
-                    >All
-                    </button>
-                    @for (addressGroup of addressGroups(); track $index) {
-                        <button
-                            class="btn btn-address-group"
-                            [class.selected]="selectedAddressGroupId() === addressGroup.id"
-                            (click)="onSelectAddressGroup(addressGroup.id)"
-                        >
-                            {{ addressGroup.title }}
-                            <span>{{ addressGroup.numberAddresses > 1 ? addressGroup.numberAddresses : '' }}</span>
-                        </button>
-                    }
-                </div>
-
-                <div class="my-4 w-100">
-                    <hr>
-                </div>
-
-                <ul class="w-100 addresses">
-                    @for (address of addresses(); track $index) {
-                        <li class="w-100">
-                            <button
-                                class="p-2 w-100 d-flex align-items-center justify-content-between gap-2 text-start btn btn-address">
-                                <div class="flex-fill d-flex align-items-stretch gap-3">
-                                    <div
-                                        class="rounded overflow-hidden avatar"
-                                        [ngStyle]="{backgroundImage: 'url(' + address.avatar + ')'}"
-                                    >
-                                    </div>
-                                    <div class="flex-fill d-flex flex-column justify-content-between">
-                                        <h5 class="address-title">{{ address.title }}</h5>
-                                        <div class="lh-1 d-flex align-items-center gap-2 address-rating">
-                                            <div class="rating-point">{{ address.ratingNumber | number: '1.1-1' }}</div>
-                                            <div class="star-icons" [appStarRating]="address.ratingNumber"></div>
-                                            <div class="rating-amount">({{ address.ratingAmount | number }})</div>
-                                        </div>
-                                        <span>Thanh Hóa & Ninh Bình</span>
-                                    </div>
-                                </div>
-
-                                <div class="input-check-box">
-                                    <input class="form-check-input" type="checkbox">
-                                </div>
-                            </button>
-                        </li>
-                    }
-                </ul>
-
-            </div>
-        </div>
-    }
-
 </div>
 
-@if (selectedMerchant()) {
-    <app-address-detail
-        [isShowMerchantGroups]="isShowMerchantGroups()"
-        [selectedMerchant]="selectedMerchant()"
-    ></app-address-detail>
-}
 
+
+<!--  Start :: Result Option Template  -->
 <ng-template
     cdkConnectedOverlay
     [cdkConnectedOverlayOrigin]="trigger"
@@ -154,3 +78,4 @@
 
     </div>
 </ng-template>
+<!--  End :: Result Option Template  -->
