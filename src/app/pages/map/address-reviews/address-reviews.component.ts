@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject, Input, OnInit, signal} from '@angular/core';
-import {JsonPipe, NgStyle} from '@angular/common';
+import { NgStyle} from '@angular/common';
 import {StarRatingDirective} from 'directives/star-rating.directive';
-import {Swiper} from 'swiper';
 import {ReviewService} from '@services/review.service';
 
 @Component({
