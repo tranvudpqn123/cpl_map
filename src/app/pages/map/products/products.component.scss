@@ -36,7 +36,7 @@
     background: aqua;
     height: 100dvh;
 
-    .image-full img {
+    .image-full {
         height: 100dvh;
     }
 
@@ -63,8 +63,18 @@
     transition: background-color 0.3s, color 0.3s;
 }
 
-.nav-link:hover {
+.nav-link:hover:not(.active) {
     background-color: rgb(var(--c-primary), 0.4)
 }
+
+.swiper-button-prev,
+.swiper-button-next {
+    --swiper-navigation-size: 12px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    transform: translateY(-50%);
+}
+
 
 
