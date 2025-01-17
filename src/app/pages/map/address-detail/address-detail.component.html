@@ -240,7 +240,7 @@
             }
 
             @if (currentTab() === EAddressDetailTab.OVERVIEW || currentTab() === EAddressDetailTab.REVIEW) {
-                <app-address-reviews></app-address-reviews>
+                <app-address-reviews [merchantId]="selectedMerchant()?.id"></app-address-reviews>
             }
 
             @if (currentTab() === EAddressDetailTab.PRODUCT) {
