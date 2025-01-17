@@ -33,16 +33,18 @@
     top: 0;
     left: calc(30dvw - 55px);
     width: calc(70dvw + 67px);
-    background: aqua;
-    height: 100dvh;
 
-    .image-full img {
+    .image-full {
         height: 100dvh;
     }
 
     .button-zoom {
         bottom: 0;
         right: 5%;
+    }
+    .close-image-detail{
+        right: 3%;
+        top: 1%;
     }
 
 }
@@ -63,8 +65,18 @@
     transition: background-color 0.3s, color 0.3s;
 }
 
-.nav-link:hover {
+.nav-link:hover:not(.active) {
     background-color: rgb(var(--c-primary), 0.4)
 }
+
+.swiper-button-prev,
+.swiper-button-next {
+    --swiper-navigation-size: 12px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    transform: translateY(-50%);
+}
+
 
 

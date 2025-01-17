@@ -31,11 +31,11 @@ export class SliderPhotosComponent implements AfterViewInit, OnInit {
     photoSliderWrapperVertical: Swiper | null = null;
 
     ngOnInit() {
-        this.merchantFilterService.selectedAddress$
-            .subscribe((selectedAddress) => {
-                this.selectedAddress.set(selectedAddress);
-                this.selectedImageGroup.set(selectedAddress ? selectedAddress.imageGroups[0] : null);
-            });
+        // this.merchantFilterService.selectedAddress$
+        //     .subscribe((selectedAddress) => {
+        //         this.selectedAddress.set(selectedAddress);
+        //         this.selectedImageGroup.set(selectedAddress ? selectedAddress.imageGroups[0] : null);
+        //     });
     }
 
     ngAfterViewInit() {
