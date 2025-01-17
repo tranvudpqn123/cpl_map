@@ -112,7 +112,6 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit,
             .subscribe(merchantGroups => {
                 const selectedGroup = merchantGroups.find(group => group.selected);
                 merchantGroups = merchantGroups.filter(group => group.showOnSidebar);
-                console.log('selectedGroup', selectedGroup);
                 this.merchantGroups.set(merchantGroups);
                 this.merchants.set(selectedGroup?.merchants ?? []);
                 this.selectedAddressGroupId.set(selectedGroup?.id ?? 'ALL');

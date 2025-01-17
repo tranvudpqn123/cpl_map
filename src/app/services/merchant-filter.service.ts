@@ -238,7 +238,6 @@ export class MerchantFilterService {
             merchantGroups_v2.push(newListAddress);
         }
 
-        console.log('merchantGroups_v2', merchantGroups_v2);
         this.addressData.next({
             ...this.addressData.value,
             merchantGroups_v2: [...merchantGroups_v2],

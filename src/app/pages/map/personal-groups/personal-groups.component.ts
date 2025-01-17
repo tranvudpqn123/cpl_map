@@ -75,7 +75,6 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
         this.merchantFilterService.selectedAddressGroupId$
             .pipe(takeUntil(this.destroyFlag))
             .subscribe((selectedAddressGroupId) => {
-                console.log('selectedAddressGroupId', selectedAddressGroupId);
                 // this.selectedAddressGroupId.set(selectedAddressGroupId);
             });
 

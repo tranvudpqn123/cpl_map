@@ -53,7 +53,6 @@ export class SidebarComponent extends AutomaticallyUnsubscribe implements OnInit
         this.merchantFilterService.showMerchantGroupType$
             .pipe(takeUntil(this.destroyFlag))
             .subscribe(showMerchantGroupType => {
-                console.log('showMerchantGroupType', showMerchantGroupType);
                 this.showMerchantGroupType.set(showMerchantGroupType);
             });
     }
