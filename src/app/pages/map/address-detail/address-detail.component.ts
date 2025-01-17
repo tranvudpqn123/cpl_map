@@ -1,4 +1,14 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, inject, input, OnInit, output, signal} from '@angular/core';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    Component,
+    EventEmitter,
+    inject,
+    input,
+    OnInit, Output,
+    output,
+    signal
+} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {Swiper} from 'swiper';
 import {IconPaths} from '@constants/image-paths';
@@ -51,6 +61,8 @@ export class AddressDetailComponent extends AutomaticallyUnsubscribe implements 
     private readonly merchantFilterService = inject(MerchantFilterService);
     changeTab = output<EAddressDetailTab>()
     isShowMerchantGroups = input();
+    @Output() showMerchantGroupsChange = new EventEmitter<boolean>();
+
     selectedMerchant = input<IMerchant | null>();
 
     timeUntilClose: string | null = null;
@@ -117,6 +129,9 @@ export class AddressDetailComponent extends AutomaticallyUnsubscribe implements 
 
     onSelectTab(addressDetailTab: EAddressDetailTab) {
         this.currentTab.set(addressDetailTab);
+        if(addressDetailTab === 'PRODUCT' && this.isShowMerchantGroups() === true){
+            this.showMerchantGroupsChange.emit(false);
+        }
     }
 
     calculateTimeUntilClose() {
