@@ -1,15 +1,17 @@
 import {inject, Injectable} from '@angular/core';
 import {BehaviorSubject, distinctUntilChanged, map, shareReplay} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
-import {IResponseData} from '@models/response-data.interface';
-import {UtilsService} from '@services/utils.service';
-import {IconPaths} from '@constants/image-paths';
+// Services
 import {StorageService} from '@services/storage.service';
+import {UtilsService} from '@services/utils.service';
+// Models
+import {IconPaths} from '@constants/image-paths';
 import {EStorageKey} from '@constants/store-key';
-import data from './merchant.data.json';
 import {environment} from '@environments/environment';
 import {IMerchant, IMerchantFilterRequest, IMerchantResponse} from '@models/merchant.interface';
 import {IAddress, IAddressGroup, IAddressGroupData} from '@models/address-merchant.interface';
+import {IResponseData} from '@models/response-data.interface';
+
 
 @Injectable({
     providedIn: 'root'
@@ -122,14 +124,6 @@ export class MerchantFilterService {
         });
     }
 
-    get selectedGroupType$() {
-        return this.addressData.asObservable().pipe(
-            map(data => data.selectedGroupType),
-            distinctUntilChanged((prev, curr) => {
-                return prev === curr;
-            })
-        );
-    }
     get isShowMerchantGroups$() {
         return this.addressData.asObservable().pipe(
             distinctUntilChanged((prev, curr) => {
@@ -314,6 +308,13 @@ export class MerchantFilterService {
         const merchantIndex = merchantGroups_v2[currentListIndex].merchants.findIndex(it => it.id === merchantId);
         if (merchantIndex !== -1) {
             merchantGroups_v2[currentListIndex].merchants.splice(merchantIndex, 1);
+            const lastTwoAvatars = merchantGroups_v2[currentListIndex].merchants
+                .slice(merchantGroups_v2[currentListIndex].merchants.length - 2)
+                .map(it => it.avatar);
+            merchantGroups_v2[currentListIndex].avatars = lastTwoAvatars;
+            if (merchantGroups_v2[currentListIndex].merchants.length === 0) {
+                merchantGroups_v2.splice(currentListIndex, 1);
+            }
             this.addressData.next({
                 ...this.addressData.value,
                 merchantGroups_v2: [...merchantGroups_v2],

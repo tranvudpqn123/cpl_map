@@ -22,7 +22,7 @@
             >
             <button class="me-2 p-0 border-0 btn"><i class="fs-3 bi bi-search"></i></button>
 
-            @if (selectedMerchant() || isShowMerchantGroups()) {
+            @if (selectedMerchant()) {
                 <button
                     class="ms-4 p-0 d-flex align-items-center justify-content-center rounded-circle border-0 btn btn-close-popup"
                     (click)="onCloseAddressDetail()"

@@ -63,7 +63,6 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit,
     responseMerchants = signal<IMerchant[]>([]);
     options = signal<IAddressOption[]>([]);
     selectedMerchant = signal<IMerchant | null>(null);
-    isShowMerchantGroups = signal<boolean>(false);
     selectedSubService = signal<ISubServiceType | null>(null);
     mapServices = signal<Map<string, IServiceType>>(new Map());
     merchantGroups = signal<IMerchantGroup[]>([]);
@@ -86,12 +85,6 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit,
             .subscribe(() => {
                 this.isShowResultSearch.set(true);
                 this.getMerchants(this.merchants());
-            });
-
-        this.merchantFilterService.selectedGroupType$
-            .pipe(takeUntil(this.destroyFlag))
-            .subscribe(selectedGroupType => {
-                this.isShowMerchantGroups.set(!!selectedGroupType);
             });
 
         this.merchantFilterService.selectedSubService$

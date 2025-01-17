@@ -1,30 +1,31 @@
 import {ChangeDetectionStrategy, Component, inject, OnInit, signal, ViewChild} from '@angular/core';
+import {firstValueFrom, takeUntil} from 'rxjs';
+import {CommonModule} from '@angular/common';
+import {Overlay, OverlayConfig, OverlayRef} from '@angular/cdk/overlay';
+import {CdkPortal} from '@angular/cdk/portal';
+import {GoogleMapsModule} from '@angular/google-maps';
+
 // Services
 import {
-    EAddressGroupType, EShowMerchantGroupType,
-    IListAddress,
+    EShowMerchantGroupType,
     IServiceType,
     ISubServiceType,
     MerchantFilterService
 } from '@services/merchant-filter.service';
+import {CategoryService} from '@services/category.service';
+
 // Components
+import {AutomaticallyUnsubscribe} from '@constants/automatically-unsubscribe';
 import {SidebarComponent} from '@pages/map/sidebar/sidebar.component';
 import {FilterComponent} from '@pages/map/filter/filter.component';
 import {PersonalGroupsComponent} from '@pages/map/personal-groups/personal-groups.component';
-import {AutomaticallyUnsubscribe} from '@constants/automatically-unsubscribe';
-
-import {firstValueFrom, takeUntil} from 'rxjs';
-import {CommonModule} from '@angular/common';
-import {IconPaths} from '@constants/image-paths';
-import CollisionBehavior = google.maps.CollisionBehavior;
-import {GoogleMapsModule} from '@angular/google-maps';
-import {ClickOutsideDirective} from 'directives/click-outside.directive';
-import {CategoryService} from '@services/category.service';
-import {ICategory} from '@models/category.interface';
-import {IMerchant} from '@models/merchant.interface';
-import {CdkPortal} from '@angular/cdk/portal';
-import {Overlay, OverlayConfig, OverlayRef} from '@angular/cdk/overlay';
 import {AddressDetailComponent} from '@pages/map/address-detail/address-detail.component';
+
+// Models
+import {IconPaths} from '@constants/image-paths';
+import {IMerchant} from '@models/merchant.interface';
+
+import CollisionBehavior = google.maps.CollisionBehavior;
 
 @Component({
     selector: 'app-map',
@@ -35,7 +36,6 @@ import {AddressDetailComponent} from '@pages/map/address-detail/address-detail.c
         FilterComponent,
         PersonalGroupsComponent,
         GoogleMapsModule,
-        ClickOutsideDirective,
         CdkPortal,
         AddressDetailComponent
     ],
@@ -47,7 +47,6 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit {
     @ViewChild(CdkPortal) portal!: CdkPortal;
     private readonly overlay = inject(Overlay);
     private readonly merchantFilterService = inject(MerchantFilterService);
-    private readonly categoryService = inject(CategoryService);
     private overlayRef: OverlayRef | null = null;
     selectedMerchant = signal<IMerchant | null>(null);
     isShowMerchantGroups = signal<boolean>(false);
@@ -200,16 +199,6 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit {
 
         // Fit the map to the calculated bounds
         map.panToBounds(bounds, 50);
-    }
-
-    private toggleHighlight(markerView: any) {
-        if (markerView.content.classList.contains('highlight')) {
-            markerView.content.classList.remove('highlight');
-            markerView.zIndex = null;
-        } else {
-            markerView.content.classList.add('highlight');
-            markerView.zIndex = 1;
-        }
     }
 
     private showMoreDetail(markerView: any) {
