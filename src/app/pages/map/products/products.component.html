@@ -46,6 +46,9 @@
                 <div class="row h-100">
                     <!-- Image Viewer -->
                     <div class="col-12 position-relative bg-secondary">
+                        <div class="text-black position-absolute close-image-detail" (click)="closeDetailImage()">
+                            <span role="button" [innerHTML]="IconPaths.CLOSE | safeSvg"></span>
+                        </div>
                         <div
                             class="position-absolute d-flex align-items-center bg-dark top-50 start-50 translate-middle image-full">
                             <img
@@ -59,7 +62,8 @@
                                 <i>{{ selectedImage()!.price | dotSeparator }} VNĐ</i>
                                 <i class="text-warning">
                                     Hoàn tiền
-                                    ngay {{ selectedImage()!.price * (selectedImage()!.discountRate / 100) | dotSeparator }} VNĐ
+                                    ngay {{ selectedImage()!.price * (selectedImage()!.discountRate / 100) | dotSeparator }}
+                                    VNĐ
                                     khi mua sản phẩm
                                 </i>
                             </div>

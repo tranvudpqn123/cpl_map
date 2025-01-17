@@ -33,8 +33,6 @@
     top: 0;
     left: calc(30dvw - 55px);
     width: calc(70dvw + 67px);
-    background: aqua;
-    height: 100dvh;
 
     .image-full {
         height: 100dvh;
@@ -43,6 +41,10 @@
     .button-zoom {
         bottom: 0;
         right: 5%;
+    }
+    .close-image-detail{
+        right: 3%;
+        top: 1%;
     }
 
 }

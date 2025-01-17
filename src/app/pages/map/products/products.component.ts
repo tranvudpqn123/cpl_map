@@ -12,11 +12,13 @@ import {CommonModule} from '@angular/common';
 import {IProduct, IProductGroup} from '@models/product.interface';
 import {DotSeparatorPipe} from '@pipes/dot-separator.pipe';
 import {Swiper} from 'swiper';
+import {IconPaths} from '@constants/image-paths';
+import {SafeSvgPipe} from '@pipes/safe-svg.pipe';
 
 @Component({
     selector: 'app-products',
     standalone: true,
-    imports: [CommonModule, DotSeparatorPipe],
+    imports: [CommonModule, DotSeparatorPipe, SafeSvgPipe],
     templateUrl: './products.component.html',
     styleUrl: './products.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -29,6 +31,8 @@ export class ProductsComponent implements OnInit, AfterViewInit {
     selectedImage = signal<IProduct | null>(null);
     selectedGroupId = signal<string | null>(null);
     private readonly productsService = inject(ProductsService);
+    protected readonly IconPaths = IconPaths;
+
     @Input() merchantId!: string | undefined;
 
     ngOnInit(): void {
@@ -68,7 +72,6 @@ export class ProductsComponent implements OnInit, AfterViewInit {
             }
         })
     }
-
     selectGroup(id: string): void {
         if (id === this.selectedGroupId()) {
             this.selectedGroupId.set(null);
@@ -81,9 +84,13 @@ export class ProductsComponent implements OnInit, AfterViewInit {
         }
     }
 
-
     showDetailImage(data: IProduct): void {
-        this.selectedImage.set(data);
+        const currentImage = this.selectedImage();
+        this.selectedImage.set(currentImage && currentImage.id === data.id ? null : data);
     }
+    closeDetailImage(): void {
+        this.selectedImage.set(null);
+    }
+
 }
 
