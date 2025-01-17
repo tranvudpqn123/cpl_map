@@ -25,7 +25,6 @@ export class MerchantFilterService {
     private readonly addressData = new BehaviorSubject<{
         addressGroups: IAddressGroupData[],
         selectedAddress: IAddress | null,
-        selectedAddressGroupId: string,
         isShowListAddressGroups: boolean,
 
         merchantGroups: IAddressGroupData[],
@@ -45,7 +44,6 @@ export class MerchantFilterService {
         {
             addressGroups: [],
             selectedAddress: null,
-            selectedAddressGroupId: 'ALL',
             isShowListAddressGroups: false,
             isShowMerchantGroups: false,
             merchantGroups: [],
@@ -160,11 +158,7 @@ export class MerchantFilterService {
                 }) as IAddressGroup[];
             }), shareReplay(1));
     }
-    get selectedAddressGroupId$() {
-        return this.addressData.asObservable().pipe(
-            map(data => data.selectedAddressGroupId),
-            distinctUntilChanged((prev, curr) => prev === curr));
-    }
+
     get selectedSubService$() {
         return this.addressData.asObservable().pipe(
             map(data => data.selectedSubService),
@@ -196,6 +190,9 @@ export class MerchantFilterService {
         const {merchantGroups_v2} = this.addressData.value;
         merchantGroups_v2.forEach(group => {
             group.selected = group.id === addressGroupId;
+            if (group.type === EMerchantGroupType.SYSTEM) {
+                group.showOnSidebar = group.selected;
+            }
         });
         this.addressData.next({
             ...this.addressData.value,
@@ -218,6 +215,7 @@ export class MerchantFilterService {
         this.addressData.next({
             ...this.addressData.value,
             showMerchantGroupType: type,
+            selectedMerchant: null,
         });
     }
     updateSelectedMerchant(merchant: IMerchant | null) {

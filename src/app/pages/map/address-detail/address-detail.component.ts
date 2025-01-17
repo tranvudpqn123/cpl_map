@@ -65,7 +65,7 @@ export class AddressDetailComponent extends AutomaticallyUnsubscribe implements 
     currentTab = signal(EAddressDetailTab.OVERVIEW);
     showListOptions = signal(false);
     groupOptions = signal<IMerchantGroup[]>([]);
-    mapMerchantsFavourite = signal< Map<string, string>>(new Map<string, string>());
+    mapMerchantsFavourite = signal< Map<string, string>>(new Map());
     savedGroupMerchant = signal<IMerchantGroup | null>(null);
 
     ngOnInit() {

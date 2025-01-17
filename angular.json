@@ -40,10 +40,7 @@
                         "tsConfig": "tsconfig.app.json",
                         "inlineStyleLanguage": "scss",
                         "assets": [
-                            {
-                                "glob": "**/*",
-                                "input": "public"
-                            }
+                            "src/assets"
                         ],
                         "styles": [
                             "node_modules/bootstrap-icons/font/bootstrap-icons.css",
@@ -102,10 +99,7 @@
                         "tsConfig": "tsconfig.spec.json",
                         "inlineStyleLanguage": "scss",
                         "assets": [
-                            {
-                                "glob": "**/*",
-                                "input": "public"
-                            }
+                            "src/assets"
                         ],
                         "styles": [
                             "node_modules/bootstrap-icons/font/bootstrap-icons.css",

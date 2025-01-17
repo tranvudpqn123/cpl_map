@@ -48,12 +48,13 @@ import {StarRatingDirective} from 'directives/star-rating.directive';
 export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements OnInit{
     @ViewChild(CdkPortal) portal!: CdkPortal;
     @ViewChild('contextMenuTemplate', {static: true}) contextMenuTemplate!: TemplateRef<any>;
+    protected readonly EMerchantGroupType = EMerchantGroupType;
+    protected readonly EShowMerchantGroupType = EShowMerchantGroupType;
 
     private readonly overlay = inject(Overlay);
     private readonly viewContainerRef = inject(ViewContainerRef);
     private readonly merchantFilterService = inject(MerchantFilterService);
     protected readonly IconPaths = IconPaths;
-    protected readonly EAddressGroupType = EAddressGroupType;
     private overlayRef: OverlayRef | null = null;
 
     selectedGroup = signal<IMerchantGroup | null>(null);
@@ -61,7 +62,6 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
     showMerchantGroupType = signal<EShowMerchantGroupType | null>(null);
     openAddListForm = signal(false);
     addressGroups = signal<IAddressGroup[]>([]);
-    selectedAddressGroupId = signal('');
     systemMerchantGroups = signal<IMerchantGroup[]>([]);
 
     merchantGroups = signal<IMerchantGroup[]>([]);
@@ -72,25 +72,11 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
 
 
     ngOnInit() {
-        this.merchantFilterService.selectedAddressGroupId$
-            .pipe(takeUntil(this.destroyFlag))
-            .subscribe((selectedAddressGroupId) => {
-                console.log('selectedAddressGroupId', selectedAddressGroupId);
-                // this.selectedAddressGroupId.set(selectedAddressGroupId);
-            });
 
         this.merchantFilterService.addressGroups$
             .pipe(takeUntil(this.destroyFlag))
             .subscribe((addressGroups) => {
                 this.addressGroups.set(addressGroups);
-            });
-
-        this.merchantFilterService.selectedAddressGroupId$
-            .pipe(takeUntil(this.destroyFlag))
-            .subscribe((selectedAddressGroupId) => {
-                this.selectedAddressGroupId.set(selectedAddressGroupId);
-                const selectedGroup = this.addressGroups()?.find(group => group.id === selectedAddressGroupId);
-
             });
 
         this.merchantFilterService.merchantGroups_v2$
@@ -214,14 +200,10 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
         }
     }
 
-    onSelectList(selectedGroupId: string) {
-        // this.merchantFilterService.selectListAddress(list.id);
-    }
-
     onSelectSystemGroup(groupId: string) {
-        this.merchantFilterService.selectMerchantGroup(groupId);
+        this.merchantFilterService.updateSelectedAddressGroup(groupId);
+        this.merchantFilterService.updateShowMerchantGroupType(EShowMerchantGroupType.HISTORY);
     }
-
     onRemoveMerchantFromGroup(event: MouseEvent, listId: string, merchantId: string) {
         event.stopPropagation();
         this.merchantFilterService.removeFromGroup(listId, merchantId);
@@ -241,8 +223,5 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
         }
     }
 
-    protected readonly ESystemMerchantGroupType = ESystemMerchantGroupType;
-    protected readonly EMerchantGroupType = EMerchantGroupType;
-    protected readonly EShowMerchantGroupType = EShowMerchantGroupType;
-    protected readonly filter = filter;
+
 }

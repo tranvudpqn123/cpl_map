@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, OnInit, signal, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit, Renderer2, signal, ViewChild} from '@angular/core';
 import {firstValueFrom, takeUntil} from 'rxjs';
 import {CommonModule} from '@angular/common';
 import {Overlay, OverlayConfig, OverlayRef} from '@angular/cdk/overlay';
@@ -7,7 +7,7 @@ import {GoogleMapsModule} from '@angular/google-maps';
 
 // Services
 import {
-    EShowMerchantGroupType,
+    EShowMerchantGroupType, ESystemMerchantGroupType, IMerchantGroup,
     IServiceType,
     ISubServiceType,
     MerchantFilterService
@@ -45,20 +45,25 @@ import CollisionBehavior = google.maps.CollisionBehavior;
 })
 export class MapComponent extends AutomaticallyUnsubscribe implements OnInit {
     @ViewChild(CdkPortal) portal!: CdkPortal;
+    private readonly renderer = inject(Renderer2);
     private readonly overlay = inject(Overlay);
     private readonly merchantFilterService = inject(MerchantFilterService);
     private overlayRef: OverlayRef | null = null;
     selectedMerchant = signal<IMerchant | null>(null);
+    merchantGroups = signal<IMerchantGroup[]>([]);
+
     isShowMerchantGroups = signal<boolean>(false);
     showMerchantGroupType = signal<EShowMerchantGroupType | null>(null);
 
     map: google.maps.Map | null = null;
     markers: any[] = [];
 
+    mapMerchantsFavourite = signal< Map<string, string>>(new Map());
     serviceTypes = signal<IServiceType[]>([]);
-    subServiceTypes = signal<ISubServiceType[] >([]);
+    subServiceTypes = signal<ISubServiceType[]>([]);
     selectedService = signal<IServiceType | null>(null);
-    serviceTypeSelected = ''
+    serviceTypeSelected = '';
+
 
     ngOnInit() {
         this.merchantFilterService.selectedMerchant$
@@ -82,9 +87,30 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit {
                 this.showMerchantGroupType.set(showMerchantGroupType);
             });
 
-        this.merchantFilterService.serviceTypes$.subscribe((serviceTypes) => {
-            this.serviceTypes.set(serviceTypes);
-        });
+        this.merchantFilterService.serviceTypes$
+            .pipe(takeUntil(this.destroyFlag))
+            .subscribe((serviceTypes) => {
+                this.serviceTypes.set(serviceTypes);
+            });
+
+        this.merchantFilterService.merchantGroups_v2$
+            .pipe(takeUntil(this.destroyFlag))
+            .subscribe((merchantGroups) => {
+                const favoriteMerchants = merchantGroups.find(it => it.id === ESystemMerchantGroupType.FAVORITES);
+                if (favoriteMerchants) {
+                    this.mapMerchantsFavourite.set(
+                        new Map(favoriteMerchants.merchants.map((it: { id: any; }) => [it.id, it.id]))
+                    );
+                }
+
+                if (this.map) {
+                    const selectedGroupMerchants = merchantGroups.find(it => it.selected);
+                    const merchants = selectedGroupMerchants?.merchants ?? [];
+                    this.setMarkers(this.map, merchants);
+                }
+
+            });
+
         this.initMap();
     };
 
@@ -116,12 +142,12 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit {
             {
                 featureType: "road",
                 elementType: "labels",
-                stylers: [{ visibility: "simplified" }], // Ho?c "off" d? ?n
+                stylers: [{visibility: "simplified"}], // Ho?c "off" d? ?n
             },
             {
                 featureType: "poi.business",
                 elementType: "labels",
-                stylers: [{ visibility: "off" }], // ?n qu�n c� ph�
+                stylers: [{visibility: "off"}], // ?n qu�n c� ph�
             }
         ]);
 
@@ -162,7 +188,7 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit {
         map.panTo({lat, lng});
 
         merchants.forEach(merchant => {
-            const markerContent = this.createShortcutMarker();
+            const markerContent = this.createShortcutMarker(merchant);
             const advancedMarkerElement = new AdvancedMarkerElement({
                 map,
                 content: markerContent,
@@ -173,6 +199,9 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit {
             });
             this.markers.push(advancedMarkerElement);
 
+            advancedMarkerElement.addListener('click', () => {
+                this.merchantFilterService.updateSelectedMerchant(merchant);
+            });
             markerContent.addEventListener("mouseenter", () => {
                 this.showMoreDetail(advancedMarkerElement);
             });
@@ -184,7 +213,7 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit {
 
         this.fitMapToBounds(this.markers, map);
 
-}
+    }
 
     private fitMapToBounds(markers: any[], map: google.maps.Map) {
         if (markers.length === 0) return;
@@ -207,6 +236,7 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit {
             markerView.zIndex = 1;
         }
     }
+
     private hideMoreDetail(markerView: any) {
         if (markerView.content.classList.contains('highlight')) {
             markerView.content.classList.remove('highlight');
@@ -214,7 +244,8 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit {
         }
     }
 
-    private createShortcutMarker() {
+    private createShortcutMarker(merchant: IMerchant) {
+        const isFavorite = this.mapMerchantsFavourite().get(merchant.id);
 
         const content = document.createElement("div");
         content.classList.add("property");
@@ -222,29 +253,27 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit {
             <div class="position-fixed border bg-white merchant">
                 <div
                     class="position-relative merchant-avatar"
-                    style="background-image: url(https://img.tripi.vn/cdn-cgi/image/width=1280,height=1280/https://googleapis.tripi.vn/download/storage/v1/b/hotelcdn/o/1870%2F1LV0DXXQJ8_BKV_1468-HDR.jpg?generation=1587028250082357&alt=media)"
+                    style="background-image: url('${merchant.avatar}')"
                 >
                 </div>
                 <div class="p-3">
                     <div class="lh-1 d-flex align-items-center justify-content-between">
-                        <h5 class="c-text-truncate fw-500 merchant-name">Var Cyber Gaming</h5>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="py-1 px-1 rounded merchant-discount text-center">${merchant.discountRate}%</div>
+                            <h5 class="lh-1 c-text-truncate fw-500 merchant-name">${merchant.name}</h5>
+                        </div>
+
                         <button class="p-0 c-text-gray btn btn-add-to-favorites">
 
-                        <svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 -960 960 960" width="30px" fill="currentColor"><path d="m480-146.93-44.15-39.69q-99.46-90.23-164.5-155.07-65.04-64.85-103.08-115.43-38.04-50.57-53.15-92.27Q100-591.08 100-634q0-85.15 57.42-142.58Q214.85-834 300-834q52.38 0 99 24.5t81 70.27q34.38-45.77 81-70.27 46.62-24.5 99-24.5 85.15 0 142.58 57.42Q860-719.15 860-634q0 42.92-15.12 84.61-15.11 41.7-53.15 92.27-38.04 50.58-102.89 115.43Q624-276.85 524.15-186.62L480-146.93Zm0-81.07q96-86.38 158-148.08 62-61.69 98-107.19t50-80.81q14-35.3 14-69.92 0-60-40-100t-100-40q-47.38 0-87.58 26.88-40.19 26.89-63.65 74.81h-57.54q-23.85-48.31-63.85-75Q347.38-774 300-774q-59.62 0-99.81 40Q160-694 160-634q0 34.62 14 69.92 14 35.31 50 80.81t98 107q62 61.5 158 148.27Zm0-273Z"/></svg>
+                        ${isFavorite ? IconPaths.FAVOURITE_FILL_LG : IconPaths.FAVOURITE_LG}
                     </button>
                     </div>
                     <div class="d-flex align-items-center gap-2 c-text-gray">
-                        <span>5.0</span>
-                        <div class="d-flex star-icons">
-                            <span class="star-icon">${IconPaths.STAR_SM}</span>
-                            <span class="star-icon">${IconPaths.STAR_SM}</span>
-                            <span class="star-icon">${IconPaths.STAR_SM}</span>
-                            <span class="star-icon">${IconPaths.STAR_SM}</span>
-                            <span class="star-icon">${IconPaths.STAR_SM}</span>
-                        </div>
-                        <span>(52)</span>
+                        <span>${merchant.rating}</span>
+                        ${this.renderRatingStars(merchant.rating, merchant.totalRating)}
+                        <span>(${merchant.totalRating})</span>
                     </div>
-                    <p class="c-text-gray merchant-address">27 Tr?n Duy Hung, qu?n C?u Gi?y, TP H� N?i</p>
+                    <p class="c-text-gray merchant-address">${merchant.fullAddress}</p>
                 </div>
             </div>
         `;
@@ -259,8 +288,8 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit {
 
             if (!point1 || !point2) return 0;
             const scale = Math.pow(2, map.getZoom() ?? 15); // Scale for current zoom level
-            const pixel1 = { x: point1.x * scale, y: point1.y * scale };
-            const pixel2 = { x: point2.x * scale, y: point2.y * scale };
+            const pixel1 = {x: point1.x * scale, y: point1.y * scale};
+            const pixel2 = {x: point2.x * scale, y: point2.y * scale};
             return Math.sqrt(Math.pow(pixel1.x - pixel2.x, 2) + Math.pow(pixel1.y - pixel2.y, 2));
         }
         return 0;
@@ -302,6 +331,29 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit {
         this.overlayRef.backdropClick().subscribe(() => {
             this.overlayRef?.detach();
         });
+    }
+
+    private renderRatingStars(rating: number, totalRating: number) {
+
+        let res = `<div class="d-flex star-icons">`;
+
+        const fullStars = Math.floor(rating);
+        for (let i = 0; i < fullStars; i++) {
+            res += `<i class="bi bi-star-fill"></i>`;
+        }
+
+        // Half star
+        if (rating % 1 >= 0.5) {
+            res += `<i class="bi bi-star-half"></i>`;
+        }
+
+        // Empty stars
+        const emptyStars = 5 - fullStars - (rating % 1 >= 0.5 ? 1 : 0);
+        for (let i = 0; i < emptyStars; i++) {
+            res += `<i class="bi bi-star"></i>`;
+        }
+
+        return res += '</div>';
     }
 
 }

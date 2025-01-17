@@ -27,13 +27,11 @@ import {CommonModule} from '@angular/common';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SidebarComponent extends AutomaticallyUnsubscribe implements OnInit {
-    protected readonly EAddressGroupType = EAddressGroupType;
+    protected readonly EShowMerchantGroupType = EShowMerchantGroupType;
     protected readonly IconPaths = IconPaths;
     private readonly merchantFilterService = inject(MerchantFilterService);
-    private readonly storageService = inject(StorageService);
-    merchantGroups = signal<IMerchantGroup[]>([]);
 
-    selectedAddressGroupId = signal('');
+    merchantGroups = signal<IMerchantGroup[]>([]);
     showMerchantGroupType = signal<EShowMerchantGroupType | null>(null);
 
     ngOnInit() {
@@ -42,34 +40,17 @@ export class SidebarComponent extends AutomaticallyUnsubscribe implements OnInit
             .subscribe((merchantGroups) => {
                 this.merchantGroups.set(merchantGroups);
             });
-        this.getListSeenMerchant();
-
-        this.merchantFilterService.selectedAddressGroupId$
-            .pipe(takeUntil(this.destroyFlag))
-            .subscribe((selectedAddressGroupId) => {
-                this.selectedAddressGroupId.set(selectedAddressGroupId);
-            });
 
         this.merchantFilterService.showMerchantGroupType$
             .pipe(takeUntil(this.destroyFlag))
             .subscribe(showMerchantGroupType => {
-                console.log('showMerchantGroupType', showMerchantGroupType);
                 this.showMerchantGroupType.set(showMerchantGroupType);
             });
-    }
-
-
-    getListSeenMerchant(){
-        // this.merchantFilterService.addressGroups$
-        //     .subscribe((addressGroups) => {
-        //         this.merchantGroups.set(addressGroups);
-        //     });
     }
 
     onSelectAddressGroup(addressGroupId: string) {
         this.merchantFilterService.updateSelectedAddressGroup(addressGroupId);
         this.merchantFilterService.updateShowMerchantGroupType(EShowMerchantGroupType.HISTORY);
-
     }
 
     onShowCustomGroup(type: EShowMerchantGroupType) {
@@ -78,5 +59,4 @@ export class SidebarComponent extends AutomaticallyUnsubscribe implements OnInit
     }
 
 
-    protected readonly EShowMerchantGroupType = EShowMerchantGroupType;
 }
