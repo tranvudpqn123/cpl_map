@@ -31,7 +31,10 @@ export class MerchantFilterService {
         selectedGroupType: EAddressGroupType | null,
         listAddress: IListAddress[],
         selectedListAddress: IListAddress | null,
-        selectedSubService: ISubServiceType | null
+        selectedSubService: ISubServiceType | null,
+
+        // Custom Data
+        merchantGroups_v2: IMerchantGroup[],
 
     }>(
         {
@@ -46,27 +49,62 @@ export class MerchantFilterService {
             listAddress: [],
             selectedListAddress: null,
             selectedSubService: null,
+
+
+
+
+            // Custom Data
+            merchantGroups_v2: [],
         }
     );
 
     serviceTypes$ = new BehaviorSubject<IServiceType[]>([]);
 
     constructor() {
-        const listAddress = this.storageService.getItem<IListAddress[]>(EStorageKey.LIST_ADDRESS) ?? [
+
+
+        const systemGroupMerchants: IMerchantGroup[] = this.storageService.getItem<IMerchantGroup[]>(EStorageKey.GROUP_MERCHANTS) ?? [
             {
-                id: 'TRAVEL_PLANS', icon: IconPaths.TRAVEL_LUGGAGE_LG, title: 'Travel plans', default: true, merchants: []
+                id: ESystemMerchantGroupType.TRAVEL_PLANS,
+                icon: IconPaths.TRAVEL_LUGGAGE_LG,
+                title: 'Travel plans',
+                merchants: [],
+                avatars: [],
+                type: EMerchantGroupType.SYSTEM,
+                showOnSidebar: true,
             },
             {
-                id: 'WANT_TO_GO', icon: IconPaths.FLAG_LG, title: 'Want to go', default: true, merchants: []
+                id: ESystemMerchantGroupType.WANT_TO_GO,
+                icon: IconPaths.FLAG_LG,
+                title: 'Want to go',
+                merchants: [],
+                avatars: [],
+                type: EMerchantGroupType.SYSTEM,
+                showOnSidebar: true,
             },
             {
-                id: 'STARRED_PLACES', icon: IconPaths.STAR_LG, title: 'Starred places', default: true, merchants: []
+                id: ESystemMerchantGroupType.STARRED_PLACES,
+                icon: IconPaths.STAR_LG,
+                title: 'Starred places',
+                merchants: [],
+                avatars: [],
+                type: EMerchantGroupType.SYSTEM,
+                showOnSidebar: true,
             },
             {
-                id: 'FAVORITES', icon: IconPaths.FAVOURITE_LG, title: 'Favourites', default: true, merchants: []
+                id: ESystemMerchantGroupType.FAVORITES,
+                icon: IconPaths.FAVOURITE_LG,
+                title: 'Favourites',
+                merchants: [],
+                avatars: [],
+                type: EMerchantGroupType.SYSTEM,
+                showOnSidebar: true,
             }
         ];
-        this.addressData.next({...this.addressData.value, listAddress});
+        this.addressData.next({
+            ...this.addressData.value,
+            merchantGroups_v2: [...systemGroupMerchants]
+        });
 
         this.getServiceTypes().subscribe(res => {
             const {code, data} = res;
@@ -222,6 +260,13 @@ export class MerchantFilterService {
             }));
     }
 
+    get merchantGroups_v2$() {
+        return this.addressData.asObservable().pipe(
+            map(data => data.merchantGroups_v2),
+            distinctUntilChanged((prev, curr) => {
+                return prev === curr;
+            }));
+    }
 
     updateSelectedSubService(subService: ISubServiceType | null) {
         this.addressData.next({...this.addressData.value, selectedSubService: subService});
@@ -248,72 +293,84 @@ export class MerchantFilterService {
         this.addressData.next({...this.addressData.value, selectedMerchant: merchant});
     }
 
-    createOrUpdateListAddress(newListAddress: IListAddress) {
-        const {listAddress} = this.addressData.value;
+    createOrUpdateMerchantGroup(newListAddress: IMerchantGroup) {
+        const {merchantGroups_v2} = this.addressData.value;
 
         if (newListAddress.id) {
-            const currentIndex = listAddress.findIndex(it => it.id === newListAddress.id);
+            const currentIndex = merchantGroups_v2.findIndex(it => it.id === newListAddress.id);
             if (currentIndex === -1) {
                 return;
             }
-            listAddress[currentIndex] = newListAddress;
+            merchantGroups_v2[currentIndex] = newListAddress;
         } else {
             newListAddress.id = this.utilsService.generateGUID();
-            listAddress.push(newListAddress);
+            merchantGroups_v2.push(newListAddress);
         }
 
+        console.log('merchantGroups_v2', merchantGroups_v2);
         this.addressData.next({
             ...this.addressData.value,
-            listAddress: [...listAddress],
+            merchantGroups_v2: [...merchantGroups_v2],
         });
-        this.storageService.setItem(JSON.stringify(listAddress), EStorageKey.LIST_ADDRESS);
+        this.storageService.setItem(JSON.stringify(merchantGroups_v2), EStorageKey.GROUP_MERCHANTS);
     }
 
-    removeListAddress(listAddressId: string) {
-        let {listAddress} = this.addressData.value;
+    removeMerchantGroup(groupId: string) {
+        let {merchantGroups_v2} = this.addressData.value;
 
-        const currentIndex = listAddress.findIndex(it => it.id === listAddressId);
+        const currentIndex = merchantGroups_v2.findIndex(it => it.id === groupId);
         if (currentIndex === -1) {
             return;
         }
-        listAddress.splice(currentIndex, 1);
+        merchantGroups_v2.splice(currentIndex, 1);
 
         this.addressData.next({
             ...this.addressData.value,
-            listAddress: [...listAddress],
+            merchantGroups_v2: [...merchantGroups_v2],
         });
-        this.storageService.setItem(JSON.stringify(listAddress), EStorageKey.LIST_ADDRESS);
+        this.storageService.setItem(JSON.stringify(merchantGroups_v2), EStorageKey.GROUP_MERCHANTS);
     }
 
-    addToList(listAddressId: string, merchant: IMerchant) {
-        let {listAddress} = this.addressData.value;
+    addToList(groupId: string, merchant: IMerchant) {
+        let {merchantGroups_v2} = this.addressData.value;
 
-        const currentIndex = listAddress.findIndex(it => it.id === listAddressId);
+        const currentIndex = merchantGroups_v2.findIndex(it => it.id === groupId);
         if (currentIndex === -1) {
-            return;
-        }
-
-        const isExist = listAddress[currentIndex].merchants.find(it => it.id === merchant.id);
-        if (isExist) {
-            return;
-        }
-
-        listAddress.forEach(group => {
-            if (group.id !== 'FAVORITES' && group.id !== listAddressId) {
-                const index = group.merchants.findIndex(it => it.id === merchant.id);
-                if (index !== -1) {
-                    group.merchants.splice(index, 1);
-                }
+            // Create new group
+            merchantGroups_v2.push({
+                id: groupId,
+                title: merchant.serviceName,
+                icon: '',
+                avatars: [merchant.avatar],
+                type: EMerchantGroupType.SERVICE_TYPE,
+                merchants: [merchant],
+                showOnSidebar: true,
+            });
+        } else {
+            const isExist = merchantGroups_v2[currentIndex].merchants.find(it => it.id === merchant.id);
+            if (isExist) {
+                return;
             }
-        })
 
-        listAddress[currentIndex].merchants.push(merchant);
+            merchantGroups_v2.forEach(group => {
+                if (group.id !== 'FAVORITES' && group.id !== groupId) {
+                    const index = group.merchants.findIndex(it => it.id === merchant.id);
+                    if (index !== -1) {
+                        group.merchants.splice(index, 1);
+                    }
+                }
+            })
+
+            merchantGroups_v2[currentIndex].merchants.push(merchant);
+            const lastTwoAvatars = merchantGroups_v2[currentIndex].merchants.slice(merchantGroups_v2[currentIndex].merchants.length - 2).map(it => it.avatar);
+            merchantGroups_v2[currentIndex].avatars = lastTwoAvatars;
+        }
 
         this.addressData.next({
             ...this.addressData.value,
-            listAddress: [...listAddress],
+            merchantGroups_v2: [...merchantGroups_v2],
         });
-        this.storageService.setItem(JSON.stringify(listAddress), EStorageKey.LIST_ADDRESS);
+        this.storageService.setItem(JSON.stringify(merchantGroups_v2), EStorageKey.GROUP_MERCHANTS);
     }
 
     removeFromList(listAddressId: string, merchantId: string) {
@@ -336,15 +393,24 @@ export class MerchantFilterService {
         }
     }
 
-    selectListAddress(listAddressId: string) {
-        const {listAddress} = this.addressData.value;
-        let selectedListAddress = listAddress.find(it => it.id === listAddressId) ?? null;
-        selectedListAddress = selectedListAddress ? {...selectedListAddress} : null;
-        this.addressData.next({
-            ...this.addressData.value,
-            selectedGroupType: EAddressGroupType.RECENT,
-            selectedListAddress
-        });
+    removeFromGroup(groupId: string, merchantId: string) {
+        let {merchantGroups_v2} = this.addressData.value;
+
+        const currentListIndex = merchantGroups_v2.findIndex(it => it.id === groupId);
+        if (currentListIndex === -1) {
+            return;
+        }
+
+        const merchantIndex = merchantGroups_v2[currentListIndex].merchants.findIndex(it => it.id === merchantId);
+        if (merchantIndex !== -1) {
+            merchantGroups_v2[currentListIndex].merchants.splice(merchantIndex, 1);
+            this.addressData.next({
+                ...this.addressData.value,
+                merchantGroups_v2: [...merchantGroups_v2],
+            });
+            this.storageService.setItem(JSON.stringify(merchantGroups_v2), EStorageKey.GROUP_MERCHANTS);
+
+        }
     }
 
     getMerchants(merchantFilterRequest: IMerchantFilterRequest) {
@@ -431,4 +497,24 @@ export interface ISubServiceType {
     avatar: string;
     id: string;
     name: string;
+}
+
+export enum EMerchantGroupType {
+    SYSTEM = 'SYSTEM', CUSTOM = 'CUSTOM', SERVICE_TYPE = 'SERVICE_TYPE'
+}
+export enum ESystemMerchantGroupType {
+    TRAVEL_PLANS = 'TRAVEL_PLANS',
+    WANT_TO_GO = 'WANT_TO_GO',
+    STARRED_PLACES = 'STARRED_PLACES',
+    FAVORITES = 'FAVORITES',
+}
+
+export interface IMerchantGroup {
+    id: string;
+    title: string;
+    icon: string;
+    avatars: string[],
+    type: EMerchantGroupType,
+    merchants: IMerchant[];
+    showOnSidebar: boolean;
 }

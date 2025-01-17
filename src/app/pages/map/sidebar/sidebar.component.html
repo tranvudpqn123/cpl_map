@@ -21,54 +21,48 @@
 
     <ul class="position-relative px-1 pt-1 text-center d-flex flex-column align-items-center justify-content-start overflow-auto address-groups">
 
-        @if (selectedListAddress()) {
-            <li
-                class="address-group"
-                [class.selected]="selectedAddressGroupId() === selectedListAddress()!.id"
-            >
-                <button
-                    class="mx-auto p-0 btn"
-                    (click)="onSelectAddressGroup(selectedListAddress()!.id)"
+        @for(addressGroup of merchantGroups(); track $index) {
+            @if (addressGroup.showOnSidebar) {
+                <li
+                    class="address-group"
+                    [class.selected]="selectedAddressGroupId() === addressGroup.id"
                 >
-                    <div class="mx-auto mb-1 position-relative thumbnail-group" >
-                        <div class="d-inline-flex align-items-center justify-content-center thumbnail" [innerHTML]="(selectedListAddress()?.icon || '') | safeSvg">
-                        </div>
-
-                    </div>
-                    <span class="address-group-title">{{selectedListAddress()?.title}}</span>
-                </button>
-            </li>
-        }
-
-        @for(addressGroup of addressGroups(); track $index) {
-            <li
-                class="address-group"
-                [class.selected]="selectedAddressGroupId() === addressGroup.id"
-            >
-                <button
-                    class="mx-auto p-0 btn"
-                    (click)="onSelectAddressGroup(addressGroup.id)"
-                >
-                    <div
-                        class="mx-auto mb-1 position-relative thumbnail-group"
-                        [class.more-than-one]="addressGroup.numberAddresses > 1"
+                    <button
+                        class="mx-auto p-0 btn"
+                        (click)="onSelectAddressGroup(addressGroup.id)"
                     >
-                        @for(avatar of addressGroup.avatars; track $index) {
+                        @if (addressGroup.icon) {
+                            <div class="mx-auto mb-1 position-relative thumbnail-group" >
+                                <div
+                                    class="d-inline-flex align-items-center justify-content-center thumbnail"
+                                    [innerHTML]="(addressGroup.icon || '') | safeSvg">
+                                </div>
+
+                            </div>
+                        } @else {
                             <div
-                                class="d-inline-block thumbnail"
-                                [class.position-absolute]="addressGroup.numberAddresses > 1">
-                                <img [src]="avatar" alt="image">
+                                class="mx-auto mb-1 position-relative thumbnail-group"
+                                [class.more-than-one]="addressGroup.merchants.length > 1"
+                            >
+                                @for(avatar of addressGroup.avatars; track $index) {
+                                    <div
+                                        class="d-inline-block thumbnail"
+                                        [class.position-absolute]="addressGroup.merchants.length > 1">
+                                        <img [src]="avatar" alt="image">
+                                    </div>
+                                }
+
+                                @if (addressGroup.merchants.length > 1) {
+                                    <span class="position-absolute text-white number-of-addresses">{{addressGroup.merchants.length}}</span>
+                                }
+
                             </div>
                         }
 
-                        @if (addressGroup.numberAddresses > 1) {
-                            <span class="position-absolute text-white number-of-addresses">{{addressGroup.numberAddresses}}</span>
-                        }
-
-                    </div>
-                    <span class="address-group-title">{{addressGroup.title}}</span>
-                </button>
-            </li>
+                        <span class="address-group-title">{{addressGroup.title}}</span>
+                    </button>
+                </li>
+            }
         }
 
     </ul>

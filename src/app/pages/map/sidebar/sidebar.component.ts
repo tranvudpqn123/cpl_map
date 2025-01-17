@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
 //Service
-import {EAddressGroupType, IListAddress} from '@services/merchant-filter.service';
+import {EAddressGroupType, IListAddress, IMerchantGroup} from '@services/merchant-filter.service';
 import {MerchantFilterService} from '@services/merchant-filter.service';
 import {StorageService} from '@services/storage.service';
 
@@ -11,11 +11,13 @@ import {takeUntil} from 'rxjs';
 import {AutomaticallyUnsubscribe} from '@constants/automatically-unsubscribe';
 import {IconPaths} from '@constants/image-paths';
 import {SafeSvgPipe} from '@pipes/safe-svg.pipe';
+import {CommonModule} from '@angular/common';
 
 @Component({
     selector: 'app-sidebar',
     standalone: true,
     imports: [
+        CommonModule,
         SafeSvgPipe
     ],
     templateUrl: './sidebar.component.html',
@@ -27,16 +29,16 @@ export class SidebarComponent extends AutomaticallyUnsubscribe implements OnInit
     protected readonly IconPaths = IconPaths;
     private readonly merchantFilterService = inject(MerchantFilterService);
     private readonly storageService = inject(StorageService);
-    addressGroups = signal<IAddressGroup[]>([]);
+    merchantGroups = signal<IMerchantGroup[]>([]);
+
     selectedAddressGroupId = signal('');
     selectedGroupType = signal<EAddressGroupType | null>(null);
-    selectedListAddress = signal<IListAddress | null>(null);
 
     ngOnInit() {
-        this.merchantFilterService.addressGroups$
+        this.merchantFilterService.merchantGroups_v2$
             .pipe(takeUntil(this.destroyFlag))
-            .subscribe((addressGroups) => {
-                this.addressGroups.set(addressGroups);
+            .subscribe((merchantGroups) => {
+                this.merchantGroups.set(merchantGroups);
             });
         this.merchantFilterService.addressData$.subscribe((addressData) => {
             const dataLocal = JSON.parse(JSON.stringify(this.storageService.getItem(EStorageKey.LIST_SEND_PARTNER)));
@@ -57,20 +59,14 @@ export class SidebarComponent extends AutomaticallyUnsubscribe implements OnInit
             .subscribe(selectedGroupType => {
                 this.selectedGroupType.set(selectedGroupType);
             });
-
-        this.merchantFilterService.selectedListAddress$
-            .pipe(takeUntil(this.destroyFlag))
-            .subscribe(selectedListAddress => {
-                this.selectedListAddress.set(selectedListAddress);
-            });
     }
 
 
     getListSeenMerchant(){
-        this.merchantFilterService.addressGroups$
-            .subscribe((addressGroups) => {
-                this.addressGroups.set(addressGroups);
-            });
+        // this.merchantFilterService.addressGroups$
+        //     .subscribe((addressGroups) => {
+        //         this.merchantGroups.set(addressGroups);
+        //     });
     }
 
     onSelectAddressGroup(addressGroupId: string) {

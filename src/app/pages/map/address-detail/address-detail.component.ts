@@ -1,14 +1,4 @@
-import {
-    AfterViewInit,
-    ChangeDetectionStrategy,
-    Component,
-    inject,
-    input,
-    OnInit,
-    output,
-    Output,
-    signal
-} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, inject, input, OnInit, output, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {Swiper} from 'swiper';
 import {IconPaths} from '@constants/image-paths';
@@ -20,7 +10,12 @@ import {CdkConnectedOverlay, CdkOverlayOrigin} from '@angular/cdk/overlay';
 import {AddressReviewsComponent} from '@pages/map/address-reviews/address-reviews.component';
 import {ProductsComponent} from '@pages/map/products/products.component';
 // Services
-import {EAddressGroupType, IListAddress, MerchantFilterService} from '@services/merchant-filter.service';
+import {
+    EMerchantGroupType,
+    ESystemMerchantGroupType,
+    IMerchantGroup,
+    MerchantFilterService
+} from '@services/merchant-filter.service';
 // Directives
 import {StarRatingDirective} from 'directives/star-rating.directive';
 import {ScrollDirectionDirective} from 'directives/scroll-directive.directive';
@@ -28,7 +23,6 @@ import {takeUntil} from 'rxjs';
 
 import {EAddressDetailTab} from '@models/address-merchant.interface';
 //Model
-
 import {IMerchant} from '@models/merchant.interface';
 
 @Component({
@@ -70,24 +64,34 @@ export class AddressDetailComponent extends AutomaticallyUnsubscribe implements 
     isAtTop = signal(true);
     currentTab = signal(EAddressDetailTab.OVERVIEW);
     showListOptions = signal(false);
+    groupOptions = signal<IMerchantGroup[]>([]);
     mapMerchantsFavourite = signal< Map<string, string>>(new Map<string, string>());
-    listAddress = signal<IListAddress[]>([]);
-    savedListAddress = signal<IListAddress | null>(null);
+    savedGroupMerchant = signal<IMerchantGroup | null>(null);
 
     ngOnInit() {
-        this.merchantFilterService.listAddress$
+        this.merchantFilterService.merchantGroups_v2$
             .pipe(takeUntil(this.destroyFlag))
-            .subscribe(listAddress => {
-                this.listAddress.set(listAddress);
-                const favoriteMerchants = listAddress.find(it => it.id === 'FAVORITES');
+            .subscribe(merchantGroups => {
+                const favoriteMerchants = merchantGroups.find(it => it.id === ESystemMerchantGroupType.FAVORITES);
                 if (favoriteMerchants) {
                     this.mapMerchantsFavourite.set(
                         new Map(favoriteMerchants.merchants.map((it: { id: any; }) => [it.id, it.id]))
                     );
-                    this.savedListAddress.set(
-                        listAddress.find(it => it.id !== 'FAVORITES' && it.merchants.some((merchant: { id: string | undefined; }) => merchant.id === this.selectedMerchant()?.id)) ?? null
-                    );
                 }
+
+                let savedGroupMerchant: IMerchantGroup | null = null;
+                const groupOptions: IMerchantGroup[] = [];
+                merchantGroups.forEach((group) => {
+                    if (group.id !== ESystemMerchantGroupType.FAVORITES && group.type === EMerchantGroupType.SYSTEM) {
+                        if (group.merchants.some((merchant: { id: string | undefined; }) => merchant.id === this.selectedMerchant()?.id)) {
+                            savedGroupMerchant = group;
+                        }
+                        groupOptions.push(group);
+                    }
+                });
+
+                this.groupOptions.set(groupOptions.filter(it => (!savedGroupMerchant || it.id !== savedGroupMerchant.id)));
+                this.savedGroupMerchant.set(savedGroupMerchant);
             });
         this.calculateTimeUntilClose();
 
@@ -137,10 +141,10 @@ export class AddressDetailComponent extends AutomaticallyUnsubscribe implements 
         }
     }
 
-    onAddToList(listAddressId: string) {
+    onAddToList(groupId: string) {
         const selectedMerchant = this.selectedMerchant();
         if (selectedMerchant) {
-            this.merchantFilterService.addToList(listAddressId, selectedMerchant);
+            this.merchantFilterService.addToList(groupId, selectedMerchant);
             this.showListOptions.set(false);
         }
     }
@@ -148,9 +152,9 @@ export class AddressDetailComponent extends AutomaticallyUnsubscribe implements 
     onAddOrRemoveToFavorite() {
         const selectedMerchant = this.selectedMerchant();
         if (selectedMerchant && this.mapMerchantsFavourite().get(selectedMerchant.id)) {
-            this.merchantFilterService.removeFromList('FAVORITES', selectedMerchant.id);
+            this.merchantFilterService.removeFromGroup(ESystemMerchantGroupType.FAVORITES, selectedMerchant.id);
         } else {
-            this.onAddToList('FAVORITES');
+            this.onAddToList(ESystemMerchantGroupType.FAVORITES);
         }
     }
 

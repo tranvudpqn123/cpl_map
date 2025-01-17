@@ -181,15 +181,15 @@
                     <div class="py-2 d-flex gap-3">
                         <span
                             class="pin-icon"
-                            [class.transform-scale-875]="savedListAddress()"
-                            [innerHTML]="(savedListAddress() ? savedListAddress()!.icon : IconPaths.PIN) | safeSvg"></span>
+                            [class.transform-scale-875]="savedGroupMerchant()"
+                            [innerHTML]="(savedGroupMerchant() ? savedGroupMerchant()!.icon : IconPaths.PIN) | safeSvg"></span>
                         <button
                             cdkOverlayOrigin
                             #trigger="cdkOverlayOrigin"
                             class="d-flex align-items-center gap-2"
                             (click)="showListOptions.set(true)"
-                        >{{ savedListAddress() ? savedListAddress()?.title : 'Add to list' }}
-                            @if (savedListAddress()) {
+                        >{{ savedGroupMerchant() ? savedGroupMerchant()?.title : 'Add to list' }}
+                            @if (savedGroupMerchant()) {
                                 <span [innerHTML]="IconPaths.CHEVRON_DOWN | safeSvg"></span>
                             }
                         </button>
@@ -201,7 +201,7 @@
                             (overlayOutsideClick)="showListOptions.set(false)"
                         >
                             <div class="p-2 shadow-md bg-white rounded border">
-                                @for (item of listAddress(); track item.id) {
+                                @for (item of groupOptions(); track item.id) {
                                     <button
                                         class="pe-2 ps-1 py-1 d-flex align-items-center gap-2"
                                         (click)="onAddToList(item.id)"

@@ -16,22 +16,22 @@
             </div>
 
             <ul class="py-3 address-group-types">
-                @for(list of listAddress(); track list.id) {
+                @for(group of merchantGroups(); track group.id) {
                     <li
                         class="py-3 px-4 d-flex align-items-center justify-content-between cursor-pointer group"
-                        (click)="onSelectList(list)"
+                        (click)="onSelectList(group.id)"
                     >
                         <div class="d-flex align-items-center justify-content-between gap-3 ">
-                            <span [innerHTML]="list.icon | safeSvg"></span>
+                            <span [innerHTML]="group.icon | safeSvg"></span>
                             <div>
-                                <p class="lh-1 fs-5">{{list.title}}</p>
-                                <p>{{list.merchants.length}} Places</p>
+                                <p class="lh-1 fs-5">{{group.title}}</p>
+                                <p>{{group.merchants.length}} Places</p>
                             </div>
                         </div>
                         <button
                             class="d-flex align-items-center justify-content-center rounded-circle border btn-group-options"
                             [innerHTML]="IconPaths.VERTICAL_DOTS | safeSvg"
-                            (click)="onOpenContextMenu(list, $event)"
+                            (click)="onOpenContextMenu(group, $event)"
                         ></button>
                     </li>
                 }
@@ -73,7 +73,7 @@
                                     <button
                                         class="position-absolute align-items-center justify-content-center border rounded-circle btn btn-remove-from-list"
                                         [innerHTML]="IconPaths.CLOSE | safeSvg"
-                                        (click)="onMerchantFromGroup($event, selectedList()!.id, merchant.id)"
+                                        (click)="onMerchantFromGroup($event, selectedGroup()!.id, merchant.id)"
                                     ></button>
 
                                     <div class="rounded overflow-hidden avatar">
@@ -112,40 +112,42 @@
 </div>
 
 
+<!--  Start :: New Group Form  -->
 <ng-template cdkPortal>
-    <form class="p-3 bg-white rounded form-add-new-list" (submit)="onSaveList()" (keydown.enter)="onSaveList()">
+    <form class="p-3 bg-white rounded form-add-new-list" (submit)="onSaveGroup()" (keydown.enter)="onSaveGroup()">
         <div class="mb-4 d-flex align-items-center justify-content-between fs-14px">
-            <h5 class="fw-500 fs-5">New List</h5>
-            <button class="p-0 btn fw-400 fs-14px" (click)="onCloseCreateListForm()">
+            <h5 class="fw-500 fs-5">New Group</h5>
+            <button class="p-0 btn fw-400 fs-14px" (click)="onCloseCreateGroupForm()">
                 <span [innerHTML]="IconPaths.CLOSE | safeSvg"></span>
             </button>
         </div>
 
         <div class="mb-4">
             <div class="mb-2 d-flex align-items-center justify-content-between c-text-gray">
-                <span>List name</span>
-                <span>{{newListName.length}}/40</span>
+                <span>Group name</span>
+                <span>{{newGroupName.length}}/40</span>
             </div>
             <input
                 type="text"
                 class="form-control"
-                name="list-name"
+                name="group-name"
                 maxlength="40"
-                [(ngModel)]="newListName"
+                [(ngModel)]="newGroupName"
             >
         </div>
         <div class="text-end">
-            <button class="py-2 text-white btn btn-create-list" [disabled]="!newListName">Create</button>
+            <button class="py-2 text-white btn btn-create-list" [disabled]="!newGroupName">Save</button>
         </div>
     </form>
 </ng-template>
+<!--  End :: New Group Form  -->
 
 <ng-template #contextMenuTemplate>
     <div class="p-2 shadow-md bg-white rounded border context-menu">
         <button class="px-3 py-1 d-block" (click)="onEditList()">Edit list</button>
 
-        @if (selectedList() && !selectedList()!.default) {
-            <button class="px-3 py-1 d-block" (click)="onRemoveList()">Remove list</button>
+        @if (selectedGroup() && selectedGroup()!.type !== EMerchantGroupType.SYSTEM) {
+            <button class="px-3 py-1 d-block" (click)="onRemoveGroup()">Remove list</button>
         }
     </div>
 </ng-template>

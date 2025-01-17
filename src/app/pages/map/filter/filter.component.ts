@@ -169,7 +169,7 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit,
                 selectedMerchant.serviceName = service.name;
             }
             this.merchantFilterService.updateSelectedMerchant(selectedMerchant);
-            this.saveInfoMerchantSeen(selectedMerchant);
+            this.merchantFilterService.addToList(selectedMerchant.serviceTypeId, selectedMerchant);
         }
         this.isShowResultSearch.set(false);
         this.merchantFilterService.updateSelectedGroupType(null);
@@ -179,48 +179,6 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit,
         this.merchantFilterService.updateSelectedMerchant(null);
         this.merchantFilterService.updateSelectedGroupType(null);
 
-    }
-
-
-    private saveInfoMerchantSeen(selectedMerchant: IMerchant) {
-        const newAddress: IAddress = {
-            id: selectedMerchant.id,
-            title: selectedMerchant.name,
-            avatar: selectedMerchant.avatar,
-            ratingNumber: selectedMerchant.rating,
-            ratingAmount: selectedMerchant.totalRating,
-            imageGroups: [],
-            addressDetail: selectedMerchant.fullAddress,
-        };
-        const newAddressGroup: IAddressGroupData = {
-            id: selectedMerchant.serviceTypeId,
-            title: selectedMerchant.serviceName,
-            addresses: [newAddress],
-        };
-
-        const listSeenMerchantLocal = this.storageService.getItem(EStorageKey.LIST_SEND_PARTNER);
-        let listSendPartner: IAddressGroupData[] = [];
-
-        if (listSeenMerchantLocal) {
-            try {
-                listSendPartner = JSON.parse(JSON.stringify(listSeenMerchantLocal));
-            } catch (error) {
-                console.error("Error parsing LIST_SEND_PARTNER from storage:", error);
-                listSendPartner = [];
-            }
-        }
-        const existingGroup = listSendPartner.find(group => group.id === newAddressGroup.id);
-
-        if (existingGroup) {
-            const isMerchantExists = existingGroup.addresses.some(address => address.id === newAddress.id);
-            if (!isMerchantExists) {
-                existingGroup.addresses.push(newAddress);
-            }
-        } else {
-            listSendPartner.push(newAddressGroup);
-        }
-        this.merchantFilterService.updateAddressGroups(listSendPartner);
-        this.storageService.setItem(JSON.stringify(listSendPartner), EStorageKey.LIST_SEND_PARTNER);
     }
 
     private getMerchants(recentMerchants: IMerchant[]) {

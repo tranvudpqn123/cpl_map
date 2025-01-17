@@ -9,7 +9,14 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import {AutomaticallyUnsubscribe} from '@constants/automatically-unsubscribe';
-import {EAddressGroupType, IListAddress, MerchantFilterService} from '@services/merchant-filter.service';
+import {
+    EAddressGroupType,
+    EMerchantGroupType,
+    ESystemMerchantGroupType,
+    IListAddress,
+    IMerchantGroup,
+    MerchantFilterService
+} from '@services/merchant-filter.service';
 import {takeUntil} from 'rxjs';
 import {IconPaths} from '@constants/image-paths';
 import {SafeSvgPipe} from '@pipes/safe-svg.pipe';
@@ -17,9 +24,9 @@ import {Overlay, OverlayConfig, OverlayRef} from '@angular/cdk/overlay';
 import {CdkPortal, PortalModule, TemplatePortal} from '@angular/cdk/portal';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
-import {Browser} from 'leaflet';
 import {IMerchant} from '@models/merchant.interface';
 import {IAddressGroup} from '@models/address-merchant.interface';
+import {FilterPipe} from '@pipes/filter.pipe';
 
 @Component({
     selector: 'app-personal-groups',
@@ -28,7 +35,8 @@ import {IAddressGroup} from '@models/address-merchant.interface';
         CommonModule,
         SafeSvgPipe,
         PortalModule,
-        FormsModule
+        FormsModule,
+        FilterPipe
     ],
     templateUrl: './personal-groups.component.html',
     styleUrl: './personal-groups.component.scss',
@@ -45,7 +53,7 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
     protected readonly EAddressGroupType = EAddressGroupType;
     private overlayRef: OverlayRef | null = null;
 
-    selectedList = signal<IListAddress | null>(null);
+    selectedGroup = signal<IMerchantGroup | null>(null);
     merchants = signal<IMerchant[]>([]);
     selectedMerchant = signal<IMerchant | null>(null);
     selectedGroupType = signal<EAddressGroupType | null>(EAddressGroupType.SAVED);
@@ -53,7 +61,9 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
     openAddListForm = signal(false);
     addressGroups = signal<IAddressGroup[]>([]);
     selectedAddressGroupId = signal('');
-    newListName = '';
+    merchantGroups = signal<IMerchantGroup[]>([])
+
+    newGroupName = '';
 
 
     ngOnInit() {
@@ -73,12 +83,7 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
             .subscribe((selectedGroupType) => {
                 this.selectedGroupType.set(selectedGroupType);
             });
-        this.merchantFilterService.selectedListAddress$
-            .pipe(takeUntil(this.destroyFlag))
-            .subscribe((selectedList) => {
-                this.selectedList.set(selectedList);
-                this.merchants.set(selectedList?.merchants || []);
-            });
+
         this.merchantFilterService.selectedMerchant$
             .pipe(takeUntil(this.destroyFlag))
             .subscribe((selectedMerchant) => {
@@ -99,6 +104,15 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
 
             });
 
+        this.merchantFilterService.merchantGroups_v2$
+            .pipe(takeUntil(this.destroyFlag))
+            .subscribe((merchantGroups) => {
+                this.merchantGroups.set(merchantGroups.filter(group =>
+                    group.type === EMerchantGroupType.CUSTOM
+                    || group.type === EMerchantGroupType.SYSTEM
+                ));
+            });
+
     }
 
     onOpenAddListForm() {
@@ -111,7 +125,7 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
 
         this.overlayRef = this.overlay.create(config);
         this.overlayRef.attach(this.portal);
-        this.overlayRef.backdropClick().subscribe(() => this.onCloseCreateListForm());
+        this.overlayRef.backdropClick().subscribe(() => this.onCloseCreateGroupForm());
 
         const inputElm = document.querySelector('.form-add-new-list .form-control') as HTMLElement;
         if (inputElm) {
@@ -119,7 +133,7 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
         }
     }
 
-    onOpenContextMenu(selectedList: IListAddress, event: MouseEvent) {
+    onOpenContextMenu(selectedGroup: IMerchantGroup, event: MouseEvent) {
         event.stopPropagation();
         if (this.overlayRef) {
             this.overlayRef.dispose();
@@ -128,7 +142,7 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
         const currentTarget = event.currentTarget as HTMLElement;
         if (currentTarget) {
             const currentElement = currentTarget.getBoundingClientRect();
-            this.selectedList.set(selectedList);
+            this.selectedGroup.set(selectedGroup);
 
             this.overlayRef = this.overlay.create({
                 positionStrategy: this.overlay
@@ -148,46 +162,49 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
         }
     }
 
-    onSaveList() {
-        if (this.newListName && this.overlayRef) {
-            const id = this.selectedList()?.id || '';
-            this.merchantFilterService.createOrUpdateListAddress({
+    onSaveGroup() {
+        if (this.newGroupName && this.overlayRef) {
+            const id = this.selectedGroup()?.id || '';
+            this.merchantFilterService.createOrUpdateMerchantGroup({
                 id,
-                title: this.newListName,
-                default: false,
+                title: this.newGroupName,
                 icon: IconPaths.LIST_BULLETED_LG,
-                merchants: []
+                merchants: [],
+                type: EMerchantGroupType.CUSTOM,
+                avatars: [],
+                showOnSidebar: false,
             });
-            this.onCloseCreateListForm();
+            this.onCloseCreateGroupForm();
         };
     }
 
-    onRemoveList() {
-        const selectedList = this.selectedList();;
-        if (selectedList) {
-            this.merchantFilterService.removeListAddress(selectedList.id);
+    onRemoveGroup() {
+        const selectedGroup = this.selectedGroup();;
+        if (selectedGroup) {
+            this.merchantFilterService.removeMerchantGroup(selectedGroup.id);
+            this.selectedGroup.set(null);
             this.overlayRef?.detach();
         }
     }
 
     onEditList() {
-        const selectedList = this.selectedList();;
+        const selectedList = this.selectedGroup();;
         if (selectedList) {
-            this.newListName = selectedList.title;
+            this.newGroupName = selectedList.title;
             this.overlayRef?.detach();
             this.onOpenAddListForm();
         }
     }
 
-    onCloseCreateListForm() {
+    onCloseCreateGroupForm() {
         if (this.overlayRef) {
             this.overlayRef.detach();
-            this.newListName = '';
+            this.newGroupName = '';
         }
     }
 
-    onSelectList(list: IListAddress) {
-        this.merchantFilterService.selectListAddress(list.id);
+    onSelectList(selectedGroupId: string) {
+        // this.merchantFilterService.selectListAddress(list.id);
     }
 
     onMerchantFromGroup(event: MouseEvent, listId: string, merchantId: string) {
@@ -198,4 +215,7 @@ export class PersonalGroupsComponent extends AutomaticallyUnsubscribe implements
     onSelectMerchant(merchant: IMerchant) {
         this.merchantFilterService.updateSelectedMerchant(merchant);
     }
+
+    protected readonly ESystemMerchantGroupType = ESystemMerchantGroupType;
+    protected readonly EMerchantGroupType = EMerchantGroupType;
 }

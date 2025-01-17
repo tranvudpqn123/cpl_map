@@ -1,3 +1,4 @@
 export enum EStorageKey {
     LIST_ADDRESS = 'LIST_ADDRESS',
+    GROUP_MERCHANTS = 'GROUP_MERCHANTS',
 }
