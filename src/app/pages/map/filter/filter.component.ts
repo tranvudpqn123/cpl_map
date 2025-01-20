@@ -32,14 +32,11 @@ const CLOCK_ICON = `<svg class="c-text-gray" xmlns="http://www.w3.org/2000/svg" 
     standalone: true,
     imports: [
         CommonModule,
-        StarRatingDirective,
         CdkOverlayOrigin,
         CdkConnectedOverlay,
         ReactiveFormsModule,
         // Pipes
         SafeSvgPipe,
-        DecimalPipe,
-        AddressDetailComponent,
     ],
     templateUrl: './filter.component.html',
     styleUrl: './filter.component.scss',
