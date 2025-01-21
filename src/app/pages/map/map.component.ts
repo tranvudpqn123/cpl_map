@@ -1,4 +1,13 @@
-import {ChangeDetectionStrategy, Component, inject, OnInit, Renderer2, signal, ViewChild} from '@angular/core';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    Component,
+    inject,
+    OnInit,
+    Renderer2,
+    signal,
+    ViewChild
+} from '@angular/core';
 import {firstValueFrom, takeUntil} from 'rxjs';
 import {CommonModule} from '@angular/common';
 import {Overlay, OverlayConfig, OverlayRef} from '@angular/cdk/overlay';
@@ -26,6 +35,9 @@ import {IconPaths} from '@constants/image-paths';
 import {IMerchant} from '@models/merchant.interface';
 
 import CollisionBehavior = google.maps.CollisionBehavior;
+import {Swiper} from 'swiper';
+import {ShowAllServiceTypeComponent} from '@pages/map/category/show-all-service-type/show-all-service-type.component';
+import {Dialog} from '@angular/cdk/dialog';
 
 @Component({
     selector: 'app-map',
@@ -43,15 +55,16 @@ import CollisionBehavior = google.maps.CollisionBehavior;
     styleUrl: './map.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MapComponent extends AutomaticallyUnsubscribe implements OnInit {
+export class MapComponent extends AutomaticallyUnsubscribe implements OnInit, AfterViewInit {
     @ViewChild(CdkPortal) portal!: CdkPortal;
     private readonly renderer = inject(Renderer2);
     private readonly overlay = inject(Overlay);
     private readonly merchantFilterService = inject(MerchantFilterService);
+    private readonly categoryService = inject(CategoryService);
     private overlayRef: OverlayRef | null = null;
     selectedMerchant = signal<IMerchant | null>(null);
     merchantGroups = signal<IMerchantGroup[]>([]);
-
+    private readonly dialog = inject(Dialog);
     isShowMerchantGroups = signal<boolean>(false);
     showMerchantGroupType = signal<EShowMerchantGroupType | null>(null);
 
@@ -62,6 +75,8 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit {
     serviceTypes = signal<IServiceType[]>([]);
     subServiceTypes = signal<ISubServiceType[]>([]);
     selectedService = signal<IServiceType | null>(null);
+    showAllServiceType = signal(true);
+
     serviceTypeSelected = '';
 
 
@@ -114,6 +129,22 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit {
         this.initMap();
     };
 
+    ngAfterViewInit() {
+        new Swiper("#btnTest", {
+            slidesPerView: 3,
+            spaceBetween: 16,
+            mousewheel: true,
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            }
+        });
+    }
+
     async onOpenSubServiceTypesModal(service: IServiceType) {
         this.selectedService.set(service);
         const cachedSubServiceTypes = service.subServiceTypes ?? [];
@@ -125,6 +156,7 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit {
             if (code === '200') {
                 this.merchantFilterService.cacheSubServiceTypes(serviceId, data);
                 this.subServiceTypes.set(data);
+
             }
         }
         this.openSubServiceTypesModal();
@@ -356,4 +388,16 @@ export class MapComponent extends AutomaticallyUnsubscribe implements OnInit {
         return res += '</div>';
     }
 
+     onViewAllModal(){
+        this.categoryService.addListServiceType(this.serviceTypes())
+        const dialogRef = this.dialog.open(ShowAllServiceTypeComponent, {
+            minWidth: '300px',
+        });
+
+        dialogRef.closed.subscribe(() => {
+            this.showAllServiceType.set(false);
+        });
+    }
+
+    protected readonly window = window;
 }
