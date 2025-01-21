@@ -1,42 +1,51 @@
-<div class="container py-3 bg-white">
+<div class="container py-3 bg-white px-0">
     <div class="d-flex align-items-center mb-3">
-        <button class="btn btn-outline-primary me-3">
-            <i class="bi bi-arrow-left"></i>
+        <button class="btn me-3"
+        (click)="closeModal()">
+            <span [innerHTML]="IconPaths.CLOSE | safeSvg" ></span>
         </button>
         <h2 class="m-0">Tất cả danh mục</h2>
     </div>
 
     <!-- Tabs -->
-    <ul class="nav nav-tabs mb-3">
-        <li class="nav-item">
-            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#food">Thực phẩm và đồ uống</button>
-        </li>
-        <li class="nav-item">
-            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#activities">Điều nên làm</button>
-        </li>
-        <li class="nav-item">
-            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#shopping">Mua sắm</button>
-        </li>
+    <ul class="nav nav-tabs d-flex flex-nowrap w-100 overflow-auto list-service-type">
+        @for (item of listServiceTypes(); track item.id) {
+            <li class="nav-item ">
+                <button class="nav-link active py-1 px-5" data-bs-toggle="tab" data-bs-target="#food">
+                    <span>{{ item.name }}</span>
+                </button>
+            </li>
+        }
     </ul>
 
     <!-- Tab Content -->
-    <div class="tab-content">
-        <!-- Thực phẩm và đồ uống -->
-        <div class="tab-pane fade show active" id="food">
-            <h4 class="mb-3">Thực phẩm và đồ uống</h4>
-            <div class="row g-3">
-                @for (item of listServiceTypes(); track item.id){
-
-                    <div class="col-6 col-md-4">
-                    <button class="btn btn-light w-100 py-3 shadow-sm rounded">
-                        <img width="10px" height="10px" [src]="item.icons" [alt]="item.name">
-                        <p>{{item.name}}</p></button>
+    <div class="tab-content overflow-auto bg-dark bg-opacity-25">
+        <div class="tab-pane fade show active">
+            @for (itemServiceType of listServiceTypes(); track itemServiceType.id; let index = $index) {
+                <div class="bg-white px-3"
+                     [class.mb-2]="index !== listServiceTypes().length - 1">
+                    <div class="border-bottom">
+                        <div class="btn d-flex justify-content-center align-items-center ">
+                            <img width="12px" height="12px" [src]="itemServiceType.icons" alt="">
+                            <dt class="pl-4 pt-1">{{ itemServiceType.name }}</dt>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-wrap p-1 pt-4">
+                        @if (listSubServiceTypeCache()[itemServiceType.id]) {
+                            @for (itemSub of listSubServiceTypeCache()[itemServiceType.id]; track itemSub.id) {
+                                <div class="p-2"
+                                     (click)="onSelectSubServiceType(itemSub)">
+                                    <div class="item rounded-5 py-2 px-3 mb-2 border rounded shadow-sm item-list-sub-service-type">
+                                        <h6 class="fw-medium">{{ itemSub.name }}</h6>
+                                    </div>
+                                </div>
+                            }
+                        } @else {
+                            <div></div>
+                        }
+                    </div>
                 </div>
-                }
-                <div class="col-6 col-md-4">
-                    <button class="btn btn-light w-100 py-3 shadow-sm rounded">☕ Quán cà phê</button>
-                </div>
-            </div>
+            }
         </div>
 
     </div>

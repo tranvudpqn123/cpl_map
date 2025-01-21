@@ -1,0 +1,18 @@
+.tab-content {
+  height: calc(100dvh - 100px);
+}
+
+.list-service-type li button{
+  width: max-content;
+}
+.list-service-type::-webkit-scrollbar {
+  display: none;
+}
+.item-list-service-type {
+  width: max-content;
+  background: rgb(var(--c-primary));
+}
+
+.item-list-sub-service-type {
+  background: rgb(var(--c-primary), 0.1);
+}
