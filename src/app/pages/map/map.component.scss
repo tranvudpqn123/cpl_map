@@ -1,3 +1,4 @@
+@import "../../../style/screen";
 .map-page {
     width: 100dvw;
     height: 100dvh;
@@ -26,6 +27,21 @@
             width: 12px
         }
     }
+    @include xs {
+        top: 10%;
+        left: 22%;
+        max-width: 78dvw;
+        min-width: auto;
+        scroll-behavior: smooth;
+        //padding-left: calc(150px);
+    }
+}
+.top-filter ul::-webkit-scrollbar {
+    @include xs {
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* Internet Explorer 10+ */
+        display: none; /* Chrome, Safari, Edge */
+    }
 }
 
 .left-filter {
@@ -45,11 +61,6 @@
     top: 50px;
 }
 
-@media (max-width: 1600px) {
-    .top-filter {
-        padding-left: calc(150px);
-    }
-}
 
 .sub-service-types {
     width: 420px;
