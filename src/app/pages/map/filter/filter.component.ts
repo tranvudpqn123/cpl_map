@@ -32,14 +32,11 @@ const CLOCK_ICON = `<svg class="c-text-gray" xmlns="http://www.w3.org/2000/svg" 
     standalone: true,
     imports: [
         CommonModule,
-        StarRatingDirective,
         CdkOverlayOrigin,
         CdkConnectedOverlay,
         ReactiveFormsModule,
         // Pipes
         SafeSvgPipe,
-        DecimalPipe,
-        AddressDetailComponent,
     ],
     templateUrl: './filter.component.html',
     styleUrl: './filter.component.scss',
@@ -112,7 +109,6 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit,
             .subscribe(merchantGroups => {
                 const selectedGroup = merchantGroups.find(group => group.selected);
                 merchantGroups = merchantGroups.filter(group => group.showOnSidebar);
-                console.log('selectedGroup', selectedGroup);
                 this.merchantGroups.set(merchantGroups);
                 this.merchants.set(selectedGroup?.merchants ?? []);
                 this.selectedAddressGroupId.set(selectedGroup?.id ?? 'ALL');
