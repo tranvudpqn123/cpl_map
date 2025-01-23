@@ -22,8 +22,7 @@ import {ProductsComponent} from '@pages/map/products/products.component';
 // Services
 import {
     EMerchantGroupType,
-    ESystemMerchantGroupType,
-    IMerchantGroup,
+    ESystemMerchantGroupType, IMerchantGroup,
     MerchantFilterService
 } from '@services/merchant-filter.service';
 // Directives
@@ -33,8 +32,8 @@ import {takeUntil} from 'rxjs';
 
 import {EAddressDetailTab} from '@models/address-merchant.interface';
 //Model
-import {IMerchant} from '@models/merchant.interface';
 import {ClickOutsideDirective} from 'directives/click-outside.directive';
+import {IMerchant} from '@models/merchant.interface';
 
 @Component({
     selector: 'app-address-detail',
@@ -51,7 +50,6 @@ import {ClickOutsideDirective} from 'directives/click-outside.directive';
         CdkOverlayOrigin,
         CdkConnectedOverlay,
         ProductsComponent,
-        ClickOutsideDirective,
     ],
     templateUrl: './address-detail.component.html',
     styleUrl: './address-detail.component.scss',

@@ -8,7 +8,7 @@ import {RedZoomModule} from 'ngx-red-zoom';
 import {IServiceType, ISubServiceType, MerchantFilterService} from '@services/merchant-filter.service';
 import {CommonModule} from '@angular/common';
 import {CategoryService} from '@services/category.service';
-import {forkJoin} from "rxjs";
+import {firstValueFrom, forkJoin} from "rxjs";
 import {Dialog} from "@angular/cdk/dialog";
 import {IconPaths} from "@constants/image-paths";
 import {SafeSvgPipe} from "@pipes/safe-svg.pipe";
@@ -27,21 +27,14 @@ export class ShowAllServiceTypeComponent implements OnInit {
     private readonly dialog = inject(Dialog);
 
     listServiceTypes = signal<IServiceType[]>([])
-    listSubServiceTypeCache = signal<Record<string, any[]>>({});
+    listSubServiceType = signal<ISubServiceType[]>([])
 
     ngOnInit() {
-        this.categoryService.listServiceType.subscribe(data => {
+        this.categoryService.listServiceType.subscribe((data) => {
             this.listServiceTypes.set(data);
 
-            const requests = data.map(itemServiceType =>
-                this.categoryService.getListSubServiceType(itemServiceType.id)
-            );
-            forkJoin(requests).subscribe(results => {
-                const cache: Record<string, any[]> = {};
-                results.forEach((res, index) => {
-                    cache[data[index].id] = res.data;
-                });
-                this.listSubServiceTypeCache.set(cache);
+            data.forEach((itemServiceType) => {
+                this.cacheListSubService(itemServiceType).then();
             });
         });
     }
@@ -54,6 +47,40 @@ export class ShowAllServiceTypeComponent implements OnInit {
     closeModal(){
         this.dialog.closeAll();
     }
+
+    async cacheListSubService(service: IServiceType) {
+        const cachedSubServiceTypes = service.subServiceTypes ?? [];
+        if (cachedSubServiceTypes.length > 0) {
+            const combinedSubServiceTypes = [
+                ...this.listSubServiceType(),
+                ...cachedSubServiceTypes.map((item: ISubServiceType) => ({
+                    ...item,
+                    serviceTypeId: service.id,
+                })),
+            ];
+            this.listSubServiceType.set(combinedSubServiceTypes);
+        } else {
+            const serviceId = service.id;
+            const { code, data } = await firstValueFrom(this.merchantFilterService.getSubServiceTypes(serviceId));
+
+            if (code === '200') {
+                this.merchantFilterService.cacheSubServiceTypes(serviceId, data);
+
+                const combinedSubServiceTypes = [
+                    ...this.listSubServiceType(),
+                    ...data.map((item: ISubServiceType) => ({
+                        id: item.id,
+                        name: item.name,
+                        avatar: item.avatar,
+                        serviceTypeId: serviceId,
+                    })),
+                ];
+                this.listSubServiceType.set(combinedSubServiceTypes);
+            }
+        }
+    }
+
+
 
 
     protected readonly IconPaths = IconPaths;
