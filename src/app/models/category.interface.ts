@@ -8,3 +8,11 @@
     orders: number;
     serviceTypeTags: [];
 }
+
+export interface ISubServiceType {
+    avatar: string;
+    id: string;
+    name: string;
+    serviceTypeId? : string;
+
+}

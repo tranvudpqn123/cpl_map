@@ -18,7 +18,6 @@ import {GoogleMapsModule} from '@angular/google-maps';
 import {
     EShowMerchantGroupType, ESystemMerchantGroupType, IMerchantGroup,
     IServiceType,
-    ISubServiceType,
     MerchantFilterService
 } from '@services/merchant-filter.service';
 import {CategoryService} from '@services/category.service';
@@ -38,6 +37,7 @@ import CollisionBehavior = google.maps.CollisionBehavior;
 import {Swiper} from 'swiper';
 import {ShowAllServiceTypeComponent} from '@pages/map/category/show-all-service-type/show-all-service-type.component';
 import {Dialog} from '@angular/cdk/dialog';
+import {ISubServiceType} from '@models/category.interface';
 
 @Component({
     selector: 'app-map',

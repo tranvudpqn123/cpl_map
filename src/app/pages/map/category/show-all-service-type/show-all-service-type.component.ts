@@ -5,13 +5,14 @@ import {
     OnInit, signal,
 } from '@angular/core';
 import {RedZoomModule} from 'ngx-red-zoom';
-import {IServiceType, ISubServiceType, MerchantFilterService} from '@services/merchant-filter.service';
+import {IServiceType, MerchantFilterService} from '@services/merchant-filter.service';
 import {CommonModule} from '@angular/common';
 import {CategoryService} from '@services/category.service';
 import {firstValueFrom, forkJoin} from "rxjs";
 import {Dialog} from "@angular/cdk/dialog";
 import {IconPaths} from "@constants/image-paths";
 import {SafeSvgPipe} from "@pipes/safe-svg.pipe";
+import {ISubServiceType} from '@models/category.interface';
 
 @Component({
     selector: 'app-show-service-type',

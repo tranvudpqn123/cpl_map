@@ -11,6 +11,7 @@ import {environment} from '@environments/environment';
 import {IMerchant, IMerchantFilterRequest, IMerchantResponse} from '@models/merchant.interface';
 import {IAddress, IAddressGroup, IAddressGroupData} from '@models/address-merchant.interface';
 import {IResponseData} from '@models/response-data.interface';
+import {ISubServiceType} from '@models/category.interface';
 
 
 @Injectable({
@@ -416,13 +417,6 @@ export interface IServiceType {
     subServiceTypes: ISubServiceType[];
 }
 
-export interface ISubServiceType {
-    avatar: string;
-    id: string;
-    name: string;
-    serviceTypeId? : string;
-
-}
 
 export enum EMerchantGroupType {
     SYSTEM = 'SYSTEM', CUSTOM = 'CUSTOM', SERVICE_TYPE = 'SERVICE_TYPE'
