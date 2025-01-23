@@ -1,0 +1,36 @@
+
+.dropdown {
+    margin-top: 10px;
+    position: relative;
+    &div {
+        height: 49px;
+    }
+}
+
+/* Custom style for dropdown */
+.dropdown-menu {
+    width: 220px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-35px);
+    transition: all 0.3s ease-in-out;
+}
+
+/* Visible dropdown */
+.dropdown-menu.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(-15px);
+}
+
+/* Individual item styles */
+.dropdown-menu .dropdown-item {
+    border-bottom: 1px solid #eee;
+    padding: 10px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background-color: #555;
+    color: #fff;
+}
