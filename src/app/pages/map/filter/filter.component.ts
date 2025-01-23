@@ -14,7 +14,7 @@ import {
 import {CommonModule, DecimalPipe} from '@angular/common';
 import {StarRatingDirective} from 'directives/star-rating.directive';
 import {CdkPortal} from '@angular/cdk/portal';
-import {CdkConnectedOverlay, CdkOverlayOrigin} from '@angular/cdk/overlay';
+import {CdkConnectedOverlay, CdkOverlayOrigin, ConnectedPosition} from '@angular/cdk/overlay';
 import {SafeSvgPipe} from '@pipes/safe-svg.pipe';
 import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {debounceTime, skip, take, takeUntil} from 'rxjs';
@@ -64,6 +64,16 @@ export class FilterComponent extends AutomaticallyUnsubscribe implements OnInit,
     mapServices = signal<Map<string, IServiceType>>(new Map());
     merchantGroups = signal<IMerchantGroup[]>([]);
     merchants = signal<IMerchant[]>([]);
+
+    customPositions: ConnectedPosition[] = [
+        {
+            originX: 'start',
+            originY: 'bottom',
+            overlayX: 'start',
+            overlayY: 'top'
+        }
+    ];
+
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['keyS'] && changes['keyS'].currentValue !== changes['keyS'].previousValue) {
