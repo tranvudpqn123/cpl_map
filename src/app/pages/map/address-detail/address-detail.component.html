@@ -23,6 +23,7 @@
                 [class.show]="!isAtTop()"
             >
                 <button
+                    (click)="currentTab.set(EAddressDetailTab.OVERVIEW)"
                     class="p-0 d-flex align-items-center justify-content-center rounded-circle btn btn-go-back">
                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
                          fill="currentColor">
@@ -33,15 +34,8 @@
 
                 <h5 class="fs-4">{{ selectedMerchant()!.name }}</h5>
 
-                <button
-                    class="p-0 d-flex align-items-center justify-content-center rounded-circle btn btn-close-popup"
-
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
-                         fill="#5f6368">
-                        <path
-                            d="M256-213.85 213.85-256l224-224-224-224L256-746.15l224 224 224-224L746.15-704l-224 224 224 224L704-213.85l-224-224-224 224Z"/>
-                    </svg>
+                <button class="p-0 d-flex align-items-center justify-content-center rounded-circle btn btn-close-popup"
+                    (click)="onCloseSlideMerchantDetail()">
                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
                          fill="currentColor">
                         <path

@@ -34,6 +34,7 @@ import {takeUntil} from 'rxjs';
 import {EAddressDetailTab} from '@models/address-merchant.interface';
 //Model
 import {IMerchant} from '@models/merchant.interface';
+import {ClickOutsideDirective} from 'directives/click-outside.directive';
 
 @Component({
     selector: 'app-address-detail',
@@ -50,6 +51,7 @@ import {IMerchant} from '@models/merchant.interface';
         CdkOverlayOrigin,
         CdkConnectedOverlay,
         ProductsComponent,
+        ClickOutsideDirective,
     ],
     templateUrl: './address-detail.component.html',
     styleUrl: './address-detail.component.scss',

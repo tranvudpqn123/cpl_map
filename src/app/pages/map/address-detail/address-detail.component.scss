@@ -1,3 +1,4 @@
+@import "../../../../style/screen";
 .address-detail-page {
     left: 530px;
     top: 66px;
@@ -11,7 +12,16 @@
         top: 0;
         bottom: 0;
         border-radius: 0;
+
+        @include xs {
+            left: 0;
+            top: 0;
+            width: 100dvw;
+            margin-top: 20vh;
+            //z-index: 9999;
+        }
     }
+
 }
 
 .wrapper-content {

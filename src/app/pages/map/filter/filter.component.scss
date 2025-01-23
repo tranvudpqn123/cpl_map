@@ -1,4 +1,4 @@
-
+@import '../../../../style/screen';
 .search-box-wrapper {
     top: 0;
     left: 70px;
@@ -29,6 +29,12 @@
         height: 100dvh;
         background-color: white;
         box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    }
+
+    @include  xs {
+        width: 80dvw;
+        left: 20%;
+        padding: 10px 0 0 0;
     }
 }
 
@@ -67,6 +73,9 @@
                 background-color: rgb(var(--c-gray), .15);
             }
         }
+    }
+    @include xs {
+        width: 93%;
     }
 }
 
