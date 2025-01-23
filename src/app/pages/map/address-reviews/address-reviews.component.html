@@ -40,15 +40,17 @@
                 </div>
             </div>
             <div class="d-flex justify-content-center flex-column align-items-center text-center rating-numbers">
-                <span class="lh-1">{{listRatings().ratingAverage}}</span>
+                <span class="lh-1">{{ listRatings().ratingAverage }}</span>
                 <div [appStarRating]="5" class=" d-flex justify-content-center gap-1 fs-6 star-icons"></div>
-                <button class="fs-6 btn c-text-primary btn-show-more-reviews">{{listRatings().totalElements}}</button>
+                <button class="fs-6 btn c-text-primary btn-show-more-reviews">{{ listRatings().totalElements }}</button>
             </div>
         </div>
     </div>
 
-<!--    //sort-->
-    <app-dropdown [data]="listSortRatings"></app-dropdown>
+    <!--    //sort-->
+    <app-dropdown
+        [data]="listSortRatings"
+        (value)="valueEmit.set($event)"></app-dropdown>
     <div class="py-4">
         <h6 class="mb-3 px-4 fs-4 fw-400">Reviews</h6>
         <ul class="reviews">
@@ -64,14 +66,16 @@
                             <div>
                                 <h6 class="fs-5">{{ rating.customerName }}</h6>
                                 <div class="d-flex align-items-center gap-2 c-text-gray">
-                                    <div [appStarRating]="rating.rating" class="d-inline-flex justify-content-center gap-1 star-icons"></div>
+                                    <div [appStarRating]="rating.rating"
+                                         class="d-inline-flex justify-content-center gap-1 star-icons"></div>
                                     <span class="d-flex align-items-center gap-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="14px" viewBox="0 -960 960 960" width="14px" fill="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="14px" viewBox="0 -960 960 960"
+                                     width="14px" fill="currentColor">
                                     <path
                                         d="m625.85-305.85 28.3-28.3L500-488.33V-680h-40v208.31l165.85 165.84ZM480.13-120q-74.67 0-140.41-28.34-65.73-28.34-114.36-76.92-48.63-48.58-76.99-114.26Q120-405.19 120-479.87q0-74.67 28.34-140.41 28.34-65.73 76.92-114.36 48.58-48.63 114.26-76.99Q405.19-840 479.87-840q74.67 0 140.41 28.34 65.73 28.34 114.36 76.92 48.63 48.58 76.99 114.26Q840-554.81 840-480.13q0 74.67-28.34 140.41-28.34 65.73-76.92 114.36-48.58 48.63-114.26 76.99Q554.81-120 480.13-120ZM480-480Zm0 320q133 0 226.5-93.5T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160Z">
                                     </path>
                                 </svg>
-                                <span>{{rating.dateCreated}}</span>
+                                <span>{{ rating.dateCreated }}</span>
                             </span>
                                 </div>
                             </div>

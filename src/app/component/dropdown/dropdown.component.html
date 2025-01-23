@@ -8,15 +8,19 @@
 </script>
 
 <div class="dropdown p-2">
-    <div role="button"
-         class="dropdown-toggle border border-secondary p-3 rounded-3"
+    <div role="button" class="dropdown-toggle border border-secondary p-3 rounded-3"
          id="dropdownMenuButton"
          data-bs-toggle="dropdown" aria-expanded="false">
         Sắp xếp
     </div>
     <ul class="dropdown-menu dropdown-menu-dark bg-secondary" aria-labelledby="dropdownMenuButton">
         @for (item of data; track item.id){
-            <li><a class="dropdown-item" href="#">{{item.name}}</a></li>
+            <li>
+                <a class="dropdown-item" href="#"
+                   (click)="onValueChange(item.name)">
+                    {{item.name}}
+                </a>
+            </li>
         }
     </ul>
 </div>

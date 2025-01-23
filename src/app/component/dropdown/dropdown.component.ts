@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 
 @Component({
   selector: 'app-dropdown',
@@ -10,4 +10,10 @@ import {Component, Input} from '@angular/core';
 export class DropdownComponent {
 
     @Input() data: any;
+    @Output() value = new EventEmitter<string>();
+
+
+    onValueChange(item: any) {
+        this.value.emit(item)
+    }
 }
